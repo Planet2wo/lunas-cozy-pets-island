@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css?v=25">
+<link rel="stylesheet" href="/style.css?v=27">
 </head>
 <body>
 <div id="stage"></div>
@@ -60,7 +60,7 @@
     <button id="btnClean" class="opt">Hide controls</button>
     <button id="btnMore" aria-expanded="false" aria-controls="dockRow">More</button>
   </div>
-  <p class="hint" id="camHint">Drag to orbit, pinch or scroll to zoom. Keys: C auto cam &#183; F free cam &#183; M cycles who you follow (Luna, Lady Moon, Solon) &#183; L Luna still &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v26</span></p>
+  <p class="hint" id="camHint">Drag to orbit, pinch or scroll to zoom. Keys: C auto cam &#183; F free cam &#183; M cycles who you follow (Luna, Lady Moon, Solon) &#183; L Luna still &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v27</span></p>
 </section>
 <button id="restore">Show controls</button>
 <section class="closet" id="closet" hidden aria-label="Clothing Closets">
@@ -101,13 +101,12 @@
 </section>
 <section id="pad" hidden aria-label="Controller">
   <div id="stickZone" aria-label="Movement stick: touch and drag on the left side"></div>
-  <div id="stickBase" aria-hidden="true"><div id="stickKnob"></div></div>
-  <div id="stickHint" aria-hidden="true">Move</div>
+  <div id="stickBase" aria-hidden="true"><i class="arr n"></i><i class="arr e"></i><i class="arr s"></i><i class="arr w"></i><div id="stickKnob"></div></div>
   <div id="padBtns">
-    <button type="button" data-act="pet" class="pb b1" aria-label="Pet or cuddle (E)"><span>&#9829;</span><small>Pet</small></button>
-    <button type="button" data-act="jump" class="pb b2" aria-label="Jump (Space)"><span>&#8593;</span><small>Jump</small></button>
-    <button type="button" data-act="wave" class="pb b3" aria-label="Wave (Q)"><span>&#128075;</span><small>Wave</small></button>
-    <button type="button" data-act="throw" class="pb b4" aria-label="Throw the ball (T)"><span>&#127934;</span><small>Fetch</small></button>
+    <button type="button" data-act="pet" class="pb b1" aria-label="Pet or cuddle (E)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19.2S5.6 15.3 5.6 11.1A3.55 3.55 0 0 1 12 8.2a3.55 3.55 0 0 1 6.4 2.9c0 4.2-6.4 8.1-6.4 8.1z"/></svg><small>Pet</small></button>
+    <button type="button" data-act="jump" class="pb b2" aria-label="Jump (Space)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 14.5 12 7l6 7.5"/></svg><small>Jump</small></button>
+    <button type="button" data-act="wave" class="pb b3" aria-label="Wave (Q)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 13.2V8.4a1.2 1.2 0 0 1 2.4 0"/><path d="M10.6 12.4V6.1a1.2 1.2 0 0 1 2.4 0V12"/><path d="M13 12.5V7.3a1.2 1.2 0 0 1 2.4 0V13"/><path d="M15.4 12.8c.15-.9.85-1.4 1.5-1.1.65.28.8 1.15.45 1.85"/><path d="M16.9 14.4c.7 1.15.4 2.4-.45 3.3-1 1.1-2.4 1.7-4.3 1.7-2 0-3.35-.85-4.2-2.1L6 14.2a1.15 1.15 0 0 1 1.85-1.4l.85 1"/></svg><small>Wave</small></button>
+    <button type="button" data-act="throw" class="pb b4" aria-label="Throw the ball (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg><small>Fetch</small></button>
   </div>
   <div id="ctrlBar"><span>Controller mode</span><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
 </section>
@@ -118,6 +117,6 @@
 <script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>')</script>
 <script src="/vendor/three-postfx.js"></script>
 <script>if(window.THREE&&!THREE.UnrealBloomPass){['shaders/CopyShader','shaders/LuminosityHighPassShader','postprocessing/EffectComposer','postprocessing/RenderPass','postprocessing/ShaderPass','postprocessing/UnrealBloomPass'].forEach(function(f){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/'+f+'.js"><\/script>')})}</script>
-<script src="/game.js?v=25"></script>
+<script src="/game.js?v=27"></script>
 </body>
 </html>

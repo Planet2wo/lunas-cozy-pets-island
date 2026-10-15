@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v25)
+# Luna's Cozy Pets – The Island (v27)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -51,11 +51,12 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 1. **Keep three files of code.** Edit `index.html`, `public/style.css`, and `public/game.js` in place. Don't split the game into modules or convert it to React/TypeScript. `game.js` is a single closure where everything shares scope.
 2. **Keep three.js at r128** (CDN tags in `index.html`). Newer versions renamed APIs that the game uses.
 3. **Place ground objects with `meshH(x,z)`** (the visible faceted terrain), not `hAt(x,z)`. Use `groundStone(x,z,s,sz,col)` for path stones.
-4. **Controller layout:** stick at bottom-left (`#stickBase`), buttons at bottom-right (`#padBtns`). Sizes come from the CSS variables on `#pad` (`--stick`, `--pb`, `--edge`), so tune those rather than hard-coding pixels.
+4. **Controller layout:** stick at bottom-left (`#stickBase`), diamond of buttons at bottom-right (`#padBtns`). Sizes come from the CSS variables on `#pad` (`--stick`, `--pb`, `--edge`, `--dx`, `--dy`), so tune those rather than hard-coding pixels.
 5. **Saves** live in `localStorage` (coins, items, outfits). Keep the existing keys so players keep their progress.
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v27 (controller overlay):** Controller mode now matches the reference overlay. The movement stick is a translucent disc with four direction marks and a white knob, anchored bottom-left. Pet, Jump, Wave and Fetch sit in a diamond at bottom-right, each a tinted circle with a white icon and its name underneath. "Controller mode" and Exit sit in a dark pill at the top-left, and the Auto cam chip stays at the top-right.
 - **v26 (launch cloud + softer night interior):** The rocket launch itself is unchanged. From about 7 seconds, when the big blow opens, the twilight-cloud photograph fades in pinned to the engine, expands slowly through the rest of the show, and thins away before the film ends. In the launch film the camera pulls far back so the whole cloud fits, then moves closer while still holding it; the soundtrack is the same. Indoors at night the lamps, fire, string lights and bloom are lower so the room stays warm without the white glare.
 - **v25 (cast facelift + Solon):** Luna, Lady Moon, Kiko and Bruno are retuned to the stills: Luna's chestnut bob, freckles, cat-print tee, peach shorts and white sneakers; Lady Moon's brighter cobalt hair, rainbow onesie with the zipper in front, and bigger frog-hat eyes; Kiko reads as a sable Sheltie (dark saddle, white ruff and blaze, plumed tail); Bruno reads as a German Shepherd (black saddle and mask, tan legs, long muzzle, saber tail). **Solon** is a new chibi, built the same way as the other two: green frog beanie, black glasses, green controller shirt, navy shorts, green sneakers, and his own practical brain. He feeds empty bowls, herds the dogs at dusk or in the rain, lets them out in the morning when Luna is busy, sweeps, and coaches zoomies. The three share one island picture (hunger, empty bowls, dogs in or out, mess) and claim jobs so they don't double up. Press M to cycle who the camera and controller follow: Luna, Lady Moon, Solon. Solon's beanie toggle is saved under `solon-closet-v1`.
 - **v24 (Jam button):** A new 🎵 Jam button in the controls (or press J) sends Lady Moon straight to the deck radio to put on a song and dance, and Luna always comes over to join in. Press it again while the music's playing and Lady Moon switches it off. The button stays lit while a jam is on.
