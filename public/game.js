@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v24 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v25 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -1389,7 +1389,7 @@ function findPathWorld(sx,sz,tx,tz){
 function createCatShirtTexture(){
   const S=512,cv=document.createElement('canvas');cv.width=cv.height=S;const ctx=cv.getContext('2d');
   const r=mulberry32(4242);
-  ctx.fillStyle='#c4e6f2';ctx.fillRect(0,0,S,S);
+  ctx.fillStyle='#67c4ee';ctx.fillRect(0,0,S,S);
   const COLS=['#5bb8ea','#f39a3d','#a9b1c3','#2d2b33','#fbfbf8','#f5a3c3','#9fd98c','#6d8fe0','#f4c56a','#b89ae0','#66c9c2','#ef7b6f'];
   const NC=4,NR=4,cw=S/NC,ch=S/NR;
   function cat(x,y,w,h,col,v){
@@ -1429,7 +1429,7 @@ function createCatShirtTexture(){
     const col=COLS[(idx*7+row*5+3)%COLS.length],v=Math.floor(r()*12);idx++;
     for(const ox of[-S,0,S])cat(x+ox,y,cw*0.96,ch*1.0,col,v);
   }
-  const tex=new T.CanvasTexture(cv);tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(3,1);tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());tex.needsUpdate=true;return tex;
+  const tex=new T.CanvasTexture(cv);tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(2,1);tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());tex.needsUpdate=true;return tex;
 }
 
 /* Faces redraw a 512px canvas on every blink. Draw each expression once into its own texture and just swap maps,
@@ -1452,26 +1452,29 @@ function createCaretakerFaceTexture(){
     ctx.setTransform(1,0,0,2,0,-256);
     for(const sx of[-1,1]){const cx=256+sx*62,cy=274,grd=ctx.createRadialGradient(cx,cy,2,cx,cy,24);
       grd.addColorStop(0,'rgba(240,128,108,0.30)');grd.addColorStop(1,'rgba(240,128,108,0)');ctx.fillStyle=grd;ell(cx,cy,24,24);}
-    ctx.fillStyle='#c4623e';
-    for(const sx of[-1,1])for(const[fx,fy]of[[48,272],[57,269],[66,272],[52,280],[61,282],[70,279]]){ell(256+sx*fx,fy,3.3,3.3);}
+    ctx.fillStyle='#d4896a';
+    for(const sx of[-1,1])for(const[fx,fy,rr]of[[46,270,2.4],[56,266,2.6],[66,271,2.3],[50,278,2.5],[60,280,2.2],[70,276,2.4],[40,274,2.0]])ell(256+sx*fx,fy,rr,rr);
+    for(const[nx,ny]of[[-8,262],[0,260],[8,263],[-4,266],[5,266]])ell(256+nx,ny,1.8,1.8);
     ctx.lineCap='round';
+    // thin chestnut brows, just above the big round eyes
+    ctx.strokeStyle='#6a4632';ctx.lineWidth=3.6;
+    for(const sx of[-1,1]){const ex=256+sx*52;ctx.beginPath();ctx.moveTo(ex-sx*16,226);ctx.quadraticCurveTo(ex,218,ex+sx*18,224);ctx.stroke();}
     for(const sx of[-1,1]){
-      const ex=256+sx*50,ey=246;
+      const ex=256+sx*52,ey=248;
       if(blink){
-        ctx.strokeStyle='#2a201c';ctx.lineWidth=3.6;ctx.beginPath();ctx.ellipse(ex,ey+4,19,10,0,0.12*Math.PI,0.88*Math.PI);ctx.stroke();
+        ctx.strokeStyle='#2a201c';ctx.lineWidth=3.6;ctx.beginPath();ctx.ellipse(ex,ey+4,20,11,0,0.12*Math.PI,0.88*Math.PI);ctx.stroke();
       }else{
-        ctx.fillStyle='#ffffff';ell(ex,ey,21,24);
-        ctx.fillStyle='#4f4945';ell(ex,ey+2,17,20.5);
-        ctx.fillStyle='#2b2725';ell(ex,ey+3,10,12);
-        ctx.fillStyle='#ffffff';ell(ex+sx*5,ey-7,4.2,4.2);ell(ex-sx*6,ey+10,1.8,1.8);
-        ctx.strokeStyle='#2a201c';ctx.lineWidth=3.4;ctx.beginPath();ctx.ellipse(ex,ey,21.5,24.5,0,Math.PI*1.08,Math.PI*1.92);ctx.stroke();
-        // outer eyelash flick
-        const a=sx>0?-0.2*Math.PI:-0.8*Math.PI,lx=ex+Math.cos(a)*21.5,ly=ey+Math.sin(a)*24.5;
-        ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(lx,ly);ctx.quadraticCurveTo(lx+sx*5,ly-2,lx+sx*9,ly-6);ctx.stroke();
+        ctx.fillStyle='#ffffff';ell(ex,ey,23,26);
+        ctx.fillStyle='#5a4034';ell(ex,ey+2,18.5,22);
+        ctx.fillStyle='#2a211c';ell(ex,ey+3,11,13.2);
+        ctx.fillStyle='#ffffff';ell(ex-sx*6,ey-8,5.2,5.4);ell(ex+sx*5,ey+10,2.1,2.1);
+        ctx.strokeStyle='#2a201c';ctx.lineWidth=3.6;ctx.beginPath();ctx.ellipse(ex,ey,23.4,26.4,0,Math.PI*1.06,Math.PI*1.94);ctx.stroke();
+        const a=sx>0?-0.18*Math.PI:-0.82*Math.PI,lx=ex+Math.cos(a)*23.4,ly=ey+Math.sin(a)*26.4;
+        ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(lx,ly);ctx.quadraticCurveTo(lx+sx*5,ly-3,lx+sx*10,ly-8);ctx.stroke();
       }
     }
-    // wide open smile with one front tooth
-    const mY=275,mW=24;
+    // wide open smile with one front tooth, like her stills
+    const mY=278,mW=26;
     ctx.beginPath();ctx.moveTo(256-mW,mY);ctx.quadraticCurveTo(256,mY+4,256+mW,mY);ctx.quadraticCurveTo(256+mW*0.6,mY+18,256,mY+18);ctx.quadraticCurveTo(256-mW*0.6,mY+18,256-mW,mY);ctx.closePath();
     ctx.fillStyle='#6e2a24';ctx.fill();
     ctx.save();ctx.clip();
@@ -1502,10 +1505,14 @@ function gridGeo(nu,nv,fn,wrapU){
    One continuous surface: a crown that follows the head, bangs at the front, and hair that falls to the shoulders.
    Every vertex is pushed outside the head ellipsoid, so the scalp can never poke through (that was Luna's "bald spot"). */
 const HAIR_LUNA={EA:0.529,EB:0.47,EC:0.48,head:[0.5712,0.4845,0.5202],
-  bang:a=>1.2+0.12*Math.sin(a)-0.03*Math.cos(2*a),faceOpen:0.86,yb:-0.64,ybBack:0.06,wave:0.018,flipSide:0.12,flipBack:0.06,tuck:0.06,clump:0.008,curl:3};
+  // chestnut bob from her stills: bangs across the forehead, hair to the shoulders, ends flipped out
+  bang:a=>1.26+0.08*Math.sin(a)-0.02*Math.cos(2*a),faceOpen:0.8,yb:-0.86,ybBack:-0.02,wave:0.03,flipSide:0.18,flipBack:0.1,tuck:0.04,clump:0.012,curl:2.2};
 const HAIR_MOON={EA:0.5,EB:0.455,EC:0.45,head:[0.5292,0.4704,0.4802],
-  // side-swept bangs: high on her right (part line), sweeping lower across to her left, always above the glasses
-  bang:a=>1.04+0.13*Math.sin(a+0.35)-0.02*Math.cos(2*a),faceOpen:0.8,yb:-0.7,ybBack:0.02,wave:0.045,flipSide:0.15,flipBack:0.09,tuck:0.045,clump:0.022,curl:2.8};
+  // fuller cobalt bob: side-swept bangs above the glasses, waves to the shoulders
+  bang:a=>1.12+0.14*Math.sin(a+0.35)-0.02*Math.cos(2*a),faceOpen:0.74,yb:-0.9,ybBack:-0.04,wave:0.062,flipSide:0.2,flipBack:0.12,tuck:0.04,clump:0.026,curl:2.6};
+const HAIR_SOLON={EA:0.52,EB:0.46,EC:0.47,head:[0.55,0.48,0.5],
+  // short chestnut cut: bangs and a little hair at the ears and nape, the rest tucked under his beanie
+  bang:a=>1.18+0.06*Math.sin(a),faceOpen:0.92,yb:-0.16,ybBack:-0.08,wave:0.01,flipSide:0.04,flipBack:0.01,tuck:0.02,clump:0.004,curl:2};
 function hairShape(cfg){
   const{EA,EB,EC}=cfg,[HX,HY,HZ]=cfg.head;
   const rEll=(x,y,z)=>1/Math.sqrt((x/EA)**2+(y/EB)**2+(z/EC)**2);
@@ -1545,20 +1552,37 @@ function buildHair(mat,cfg=HAIR_LUNA){
   const m=new T.Mesh(gridGeo(128,48,hairShape(cfg),true),mat);m.castShadow=true;return m;
 }
 
+/* Chestnut bob: darker roots, warm midtones, a soft shine band. Colour lives in the texture (the material stays white). */
+function makeChestnutHairTexture(){
+  const S=512,cv=document.createElement('canvas');cv.width=cv.height=S;const c=cv.getContext('2d'),r=mulberry32(321);
+  c.fillStyle='#6b4330';c.fillRect(0,0,S,S);
+  const cols=['#4a2c1c','#5c3824','#7a4e34','#8d5a3c','#6a4030','#3d2418','#9a6844','#5a3422'];
+  c.lineCap='round';
+  for(let i=0;i<1100;i++){const x0=r()*S,ph=r()*6.28,amp=2+r()*5,len=0.5+r()*0.5,y0=r()*0.2*S;
+    c.strokeStyle=cols[Math.floor(r()*cols.length)];c.globalAlpha=0.35+r()*0.5;c.lineWidth=0.6+r()*2.0;
+    for(const ox of[0,-S,S]){c.beginPath();for(let k=0;k<=20;k++){const t=k/20,y=y0+t*len*S,x=x0+ox+Math.sin(t*Math.PI*1.4+ph)*amp;k?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();}}
+  c.globalAlpha=1;
+  let g=c.createLinearGradient(0,0,0,S*0.16);g.addColorStop(0,'rgba(40,22,14,0.45)');g.addColorStop(1,'rgba(40,22,14,0)');c.fillStyle=g;c.fillRect(0,0,S,S*0.16);
+  g=c.createLinearGradient(0,S*0.72,0,S);g.addColorStop(0,'rgba(180,130,90,0)');g.addColorStop(1,'rgba(180,130,90,0.16)');c.fillStyle=g;c.fillRect(0,S*0.72,S,S*0.28);
+  for(let i=0;i<280;i++){const x=r()*S,y=S*(0.16+r()*0.06),h=5+r()*14;c.globalAlpha=0.08+r()*0.18;c.fillStyle='#c4a07a';
+    for(const ox of[0,-S,S])c.fillRect(x+ox,y,1+r()*2,h);}
+  c.globalAlpha=1;
+  const t=new T.CanvasTexture(cv);t.wrapS=T.RepeatWrapping;t.wrapT=T.ClampToEdgeWrapping;t.repeat.set(2.2,1);t.anisotropy=4;return t;
+}
 function buildCaretaker(){
   const HIP=0.5,HEAD_S=0.84;
   const root=new T.Group();const bodyPivot=new T.Group();root.add(bodyPivot);
   const skinMat=new T.MeshStandardMaterial({color:'#f8c6a6',roughness:0.6});
-  const hairTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=256;const c=cv.getContext('2d');const r=mulberry32(321);
-    c.fillStyle='#ececec';c.fillRect(0,0,256,256);
-    for(let i=0;i<110;i++){const x=r()*256,w=1+r()*4,v=Math.round(200+r()*55);c.strokeStyle=`rgb(${v},${v},${v})`;c.lineWidth=w;c.beginPath();c.moveTo(x,0);c.bezierCurveTo(x+r()*10-5,90,x+r()*10-5,170,x,256);c.stroke();}
-    const t=new T.CanvasTexture(cv);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(10,1);return t;})();
-  const hairMat=new T.MeshStandardMaterial({color:'#3a2216',map:hairTex,bumpMap:hairTex,bumpScale:0.006,roughness:0.5,metalness:0.02,side:T.DoubleSide});
-  const noseMat=new T.MeshStandardMaterial({color:'#f48a5c',roughness:0.55});
-  const shortsMat=new T.MeshStandardMaterial({color:'#f39c7d',roughness:0.8,map:TEX.fabric});
-  const shortsCuffMat=new T.MeshStandardMaterial({color:'#ec8e6e',roughness:0.8,map:TEX.fabric});
-  const shoeBlackMat=new T.MeshStandardMaterial({color:'#2b2d31',roughness:0.6});
-  const shoeWhiteMat=new T.MeshStandardMaterial({color:'#f2f2f0',roughness:0.55});
+  const hairTex=makeChestnutHairTexture();
+  const hairMat=new T.MeshStandardMaterial({color:'#ffffff',map:hairTex,bumpMap:hairTex,bumpScale:0.01,roughness:0.46,metalness:0.03,side:T.DoubleSide});
+  const lockTex=hairTex.clone();lockTex.needsUpdate=true;lockTex.center.set(0.5,0.5);lockTex.rotation=Math.PI/2;lockTex.repeat.set(1,0.45);
+  const hairLockMat=new T.MeshStandardMaterial({color:'#ffffff',map:lockTex,bumpMap:lockTex,bumpScale:0.008,roughness:0.48,metalness:0.02});
+  const noseMat=new T.MeshStandardMaterial({color:'#f29a72',roughness:0.55});
+  const shortsMat=new T.MeshStandardMaterial({color:'#f4a07a',roughness:0.8,map:TEX.fabric});
+  const shortsCuffMat=new T.MeshStandardMaterial({color:'#e89068',roughness:0.8,map:TEX.fabric});
+  // shoeBlackMat is the upper (white on her usual look); shoeWhiteMat is the toe, heel and sole (black)
+  const shoeBlackMat=new T.MeshStandardMaterial({color:'#f7f7f4',roughness:0.55});
+  const shoeWhiteMat=new T.MeshStandardMaterial({color:'#2b2d31',roughness:0.6});
   const shirtMat=new T.MeshStandardMaterial({map:createCatShirtTexture(),roughness:0.78});
   const faceObj=createCaretakerFaceTexture();
   const headMat=new T.MeshStandardMaterial({map:faceObj.tex,roughness:0.62});
@@ -1576,8 +1600,8 @@ function buildCaretaker(){
   const headGroup=new T.Group();headGroup.position.set(0,1.02+0.47*HEAD_S,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
   const headGeo=new T.SphereGeometry(0.51,36,28);headGeo.scale(1.02,0.95,1.12);headGeo.rotateY(-Math.PI/2); // after the turn: 0.571 wide, 0.52 deep
   const headMesh=new T.Mesh(headGeo,headMat);headMesh.castShadow=true;headGroup.add(headMesh);
-  const noseMesh=new T.Mesh(new T.SphereGeometry(0.058,14,12),noseMat);noseMesh.scale.set(1.35,0.85,0.95);noseMesh.position.set(0,-0.025,0.478);headGroup.add(noseMesh);
-  headGroup.add(buildHair(hairMat));
+  const noseMesh=new T.Mesh(new T.SphereGeometry(0.05,14,12),noseMat);noseMesh.scale.set(1.15,0.72,0.85);noseMesh.position.set(0,-0.02,0.49);headGroup.add(noseMesh);
+  const hairGrp=new T.Group();hairGrp.add(buildHair(hairMat));hairGrp.add(buildHairLocks(hairShape(HAIR_LUNA),hairLockMat,{n:16,seed:17}));headGroup.add(hairGrp);
 
   const neck=new T.Mesh(new T.CylinderGeometry(0.1,0.12,0.12,12),skinMat);neck.position.set(0,1.03,0);bodyPivot.add(neck);
   const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.26,0.33,0.54,24),shirtMat);shirtMesh.scale.set(1.12,1.0,0.82);shirtMesh.position.set(0,0.76,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
@@ -1612,10 +1636,11 @@ function buildCaretaker(){
     const calf=new T.Mesh(new T.CylinderGeometry(0.07,0.064,0.26,12),skinMat);calf.position.set(0,-0.33,0);g.add(calf);
     const pant=new T.Mesh(new T.CylinderGeometry(0.155,0.1,0.3,14),shortsMat);pant.position.set(0,-0.3,0);pant.visible=false;pant.castShadow=true;g.add(pant);
     const foot=new T.Group();foot.position.set(0,-0.445,0.04);
-    const sole=new T.Mesh(new T.BoxGeometry(0.19,0.055,0.3),shoeWhiteMat);sole.position.set(0,-0.03,0.02);foot.add(sole);
-    const upper=new T.Mesh(new T.BoxGeometry(0.175,0.1,0.22),shoeBlackMat);upper.position.set(0,0.025,-0.005);foot.add(upper);
-    const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhiteMat);toe.scale.set(1.0,0.55,0.95);toe.position.set(0,-0.008,0.115);foot.add(toe);
-    for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.12,0.014,0.018),shoeWhiteMat);lace.position.set(0,0.078,0.03+k*0.035);lace.rotation.y=(k%2?1:-1)*0.35;foot.add(lace);}
+    const sole=new T.Mesh(new T.BoxGeometry(0.2,0.04,0.33),shoeWhiteMat);sole.position.set(0,-0.04,0.02);foot.add(sole);
+    const upper=new T.Mesh(new T.BoxGeometry(0.172,0.082,0.17),shoeBlackMat);upper.position.set(0,0.018,-0.025);foot.add(upper);
+    const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhiteMat);toe.scale.set(1.05,0.46,0.72);toe.position.set(0,-0.012,0.128);foot.add(toe);
+    const heel=new T.Mesh(new T.BoxGeometry(0.174,0.064,0.05),shoeWhiteMat);heel.position.set(0,0.032,-0.108);foot.add(heel);
+    for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.1,0.012,0.015),shoeBlackMat);lace.position.set(0,0.068,-0.01+k*0.028);lace.rotation.y=(k%2?1:-1)*0.38;foot.add(lace);}
     g.add(foot);bodyPivot.add(g);return {leg:g,foot,shortLeg,cuff,pant};
   }
   const leftLeg=makeLeg(-1),rightLeg=makeLeg(1);
@@ -1784,7 +1809,7 @@ const SPACE_LAUNCH = (function(){
 
 
 /* ================= Lady Moon: 3D Chibi Crafter Companion & AI Brain ================= */
-let FOLLOW_MOON = false;
+let FOLLOW_MOON = false, FOLLOW_SOLON = false;
 function createCrochetTexture(){
   const S=128,cv=document.createElement('canvas');cv.width=cv.height=S;const c=cv.getContext('2d');
   c.fillStyle='#dcdcdc';c.fillRect(0,0,S,S);
@@ -1814,21 +1839,13 @@ function createRainbowOnesieTexture(){
   // subtle vertical rib knit lines
   c.fillStyle='rgba(255,255,255,0.04)';
   for(let x=0;x<S;x+=6)c.fillRect(x,0,2,S);
-  // front center zipper (maps to front of cylinder at u = 0.5 -> x = 256)
-  c.fillStyle='#364152';c.fillRect(250,0,12,S);
-  c.fillStyle='#5c687c';for(let y=4;y<S;y+=8)c.fillRect(252,y,8,4);
-  c.fillStyle='#cfd6e0';c.beginPath();c.roundRect?c.roundRect(248,38,16,24,4):c.fillRect(248,38,16,24);c.fill();
-  // small yellow monkey emblem on left chest (viewer's right of zipper -> x ~ 308, y ~ 118)
-  const mx=310,my=122;
-  c.save();c.translate(mx,my);c.fillStyle='#f7d426';c.strokeStyle='#6e4214';c.lineWidth=3.2;c.lineJoin='round';c.lineCap='round';
-  // monkey tail, body, head, ears, limbs
-  c.beginPath();c.moveTo(-4,12);c.quadraticCurveTo(-22,22,-18,4);c.stroke();
-  c.beginPath();c.ellipse(0,-14,10,9,0,0,6.2832);c.fill();c.stroke();
-  for(const s of[-1,1]){c.beginPath();c.arc(s*11,-14,4.5,0,6.2832);c.fill();c.stroke();}
-  c.beginPath();c.ellipse(0,4,8,12,-0.15,0,6.2832);c.fill();c.stroke();
-  c.beginPath();c.moveTo(-6,-2);c.lineTo(-18,-10);c.moveTo(6,-2);c.lineTo(18,6);
-  c.moveTo(-4,14);c.lineTo(-12,26);c.moveTo(5,14);c.lineTo(14,25);c.stroke();
-  c.restore();
+  // the cylinder's seam (u = 0 and u = 1) is the front, so the zipper straddles both edges
+  c.fillStyle='#3a4454';c.fillRect(0,0,7,S);c.fillRect(S-7,0,7,S);
+  c.fillStyle='#d8dee8';for(let y=6;y<S;y+=10){c.fillRect(1,y,5,4);c.fillRect(S-6,y,5,4);}
+  // gold zipper pull on the upper chest
+  c.fillStyle='#f0c84a';c.strokeStyle='#8a6420';c.lineWidth=2;
+  c.beginPath();c.roundRect?c.roundRect(S-11,36,14,22,3):c.fillRect(S-11,36,14,22);c.fill();c.stroke();
+  c.fillStyle='#fff4c4';c.fillRect(S-7,40,6,6);
   const t=new T.CanvasTexture(cv);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=4;return t;
 }
 
@@ -1924,8 +1941,8 @@ function createLadyMoonFaceTexture(){
    seamless canvas that wraps around her head (used as colour and bump so the strands catch the light). */
 function makeBlueHairTexture(){
   const S=512,cv=document.createElement('canvas');cv.width=cv.height=S;const c=cv.getContext('2d'),r=mulberry32(4711);
-  c.fillStyle='#1a56cc';c.fillRect(0,0,S,S);
-  const cols=['#123b93','#1747ad','#1e5bd2','#2466de','#2f74ea','#4a8ef4','#0f3380','#1a50c0'];
+  c.fillStyle='#2a6ef2';c.fillRect(0,0,S,S);
+  const cols=['#1a4ed4','#2460ea','#3b78f6','#4d88ff','#6aa0ff','#1850d0','#123fba','#7eb0ff'];
   c.lineCap='round';
   for(let i=0;i<1300;i++){const x0=r()*S,ph=r()*6.28,amp=3+r()*7,wv=1.6+r()*1.4,len=0.45+r()*0.55,y0=r()*0.25*S;
     c.strokeStyle=cols[Math.floor(r()*cols.length)];c.globalAlpha=0.35+r()*0.5;c.lineWidth=0.6+r()*2.2;
@@ -1942,7 +1959,7 @@ function makeBlueHairTexture(){
 }
 /* Wavy, tapered locks laid over the hair shell around her sides and back, plus two face-framing pieces:
    they give the bob real volume and strand clumps. All locks are merged into one mesh (one draw call). */
-function buildHairLocks(shape,mat){
+function buildHairLocks(shape,mat,opt){
   const pos=[],nrm=[],uvs=[],idx=[];let base=0;const tmp=new T.Vector3();
   const add=(az,len,thick,out,waves,fwd)=>{
     const u=(az+Math.PI)/(Math.PI*2),pts=[];
@@ -1960,10 +1977,10 @@ function buildHairLocks(shape,mat){
     for(let k=0;k<P.count;k++){pos.push(P.getX(k),P.getY(k),P.getZ(k));nrm.push(N.getX(k),N.getY(k),N.getZ(k));uvs.push(UV.getX(k),UV.getY(k));}
     const I=tg.index.array;for(let k=0;k<I.length;k++)idx.push(I[k]+base);base+=P.count;tg.dispose();
   };
-  const r=mulberry32(99);
-  for(let k=0;k<30;k++){const a=0.98+(k/29)*(Math.PI*2-1.96),az=a>Math.PI?a-Math.PI*2:a;   // all the way round, except across her face
+  const r=mulberry32((opt&&opt.seed)||99),n=(opt&&opt.n)||30;
+  for(let k=0;k<n;k++){const a=0.98+(k/Math.max(1,n-1))*(Math.PI*2-1.96),az=a>Math.PI?a-Math.PI*2:a;   // all the way round, except across the face
     add(az+(r()-0.5)*0.06,0.8+r()*0.3,0.034+r()*0.016,0.006+r()*0.012,1.5+r()*1.5);}
-  for(const s of[-1,1])add(s*0.88,1.0,0.04,0.012,2);   // face-framing locks
+  if(!opt||opt.frame!==false)for(const s of[-1,1])add(s*0.88,1.0,0.04,0.012,2);   // face-framing locks
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nrm,3));
   g.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));g.setIndex(idx);
   const m=new T.Mesh(g,mat);m.castShadow=true;return m;
@@ -1983,22 +2000,21 @@ function buildLadyMoonHair(blueMat,streakMat,lockMat){
 
 function buildLadyMoonGlasses(){
   const g=new T.Group();
-  const frameMat=new T.MeshStandardMaterial({color:'#48352b',roughness:0.38,metalness:0.08});
-  const lensMat=new T.MeshStandardMaterial({color:'#e8f4ff',transparent:true,opacity:0.14,roughness:0.1,metalness:0.2});
+  const frameMat=new T.MeshStandardMaterial({color:'#2a211c',roughness:0.42,metalness:0.06});
+  const lensMat=new T.MeshStandardMaterial({color:'#e7f3ff',transparent:true,opacity:0.16,roughness:0.08,metalness:0.15});
   for(const sx of[-1,1]){
-    const rim=new T.Group();rim.position.set(sx*0.19,0.035,0.472);rim.rotation.y=sx*0.16;g.add(rim);
-    // rectangular-rounded frame bars
-    blob(rim,BOX,frameMat,0,0.105,0,0.25,0.032,0.028,false);
-    blob(rim,BOX,frameMat,0,-0.105,0,0.25,0.030,0.028,false);
-    blob(rim,BOX,frameMat,-0.118,0,0,0.032,0.22,0.028,false);
-    blob(rim,BOX,frameMat,0.118,0,0,0.032,0.22,0.028,false);
-    blob(rim,BOX,lensMat,0,0,0,0.21,0.18,0.01,false);
-    // temple arm back to ear
-    const temple=blob(g,BOX,frameMat,sx*0.44,0.02,0.22,0.026,0.028,0.46,false);
-    temple.rotation.y=-sx*0.18;
+    const rim=new T.Group();rim.position.set(sx*0.2,0.02,0.49);rim.rotation.y=sx*0.12;g.add(rim);
+    // thick rounded-rectangle frames, the shape in her stills
+    blob(rim,BOX,frameMat,0,0.115,0,0.28,0.038,0.032,false);
+    blob(rim,BOX,frameMat,0,-0.115,0,0.28,0.036,0.032,false);
+    blob(rim,BOX,frameMat,-0.132,0,0,0.038,0.24,0.032,false);
+    blob(rim,BOX,frameMat,0.132,0,0,0.038,0.24,0.032,false);
+    for(const[cx,cy]of[[-0.12,0.1],[0.12,0.1],[-0.12,-0.1],[0.12,-0.1]])blob(rim,SPH,frameMat,cx,cy,0,0.028,0.028,0.03,false);
+    blob(rim,BOX,lensMat,0,0,0.004,0.23,0.2,0.012,false);
+    const temple=blob(g,BOX,frameMat,sx*0.46,0.03,0.2,0.028,0.03,0.5,false);
+    temple.rotation.y=-sx*0.16;
   }
-  // nose bridge bar
-  blob(g,BOX,frameMat,0,0.035,0.488,0.11,0.03,0.028,false);
+  blob(g,BOX,frameMat,0,0.03,0.505,0.1,0.034,0.03,false);
   return g;
 }
 
@@ -2033,9 +2049,9 @@ function buildCrochetBucketHat(kind){
     const eyeGreen=hatMat,sclera=mStd('#ffffff',{roughness:0.3}),pupil=mStd('#161618',{roughness:0.15}),shine=mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.4});
     for(const sx of[-1,1]){
       const eg=new T.Group();eg.position.set(sx*0.23,0.47,0.18);eg.rotation.y=sx*0.15;g.add(eg);
-      blob(eg,SPH,eyeGreen,0,0,0,0.145,0.155,0.13);
-      blob(eg,SPH,sclera,0,0.01,0.085,0.105,0.115,0.055,false);
-      blob(eg,SPH,pupil,0,0.01,0.125,0.068,0.078,0.03,false);
+      blob(eg,SPH,eyeGreen,0,0,0,0.16,0.175,0.145);
+      blob(eg,SPH,sclera,0,0.012,0.095,0.118,0.13,0.06,false);
+      blob(eg,SPH,pupil,0,0.012,0.135,0.074,0.086,0.032,false);
       blob(eg,SPH,shine,sx*0.022,0.04,0.148,0.02,0.02,0.01,false);
     }
   }else if(kind==='strawberry'){
@@ -2124,8 +2140,8 @@ function buildLadyMoon(){
   const limbMat=new T.MeshStandardMaterial({map:limbTex,roughness:0.8});
   const shortsMat=new T.MeshStandardMaterial({map:limbTex,roughness:0.8});
   const shortsCuffMat=new T.MeshStandardMaterial({color:'#7a35c9',roughness:0.8});
-  const shoeBlackMat=new T.MeshStandardMaterial({color:'#283d6e',roughness:0.6});
-  const shoeWhiteMat=new T.MeshStandardMaterial({color:'#f4f4f2',roughness:0.55});
+  const shoeBlackMat=new T.MeshStandardMaterial({color:'#f7f7f4',roughness:0.55});
+  const shoeWhiteMat=new T.MeshStandardMaterial({color:'#3d5278',roughness:0.6});
   const faceObj=createLadyMoonFaceTexture();
   const headMat=new T.MeshStandardMaterial({map:faceObj.tex,roughness:0.62});
   cacheFaceSwaps(faceObj,headMat,m=>(m===true||m==='blink')?'blink':(m==='happy'||m==='smile')?m:'open');
@@ -2190,10 +2206,11 @@ function buildLadyMoon(){
     const shortLeg=new T.Mesh(new T.CylinderGeometry(0.145,0.135,0.22,16),shortsMat);shortLeg.position.set(0,-0.09,0);shortLeg.castShadow=true;g.add(shortLeg);
     const pant=new T.Mesh(new T.CylinderGeometry(0.135,0.108,0.28,16),shortsMat);pant.position.set(0,-0.29,0);pant.castShadow=true;g.add(pant);
     const shoe=new T.Group();shoe.position.set(0,-0.445,0.04);
-    const sole=new T.Mesh(new T.BoxGeometry(0.19,0.055,0.3),shoeWhiteMat);sole.position.set(0,-0.03,0.02);shoe.add(sole);
-    const upper=new T.Mesh(new T.BoxGeometry(0.175,0.1,0.22),shoeBlackMat);upper.position.set(0,0.025,-0.005);shoe.add(upper);
-    const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhiteMat);toe.scale.set(1.0,0.55,0.95);toe.position.set(0,-0.008,0.115);shoe.add(toe);
-    for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.12,0.014,0.018),shoeWhiteMat);lace.position.set(0,0.078,0.03+k*0.035);shoe.add(lace);}
+    const sole=new T.Mesh(new T.BoxGeometry(0.2,0.04,0.33),shoeWhiteMat);sole.position.set(0,-0.04,0.02);shoe.add(sole);
+    const upper=new T.Mesh(new T.BoxGeometry(0.172,0.082,0.17),shoeBlackMat);upper.position.set(0,0.018,-0.025);shoe.add(upper);
+    const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhiteMat);toe.scale.set(1.02,0.46,0.7);toe.position.set(0,-0.012,0.128);shoe.add(toe);
+    const heel=new T.Mesh(new T.BoxGeometry(0.174,0.06,0.048),shoeWhiteMat);heel.position.set(0,0.03,-0.108);shoe.add(heel);
+    for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.1,0.012,0.015),shoeBlackMat);lace.position.set(0,0.068,-0.01+k*0.028);shoe.add(lace);}
     g.add(shoe);
     // Barefoot mesh for cross-legged knitting pose
     const bareFoot=new T.Group();bareFoot.position.set(0,-0.44,0.05);bareFoot.visible=false;
@@ -2247,7 +2264,7 @@ function applyLadyMoonCloset(fromUser){
     M.shirtMat.map=ladyMoon.onesieTex;M.shirtMat.color.set('#ffffff');M.shirtMat.needsUpdate=true;
     M.limbMat.map=ladyMoon.limbTex;M.limbMat.color.set('#ffffff');M.limbMat.needsUpdate=true;
     M.shortsMat.map=ladyMoon.limbTex;M.shortsMat.color.set('#ffffff');M.shortsMat.needsUpdate=true;
-    M.shoeBlackMat.color.set('#283d6e');M.shoeWhiteMat.color.set('#f4f4f2');
+    M.shoeBlackMat.color.set('#f7f7f4');M.shoeWhiteMat.color.set('#3d5278');
     for(const L of legs){L.shortLeg.material=M.shortsMat;L.pant.material=M.shortsMat;}
   }else{
     o=OUTFITS.find(x=>x.id===MOON_STYLE.outfit);
@@ -2276,6 +2293,235 @@ function applyLadyMoonCloset(fromUser){
   }
 }
 setTimeout(()=>applyLadyMoonCloset(false),0);
+
+/* ================= Solon: island fixer, dog coach, third chibi =================
+   Same build as Luna and Lady Moon (head shell, hair, face canvas, limbs) with his own look:
+   green frog beanie, black glasses, green controller tee, navy shorts, green sneakers. */
+function createSolonShirtTexture(){
+  const S=512,cv=document.createElement('canvas');cv.width=cv.height=S;const c=cv.getContext('2d');
+  c.fillStyle='#3cb44a';c.fillRect(0,0,S,S);
+  c.fillStyle='rgba(255,255,255,0.06)';for(let y=0;y<S;y+=5)c.fillRect(0,y,S,2);
+  c.fillStyle='rgba(0,0,0,0.05)';for(let y=3;y<S;y+=5)c.fillRect(0,y,S,1);
+  // game pad on his left chest. Cylinder u=0 is the front (+Z); +u runs toward +X, his left, the viewer's right.
+  c.save();c.translate(58,148);
+  c.fillStyle='#f7f8fb';c.strokeStyle='#1c2430';c.lineWidth=8;c.lineJoin='round';
+  if(c.roundRect){c.beginPath();c.roundRect(-36,-24,86,50,16);c.fill();c.stroke();}
+  else{c.fillRect(-36,-24,86,50);c.strokeRect(-36,-24,86,50);}
+  c.fillStyle='#243044';c.fillRect(-24,-5,20,10);c.fillRect(-19,-14,10,28);
+  for(const[dx,dy]of[[18,-10],[30,0],[18,10],[8,0]]){c.beginPath();c.arc(dx,dy,5.2,0,6.2832);c.fill();}
+  c.restore();
+  const t=new T.CanvasTexture(cv);t.anisotropy=4;t.wrapS=T.ClampToEdgeWrapping;t.wrapT=T.ClampToEdgeWrapping;return t;
+}
+function createSolonFaceTexture(){
+  const cv=document.createElement('canvas');cv.width=512;cv.height=512;const ctx=cv.getContext('2d');const tex=new T.CanvasTexture(cv);
+  const SKIN='#f6c3a2';
+  const ell=(x,y,rx,ry)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();};
+  function drawFace(mode){
+    const blink=(mode===true||mode==='blink'),happy=(mode==='happy'),wink=(mode==='wink');
+    ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=SKIN;ctx.fillRect(0,0,512,512);
+    ctx.setTransform(1,0,0,2,0,-256);
+    for(const sx of[-1,1]){const cx=256+sx*66,cy=274,grd=ctx.createRadialGradient(cx,cy,2,cx,cy,26);
+      grd.addColorStop(0,'rgba(240,120,100,0.32)');grd.addColorStop(1,'rgba(240,120,100,0)');ctx.fillStyle=grd;ell(cx,cy,26,24);}
+    ctx.fillStyle='#c47852';
+    for(const sx of[-1,1])for(const[fx,fy,r]of[[42,268,2.5],[52,264,2.7],[62,270,2.4],[47,276,2.5],[58,278,2.3],[68,273,2.4]])ell(256+sx*fx,fy,r,r);
+    for(const[nx,ny]of[[-8,262],[0,260],[9,263],[-4,266],[5,267]])ell(256+nx,ny,1.9,1.9);
+    ctx.strokeStyle='#5c3a28';ctx.lineWidth=4.2;ctx.lineCap='round';
+    for(const sx of[-1,1]){const ex=256+sx*52;ctx.beginPath();ctx.moveTo(ex-sx*16,220);ctx.quadraticCurveTo(ex,214,ex+sx*18,220);ctx.stroke();}
+    for(const sx of[-1,1]){
+      const ex=256+sx*52,ey=246,shut=blink||(wink&&sx>0)||happy;
+      if(shut){
+        ctx.strokeStyle='#241c18';ctx.lineWidth=4.2;
+        ctx.beginPath();ctx.ellipse(ex,ey+(happy?-2:4),20,happy?12:10,0,happy?1.12*Math.PI:0.12*Math.PI,happy?1.88*Math.PI:0.88*Math.PI);ctx.stroke();
+      }else{
+        ctx.fillStyle='#ffffff';ell(ex,ey,22,25);
+        ctx.fillStyle='#5c4638';ell(ex,ey+1.5,17.5,21);
+        ctx.fillStyle='#241c18';ell(ex,ey+2.5,10.5,12.5);
+        ctx.fillStyle='#ffffff';ell(ex-sx*6,ey-8,5,5.2);ell(ex+sx*4,ey+9,2,2);
+        ctx.strokeStyle='#241c18';ctx.lineWidth=3.8;ctx.beginPath();ctx.ellipse(ex,ey,22.4,25.4,0,Math.PI*1.08,Math.PI*1.92);ctx.stroke();
+      }
+    }
+    const mY=276;
+    if(happy){
+      const mW=24,mH=16;
+      ctx.beginPath();ctx.moveTo(256-mW,mY);ctx.quadraticCurveTo(256,mY+3,256+mW,mY);ctx.quadraticCurveTo(256+mW*0.55,mY+mH,256,mY+mH);ctx.quadraticCurveTo(256-mW*0.55,mY+mH,256-mW,mY);ctx.closePath();
+      ctx.fillStyle='#6a241e';ctx.fill();ctx.save();ctx.clip();ctx.fillStyle='#e07068';ell(256,mY+mH,12,6);ctx.fillStyle='#fff';ctx.fillRect(244,mY,24,5);ctx.restore();
+    }else{
+      ctx.strokeStyle='#5a241c';ctx.lineWidth=3.4;ctx.beginPath();ctx.arc(256,mY-4,16,0.15*Math.PI,0.85*Math.PI);ctx.stroke();
+    }
+    ctx.setTransform(1,0,0,1,0,0);tex.needsUpdate=true;
+  }
+  drawFace('open');return {tex,drawFace};
+}
+function buildSolonGlasses(){
+  const g=new T.Group();
+  const frame=new T.MeshStandardMaterial({color:'#16181c',roughness:0.32,metalness:0.18});
+  const lens=new T.MeshStandardMaterial({color:'#e9f4ff',transparent:true,opacity:0.13,roughness:0.06,metalness:0.2});
+  for(const sx of[-1,1]){
+    const rim=new T.Group();rim.position.set(sx*0.198,0.012,0.5);rim.rotation.y=sx*0.1;g.add(rim);
+    blob(rim,BOX,frame,0,0.098,0,0.26,0.034,0.03,false);
+    blob(rim,BOX,frame,0,-0.098,0,0.26,0.032,0.03,false);
+    blob(rim,BOX,frame,-0.122,0,0,0.034,0.2,0.03,false);
+    blob(rim,BOX,frame,0.122,0,0,0.034,0.2,0.03,false);
+    blob(rim,BOX,lens,0,0,0.004,0.21,0.16,0.01,false);
+    const temple=blob(g,BOX,frame,sx*0.46,0.02,0.18,0.026,0.028,0.5,false);temple.rotation.y=-sx*0.16;
+  }
+  blob(g,BOX,frame,0,0.018,0.515,0.11,0.03,0.028,false);
+  return g;
+}
+function buildFrogBeanie(){
+  const g=new T.Group();
+  const col='#67b84e';
+  const hatMat=new T.MeshStandardMaterial({color:col,map:CROCHET_TEX,bumpMap:CROCHET_TEX,bumpScale:0.045,roughness:0.95,side:T.DoubleSide});
+  const geo=gridGeo(48,16,(u,v)=>{
+    const a=u*Math.PI*2,p=v*Math.PI*0.52;
+    let r=Math.sin(p)*0.55,y=Math.cos(p)*0.38;
+    if(v>0.84){const k=(v-0.84)/0.16;r=0.5+k*0.035;y=0.06-k*0.05;}
+    return [Math.cos(a)*r,y,Math.sin(a)*r];
+  },true);
+  const dome=new T.Mesh(geo,hatMat);dome.castShadow=true;dome.receiveShadow=true;g.add(dome);
+  const pupil=mStd('#1a2414',{roughness:0.35}),shine=mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.35});
+  for(const sx of[-1,1]){
+    const eg=new T.Group();eg.position.set(sx*0.2,0.4,0.05);g.add(eg);
+    blob(eg,SPH,hatMat,0,0,0,0.145,0.15,0.145);
+    blob(eg,SPH,pupil,sx*0.02,0.02,0.1,0.055,0.058,0.03,false);
+    blob(eg,SPH,shine,sx*0.05,0.06,0.11,0.02,0.02,0.01,false);
+  }
+  return g;
+}
+function buildSolon(){
+  const HIP=0.5,HEAD_S=0.84;
+  const root=new T.Group(),bodyPivot=new T.Group();root.add(bodyPivot);
+  const skinMat=new T.MeshStandardMaterial({color:'#f6c3a2',roughness:0.6});
+  const hairTex=makeChestnutHairTexture();
+  const hairMat=new T.MeshStandardMaterial({color:'#ffffff',map:hairTex,bumpMap:hairTex,bumpScale:0.008,roughness:0.5,side:T.DoubleSide});
+  const noseMat=new T.MeshStandardMaterial({color:'#f09a74',roughness:0.55});
+  const shirtTex=createSolonShirtTexture();
+  const shirtMat=new T.MeshStandardMaterial({map:shirtTex,roughness:0.78});
+  const shortsMat=new T.MeshStandardMaterial({color:'#2a3f78',roughness:0.8,map:TEX.fabric});
+  const shortsCuffMat=new T.MeshStandardMaterial({color:'#223668',roughness:0.8,map:TEX.fabric});
+  const shoeGreen=new T.MeshStandardMaterial({color:'#3cb44a',roughness:0.55});
+  const shoeWhite=new T.MeshStandardMaterial({color:'#f4f4f2',roughness:0.5});
+  const faceObj=createSolonFaceTexture();
+  const headMat=new T.MeshStandardMaterial({map:faceObj.tex,roughness:0.62});
+  cacheFaceSwaps(faceObj,headMat,m=>(m===true||m==='blink')?'blink':(m==='happy'||m==='wink')?m:'open');
+  const shCv=document.createElement('canvas');shCv.width=shCv.height=128;const sh=shCv.getContext('2d'),sg=sh.createRadialGradient(64,64,6,64,64,58);
+  sg.addColorStop(0,'rgba(15,20,35,0.48)');sg.addColorStop(1,'rgba(15,20,35,0)');sh.fillStyle=sg;sh.fillRect(0,0,128,128);
+  const shadowDisc=new T.Mesh(new T.PlaneGeometry(1.55,1.55),new T.MeshBasicMaterial({map:new T.CanvasTexture(shCv),transparent:true,depthWrite:false}));
+  shadowDisc.rotation.x=-Math.PI/2;shadowDisc.position.y=0.03;root.add(shadowDisc);
+  const headGroup=new T.Group();headGroup.position.set(0,1.02+0.47*HEAD_S,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
+  const headGeo=new T.SphereGeometry(0.5,36,28);headGeo.scale(1.0,0.96,1.08);headGeo.rotateY(-Math.PI/2);
+  const headMesh=new T.Mesh(headGeo,headMat);headMesh.castShadow=true;headGroup.add(headMesh);
+  const nose=new T.Mesh(new T.SphereGeometry(0.048,12,10),noseMat);nose.scale.set(1.2,0.75,0.85);nose.position.set(0,-0.02,0.49);headGroup.add(nose);
+  const glasses=buildSolonGlasses();headGroup.add(glasses);
+  const hair=buildHair(hairMat,HAIR_SOLON);headGroup.add(hair);
+  const beanie=buildFrogBeanie();beanie.position.set(0,0.34,0.02);beanie.scale.setScalar(1.05);headGroup.add(beanie);
+  const neck=new T.Mesh(new T.CylinderGeometry(0.1,0.12,0.12,12),skinMat);neck.position.set(0,1.03,0);bodyPivot.add(neck);
+  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.27,0.34,0.52,24),shirtMat);shirtMesh.scale.set(1.16,1,0.84);shirtMesh.position.set(0,0.76,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
+  const collar=new T.Mesh(new T.TorusGeometry(0.125,0.018,8,20),shirtMat);collar.rotation.x=Math.PI/2;collar.position.set(0,1.02,0);bodyPivot.add(collar);
+  function makeArm(side){
+    const g=new T.Group();g.position.set(side*0.3,0.96,0);
+    const sleeve=new T.Mesh(new T.CylinderGeometry(0.11,0.13,0.16,14),shirtMat);sleeve.position.set(side*0.05,-0.04,0);sleeve.rotation.z=side*0.55;g.add(sleeve);
+    const arm=new T.Mesh(new T.CylinderGeometry(0.062,0.055,0.3,12),skinMat);arm.position.set(side*0.16,-0.22,0);arm.rotation.z=side*0.38;g.add(arm);
+    const hand=new T.Mesh(new T.SphereGeometry(0.095,14,12),skinMat);hand.position.set(side*0.24,-0.4,0.01);g.add(hand);
+    bodyPivot.add(g);return g;
+  }
+  const leftArm=makeArm(-1),rightArm=makeArm(1);
+  const pelvis=new T.Mesh(new T.CylinderGeometry(0.3,0.32,0.16,18),shortsMat);pelvis.scale.set(1.1,1,0.82);pelvis.position.set(0,HIP+0.02,0);bodyPivot.add(pelvis);
+  function makeLeg(side){
+    const g=new T.Group();g.position.set(side*0.15,HIP,0);
+    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.145,0.15,0.18,16),shortsMat);shortLeg.position.set(0,-0.07,0);g.add(shortLeg);
+    const cuff=new T.Mesh(new T.CylinderGeometry(0.158,0.158,0.05,16),shortsCuffMat);cuff.position.set(0,-0.17,0);g.add(cuff);
+    const calf=new T.Mesh(new T.CylinderGeometry(0.068,0.06,0.26,12),skinMat);calf.position.set(0,-0.32,0);g.add(calf);
+    const shoe=new T.Group();shoe.position.set(0,-0.44,0.04);
+    const sole=new T.Mesh(new T.BoxGeometry(0.2,0.04,0.32),shoeWhite);sole.position.set(0,-0.04,0.02);shoe.add(sole);
+    const upper=new T.Mesh(new T.BoxGeometry(0.17,0.08,0.16),shoeGreen);upper.position.set(0,0.016,-0.02);shoe.add(upper);
+    const toe=new T.Mesh(new T.SphereGeometry(0.088,14,10),shoeWhite);toe.scale.set(1.02,0.46,0.7);toe.position.set(0,-0.012,0.125);shoe.add(toe);
+    for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.1,0.012,0.014),shoeWhite);lace.position.set(0,0.064,-0.005+k*0.026);shoe.add(lace);}
+    g.add(shoe);bodyPivot.add(g);return {leg:g,shoe,shortLeg,cuff};
+  }
+  const leftLeg=makeLeg(-1),rightLeg=makeLeg(1);
+  bodyPivot.scale.setScalar(1.1);root.rotation.order='YXZ';root.userData.noWx=true;scene.add(root);
+  return {root,bodyPivot,headGroup,leftArm,rightArm,leftLeg,rightLeg,shadowDisc,faceObj,HIP,glasses,beanie,hair,nose,
+    mats:{shirtMat,shortsMat,skinMat,shoeGreen,shoeWhite}};
+}
+const solon=buildSolon();
+const SOLON_STYLE={hat:true};
+try{const ss=JSON.parse(localStorage.getItem('solon-closet-v1')||'null');if(ss&&ss.hat===false)SOLON_STYLE.hat=false;}catch(e){}
+function applySolonCloset(fromUser){
+  solon.beanie.visible=SOLON_STYLE.hat!==false;
+  solon.hair.visible=true;
+  if(fromUser){SL.twirlT=0.7;emote(solon.headGroup,'sparkle',0.9);try{localStorage.setItem('solon-closet-v1',JSON.stringify(SOLON_STYLE));}catch(e){}}
+}
+applySolonCloset(false);
+const _solSpawn=snapWalkable(-18.2,25.8);
+const SL={
+  x:_solSpawn[0],z:_solSpawn[1],y:0,yaw:-0.4,pitch:0,speed:0,walkSpeed:3.05,
+  state:'idle',act:null,timer:1.4,actT:0,actDur:3,
+  path:[],wp:0,walkPhase:0,blinkTimer:2.1,isBlinking:false,faceMode:'open',
+  sitK:0,squatK:0,jumpT:0,twirlT:0,emoteT:0,spot:null,inside:false,ix:1.5,iz:1.4,
+  stuckT:0,stuckN:0,checkX:_solSpawn[0],checkZ:_solSpawn[1],mAct:null,broom:null
+};
+SL.y=walkHeight(SL.x,SL.z);solon.root.position.set(SL.x,SL.y,SL.z);
+
+function poseSolon(dt,time){
+  const M=solon,acting=SL.state==='act',act=acting?SL.act:null;
+  const sitting=act==='sit',squatting=act==='feed'||act==='train';
+  SL.sitK=lerp(SL.sitK,sitting?1:0,Math.min(1,dt*5));
+  SL.squatK=lerp(SL.squatK,squatting?1:0,Math.min(1,dt*6));
+  SL.twirlT=Math.max(0,SL.twirlT-dt);
+  const tw=SL.twirlT>0?smooth(0,1,1-SL.twirlT/0.7)*Math.PI*2:0;
+  let hop=0;
+  if(act==='cheer')hop=Math.abs(Math.sin(time*6.2))*0.28;
+  if(SL.jumpT>0)hop+=Math.sin((1-SL.jumpT/0.62)*Math.PI)*0.72;
+  const gy=SL.inside?0:walkHeight(SL.x,SL.z);
+  SL.y=lerp(SL.y,gy,Math.min(1,dt*22));
+  M.root.position.set(SL.x,SL.y-SL.sitK*0.42-SL.squatK*0.2+hop,SL.z);
+  M.root.rotation.y=SL.yaw+tw;
+  const mv=clamp(SL.speed/3.3,0,1),running=SL.speed>3.3;
+  if(mv>0.03)SL.walkPhase+=dt*SL.speed*(running?4.1:3.6);
+  const s=Math.sin(SL.walkPhase),c=Math.cos(SL.walkPhase),H=M.HIP;
+  let lLegX=s*(running?0.8:0.6)*mv,rLegX=-s*(running?0.8:0.6)*mv;
+  let lLegZ=0,rLegZ=0,lLegY=H+Math.max(0,-c)*0.1*mv,rLegY=H+Math.max(0,c)*0.1*mv;
+  const walkLX=lLegX,walkRX=rLegX;
+  if(SL.sitK>0.05){lLegX=lerp(lLegX,-1.25,SL.sitK);rLegX=lerp(rLegX,-1.25,SL.sitK);lLegZ=lerp(0,0.35,SL.sitK);rLegZ=lerp(0,-0.35,SL.sitK);}
+  if(SL.squatK>0.05){lLegX=lerp(lLegX,-0.95,SL.squatK);rLegX=lerp(rLegX,-0.95,SL.squatK);}
+  if(act==='cheer'){lLegX=-0.15;rLegX=-0.7-Math.abs(Math.sin(time*6.2))*0.3;}
+  M.leftLeg.leg.rotation.set(lLegX,0,lLegZ);M.rightLeg.leg.rotation.set(rLegX,0,rLegZ);
+  {const w=(lLegX===walkLX&&rLegX===walkRX)?1:0;
+    M.leftLeg.shoe.rotation.x=w*(-walkLX*0.75-(lLegY-H)*1.4);M.rightLeg.shoe.rotation.x=w*(-walkRX*0.75-(rLegY-H)*1.4);}
+  M.leftLeg.leg.position.y=lLegY;M.rightLeg.leg.position.y=rLegY;
+  M.bodyPivot.position.y=Math.abs(s)*(running?0.07:0.05)*mv;
+  M.bodyPivot.rotation.z=s*0.045*mv;
+  let lean=(running?0.14:0.05)*mv+0.26*SL.squatK;
+  let lX=-s*(running?0.65:0.46)*mv,rX=s*(running?0.65:0.46)*mv,lZ=0,rZ=0;
+  if(M.broom)M.broom.visible=acting&&act==='sweep';
+  if(acting){
+    switch(act){
+      case 'wave':rZ=2.35+Math.sin(time*8)*0.3;lZ=-0.15;lX=-0.15;break;
+      case 'cheer':lZ=-2.5-Math.sin(time*8)*0.15;rZ=2.5+Math.sin(time*8)*0.15;lX=-0.2;rX=-0.2;lean=-0.06;break;
+      case 'hips':lZ=-0.42;rZ=0.42;lX=0.35;rX=0.35;lean=0.04;break;
+      case 'scout':rX=-0.35;rZ=1.7;lZ=-0.2;lean=-0.02;break;
+      case 'train':rX=-1.35+Math.sin(time*3)*0.08;rZ=-0.15;lZ=-0.7;lX=-0.2;lean=0.12;break;
+      case 'feed':lX=-1.05;rX=-1.05+Math.sin(time*4)*0.12;lZ=0.15;rZ=-0.15;break;
+      case 'sweep':{const sw=Math.sin(time*4.2);rX=-0.6+sw*0.08;lX=-0.8;rZ=-0.05+sw*0.28;lZ=0.2+sw*0.28;lean=0.16;break;}
+      case 'chat':rZ=0.55+Math.max(0,Math.sin(time*2.5))*0.55;rX=-0.45;lZ=-0.55;lX=-0.2;break;
+      case 'stretch':lZ=-2.6;rZ=2.6;lean=-0.08;break;
+      case 'herd':rZ=0.4+Math.sin(time*3)*0.4;rX=-0.4;lX=-0.2;break;
+      case 'sit':lX=-0.45;rX=-0.45;lZ=-0.2;rZ=0.2;lean=0.08;break;
+    }
+  }
+  const ak=Math.min(1,dt*10);
+  M.bodyPivot.rotation.x=lerp(M.bodyPivot.rotation.x,lean,ak);
+  M.leftArm.rotation.x=lerp(M.leftArm.rotation.x,lX,ak);M.rightArm.rotation.x=lerp(M.rightArm.rotation.x,rX,ak);
+  M.leftArm.rotation.z=lerp(M.leftArm.rotation.z,lZ,ak);M.rightArm.rotation.z=lerp(M.rightArm.rotation.z,rZ,ak);
+  let hy=Math.sin(time*0.8)*0.12,hp=act==='scout'?-0.25:act==='feed'||act==='train'?0.28:0,hz=act==='hips'?0.06:0;
+  const nearL=Math.hypot(AI.x-SL.x,AI.z-SL.z),nearM=LM.inside?99:Math.hypot(LM.x-SL.x,LM.z-SL.z);
+  if(act!=='scout'&&act!=='sit'&&nearL<5)hy=clamp(normalizeAngle(Math.atan2(AI.x-SL.x,AI.z-SL.z)-SL.yaw),-0.9,0.9);
+  else if(act!=='scout'&&nearM<5)hy=clamp(normalizeAngle(Math.atan2(LM.x-SL.x,LM.z-SL.z)-SL.yaw),-0.9,0.9);
+  M.headGroup.rotation.y=lerp(M.headGroup.rotation.y,hy,Math.min(1,dt*6));
+  M.headGroup.rotation.x=lerp(M.headGroup.rotation.x,hp,Math.min(1,dt*6));
+  M.headGroup.rotation.z=lerp(M.headGroup.rotation.z,hz,Math.min(1,dt*6));
+}
 
 /* Lady Moon's Crafter AI Brain */
 const LM = {
@@ -2722,22 +2968,24 @@ function makeBunny(o){
 function makeDog(o){
   // Kiko: a plush sable Shetland Sheepdog (Sheltie)
   const root=new T.Group(),body=new T.Group();root.add(body);
-  const FUR={tan:'#d6994f',gold:'#e7b46a',sable:'#5b3a24',mid:'#8a5a34',cream:'#f3e7cf',white:'#fbf6ec',pink:'#f0a0a6'};
+  const FUR={tan:'#c9843c',gold:'#e8a85a',sable:'#3a2416',mid:'#6b4428',cream:'#f6efe2',white:'#fffaf3',pink:'#f0a0a6',black:'#241810'};
   const fm={},fur=c=>fm[c]||(fm[c]=mStd(c,{roughness:0.95}));
   // fur tufts: soft cones that give the coat its jagged, fluffy edge
   const tuft=(p,c,x,y,z,r,h,rx,rz,ry=0)=>{const m=blob(p,CONE,fur(c),x,y,z,r,h,r*0.8,false);m.rotation.set(rx,ry,rz);return m;};
   // torso with a dark saddle over the back and a cream belly
-  blob(body,SPH,fur(FUR.tan),0,0.38,-0.02,0.2,0.19,0.3);
-  blob(body,SPH,fur(FUR.sable),0,0.47,-0.07,0.19,0.115,0.25);
-  blob(body,SPH,fur(FUR.cream),0,0.27,0.0,0.14,0.09,0.24,false);
-  blob(body,SPH,fur(FUR.tan),0,0.37,-0.22,0.18,0.18,0.16);
+  blob(body,SPH,fur(FUR.tan),0,0.36,-0.02,0.2,0.18,0.34);
+  blob(body,SPH,fur(FUR.sable),0,0.46,-0.06,0.2,0.13,0.3);
+  blob(body,SPH,fur(FUR.black),0,0.5,-0.08,0.16,0.07,0.22);
+  blob(body,SPH,fur(FUR.cream),0,0.26,0.02,0.15,0.09,0.26,false);
+  blob(body,SPH,fur(FUR.tan),0,0.36,-0.26,0.17,0.16,0.16);
   for(const s of[-1,1])for(let k=0;k<5;k++)tuft(body,k%2?FUR.sable:FUR.mid,s*0.175,0.42,0.1-k*0.085,0.04,0.085,0,-s*(Math.PI-0.25));
   // big white chest ruff with jagged tufts, framed by a sable mane
-  blob(body,SPH,fur(FUR.sable),0,0.62,0.21,0.235,0.22,0.15);
-  for(const s of[-1,1])for(let k=0;k<3;k++)tuft(body,k===1?FUR.mid:FUR.sable,s*(0.2+k*0.015),0.52-k*0.07,0.25,0.065,0.18,-0.1,-s*(Math.PI-0.3));
-  blob(body,SPH,fur(FUR.white),0,0.47,0.24,0.2,0.24,0.16);
-  for(let k=0;k<7;k++){const a=(k-3)*0.17;tuft(body,FUR.white,Math.sin(a)*0.17,0.27,0.27+Math.cos(a)*0.06,0.055,0.15,-0.12,Math.PI+a*0.6);}
-  for(let k=0;k<5;k++){const a=(k-2)*0.25;tuft(body,FUR.white,Math.sin(a)*0.2,0.4,0.33+Math.cos(a)*0.03,0.05,0.13,-0.5,Math.PI+a*0.8);}
+  blob(body,SPH,fur(FUR.sable),0,0.64,0.2,0.26,0.24,0.16);
+  for(const s of[-1,1])for(let k=0;k<3;k++)tuft(body,k===1?FUR.mid:FUR.sable,s*(0.22+k*0.012),0.54-k*0.08,0.26,0.07,0.2,-0.1,-s*(Math.PI-0.3));
+  blob(body,SPH,fur(FUR.white),0,0.48,0.26,0.24,0.28,0.18);
+  blob(body,SPH,fur(FUR.white),0,0.34,0.3,0.2,0.16,0.14);
+  for(let k=0;k<8;k++){const a=(k-3.5)*0.16;tuft(body,FUR.white,Math.sin(a)*0.2,0.24,0.3+Math.cos(a)*0.05,0.06,0.17,-0.15,Math.PI+a*0.5);}
+  for(let k=0;k<6;k++){const a=(k-2.5)*0.22;tuft(body,FUR.white,Math.sin(a)*0.22,0.4,0.36+Math.cos(a)*0.03,0.055,0.15,-0.55,Math.PI+a*0.7);}
   // head: sable cap and frame, golden face, white blaze and muzzle
   const head=new T.Group();head.position.set(0,0.77,0.31);head.scale.setScalar(1.1);body.add(head);
   blob(head,SPH,fur(FUR.tan),0,0,0,0.2,0.19,0.18);
@@ -2748,19 +2996,19 @@ function makeDog(o){
     for(let k=0;k<3;k++)tuft(head,FUR.sable,s*0.2,0.04-k*0.08,-0.06,0.065,0.16,0,-s*(Math.PI/2+0.2+k*0.2));
     blob(head,SPH,fur(FUR.gold),s*0.06,0.078,0.15,0.032,0.018,0.016,false);
   }
-  const blaze=blob(head,SPH,fur(FUR.white),0,0.035,0.162,0.032,0.12,0.028,false);blaze.rotation.x=-0.35;
-  blob(head,SPH,fur(FUR.white),0,-0.075,0.13,0.09,0.075,0.1);
+  const blaze=blob(head,SPH,fur(FUR.white),0,0.04,0.17,0.04,0.16,0.035,false);blaze.rotation.x=-0.4;
+  blob(head,SPH,fur(FUR.white),0,-0.07,0.15,0.11,0.085,0.12);
   blob(head,SPH,mStd('#1b1718',{roughness:0.3}),0,-0.04,0.235,0.036,0.026,0.024,false);
   blob(head,SPH,mStd('#5a2428'),0,-0.112,0.19,0.05,0.025,0.035,false);
   const tongue=blob(head,SPH,fur(FUR.pink),0,-0.125,0.205,0.032,0.012,0.04,false);
   for(const s of[-1,1]){
-    blob(head,SPH,mStd('#3a2216',{roughness:0.2}),s*0.075,0.02,0.146,0.046,0.054,0.028,false);
-    blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.4}),s*0.075+0.012,0.038,0.168,0.013,0.013,0.008,false);
-    blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.4}),s*0.075-0.012,0.005,0.17,0.006,0.006,0.005,false);
-    // tall pointed ears with pink insides and tan tufts at the base
-    const ear=new T.Group();ear.position.set(s*0.1,0.16,-0.02);ear.rotation.set(0.12,0,-s*0.22);head.add(ear);
-    blob(ear,CONE,fur(FUR.sable),0,0.085,0,0.075,0.18,0.04);
-    blob(ear,CONE,fur(FUR.pink),0,0.065,0.025,0.045,0.115,0.012,false);
+    blob(head,SPH,mStd('#2a1c14',{roughness:0.2}),s*0.078,0.025,0.155,0.055,0.064,0.032,false);
+    blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.55}),s*0.078+0.016,0.046,0.178,0.016,0.016,0.01,false);
+    blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.4}),s*0.078-0.014,0.008,0.18,0.007,0.007,0.005,false);
+    // tall sable ears, pink inside, the sheltie silhouette
+    const ear=new T.Group();ear.position.set(s*0.1,0.17,-0.02);ear.rotation.set(0.08,0,-s*0.18);head.add(ear);
+    blob(ear,CONE,fur(FUR.black),0,0.11,0,0.07,0.22,0.038);
+    blob(ear,CONE,fur(FUR.pink),0,0.085,0.022,0.04,0.14,0.012,false);
     tuft(head,FUR.gold,s*0.15,0.12,0.0,0.045,0.13,0,-s*1.15);
     tuft(head,FUR.gold,s*0.16,0.08,0.03,0.04,0.11,0.2,-s*1.5);
   }
@@ -2774,25 +3022,25 @@ function makeDog(o){
     for(const t of[-1,1])blob(g,BOX,mStd('#b9a88e'),t*0.018,-0.285,0.09,0.004,0.025,0.03,false);
     return g;});
   // bushy tail: sable base, tan middle, white tip
-  const wag=new T.Group();wag.position.set(0,0.45,-0.32);body.add(wag);
-  blob(wag,SPH,fur(FUR.sable),0,-0.01,-0.08,0.09,0.09,0.14);
-  blob(wag,SPH,fur(FUR.tan),0,-0.08,-0.19,0.105,0.105,0.13);
-  blob(wag,SPH,fur(FUR.cream),0,-0.15,-0.29,0.095,0.1,0.12);
-  for(let k=0;k<4;k++)tuft(wag,FUR.white,(k-1.5)*0.035,-0.19,-0.36,0.04,0.09,-2.3,(k-1.5)*0.3);
-  root.scale.setScalar(0.95);
+  const wag=new T.Group();wag.position.set(0,0.42,-0.34);wag.rotation.x=-0.45;body.add(wag);
+  blob(wag,SPH,fur(FUR.sable),0,0.02,-0.08,0.1,0.1,0.14);
+  blob(wag,SPH,fur(FUR.tan),0,0.02,-0.2,0.12,0.12,0.14);
+  blob(wag,SPH,fur(FUR.cream),0,0.0,-0.32,0.11,0.12,0.13);
+  for(let k=0;k<5;k++)tuft(wag,FUR.white,(k-2)*0.04,0.02,-0.42,0.045,0.11,-2.2,(k-2)*0.25);
+  root.scale.setScalar(0.98);
   return {root,body,head,legs,tail:[],wag,wagAxis:'y',tongue,mouth};
 }
 function makeShepherd(o){
   // Bruno: a plush German Shepherd pup (black saddle, tan legs, dark muzzle mask)
   const root=new T.Group(),body=new T.Group();root.add(body);
-  const FUR={tan:'#cf8a3e',light:'#e3aa62',black:'#211b18',dark:'#3a2a20',pink:'#d99a80',blush:'#f08a7a'};
+  const FUR={tan:'#c47a32',light:'#e2a45a',black:'#1a1614',dark:'#2a211c',pink:'#e7b0a0',blush:'#e09078'};
   const fm={},fur=c=>fm[c]||(fm[c]=mStd(c,{roughness:0.95}));
   const tuft=(p,c,x,y,z,r,h,rx,rz,ry=0)=>{const m=blob(p,CONE,fur(c),x,y,z,r,h,r*0.8,false);m.rotation.set(rx,ry,rz);return m;};
   // body: tan with a black saddle over the back and shoulders
-  blob(body,SPH,fur(FUR.tan),0,0.38,-0.03,0.21,0.2,0.33);
-  blob(body,SPH,fur(FUR.black),0,0.46,-0.06,0.205,0.15,0.28);
-  blob(body,SPH,fur(FUR.tan),0,0.36,-0.25,0.19,0.19,0.16);
-  blob(body,SPH,fur(FUR.light),0,0.27,0.0,0.15,0.09,0.25,false);
+  blob(body,SPH,fur(FUR.tan),0,0.4,-0.02,0.2,0.2,0.4);
+  blob(body,SPH,fur(FUR.black),0,0.5,-0.04,0.21,0.16,0.34);
+  blob(body,SPH,fur(FUR.tan),0,0.38,-0.32,0.17,0.17,0.16);
+  blob(body,SPH,fur(FUR.light),0,0.28,0.02,0.14,0.1,0.28,false);
   for(const s of[-1,1])for(let k=0;k<5;k++)tuft(body,FUR.black,s*0.18,0.41,0.12-k*0.085,0.045,0.09,0,-s*(Math.PI-0.25));
   // chest: fluffy light-tan bib with black tufts at the sides of the neck
   blob(body,SPH,fur(FUR.tan),0,0.6,0.2,0.22,0.2,0.15);
@@ -2811,8 +3059,9 @@ function makeShepherd(o){
     blob(head,SPH,mStd(FUR.blush,{roughness:0.9,transparent:true,opacity:0.55}),s*0.12,-0.04,0.13,0.035,0.022,0.015,false);
   }
   // dark muzzle mask, black nose, open smile with tongue out
-  blob(head,SPH,fur(FUR.dark),0,-0.075,0.13,0.095,0.078,0.11);
-  blob(head,SPH,mStd('#141012',{roughness:0.3}),0,-0.035,0.24,0.045,0.032,0.03,false);
+  blob(head,SPH,fur(FUR.dark),0,-0.07,0.16,0.1,0.08,0.16);
+  blob(head,SPH,fur(FUR.black),0,-0.04,0.2,0.07,0.055,0.1);
+  blob(head,SPH,mStd('#141012',{roughness:0.3}),0,-0.02,0.29,0.048,0.034,0.036,false);
   blob(head,SPH,mStd('#4a1e22'),0,-0.12,0.19,0.055,0.028,0.035,false);
   const tongue=blob(head,SPH,fur('#f08a9a'),0,-0.145,0.21,0.034,0.014,0.05,false);
   for(const s of[-1,1]){
@@ -2821,9 +3070,9 @@ function makeShepherd(o){
     blob(head,SPH,mStd('#1b120c',{roughness:0.2}),s*0.075,0.015,0.162,0.024,0.028,0.02,false);
     blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.4}),s*0.075+0.013,0.035,0.172,0.012,0.012,0.008,false);
     // tall black ears with warm pink insides
-    const ear=new T.Group();ear.position.set(s*0.1,0.15,-0.02);ear.rotation.set(0.1,0,-s*0.2);head.add(ear);
-    blob(ear,CONE,fur(FUR.black),0,0.11,0,0.085,0.24,0.045);
-    blob(ear,CONE,fur(FUR.pink),0,0.09,0.03,0.052,0.16,0.012,false);
+    const ear=new T.Group();ear.position.set(s*0.11,0.16,-0.03);ear.rotation.set(-0.05,0,-s*0.12);head.add(ear);
+    blob(ear,CONE,fur(FUR.black),0,0.14,0,0.08,0.28,0.04);
+    blob(ear,CONE,fur(FUR.pink),0,0.11,0.028,0.046,0.18,0.012,false);
     tuft(head,FUR.light,s*0.15,0.1,0.02,0.04,0.11,0.2,-s*1.2);
   }
   const mouth=new T.Object3D();mouth.position.set(0,-0.125,0.24);head.add(mouth);
@@ -2836,12 +3085,14 @@ function makeShepherd(o){
     for(const t of[-1.5,-0.5,0.5,1.5])blob(g,SPH,mStd('#211b18'),t*0.022,-0.3,0.1,0.012,0.01,0.012,false);
     return g;});
   // bushy tail curling up, black on top
-  const wag=new T.Group();wag.position.set(0,0.46,-0.33);body.add(wag);
-  blob(wag,SPH,fur(FUR.black),0,0.02,-0.08,0.085,0.09,0.13);
-  blob(wag,SPH,fur(FUR.black),0,0.1,-0.17,0.09,0.1,0.11);
-  blob(wag,SPH,fur(FUR.tan),0,0.04,-0.17,0.075,0.07,0.1,false);
-  blob(wag,SPH,fur(FUR.tan),0,0.18,-0.21,0.08,0.1,0.085);blob(wag,SPH,fur(FUR.light),0,0.26,-0.19,0.06,0.07,0.06,false);
-  root.scale.setScalar(1.02);
+  // saber tail: hangs back and down, black along the top, tan underneath
+  const wag=new T.Group();wag.position.set(0,0.42,-0.38);wag.rotation.x=0.85;body.add(wag);
+  blob(wag,SPH,fur(FUR.black),0,0.02,-0.06,0.08,0.08,0.12);
+  blob(wag,SPH,fur(FUR.black),0,0.0,-0.16,0.075,0.07,0.12);
+  blob(wag,SPH,fur(FUR.tan),0,-0.02,-0.16,0.06,0.05,0.1,false);
+  blob(wag,SPH,fur(FUR.tan),0,-0.02,-0.26,0.065,0.06,0.1);
+  blob(wag,SPH,fur(FUR.black),0,0.02,-0.26,0.05,0.045,0.08,false);
+  root.scale.setScalar(1.08);
   return {root,body,head,legs,tail:[],wag,wagAxis:'y',tongue,mouth};
 }
 function makeAnimal(kind,o,home){
@@ -2917,7 +3168,7 @@ function updatePet(e,dt,time){
     if(followPath(e,dt,speed*(e.flee>0?2.1:1))||e.timer<=0){e.state='idle';e.timer=e.napAfter?rnd(18,30):rnd(3,9);e.idlePose=e.napAfter||WEATHER.rainK>0.4?'loaf':pick(IDLE_POSES[e.kind]);e.napAfter=false;}
   }else if(e.state==='approach'){
     e.repath-=dt;
-    const H=e.goal==='moon'&&!LM.inside?LM:AI,dH=Math.hypot(H.x-e.x,H.z-e.z);
+    const H=e.goal==='solon'&&!SL.inside?SL:e.goal==='moon'&&!LM.inside?LM:AI,dH=Math.hypot(H.x-e.x,H.z-e.z);
     if(e.repath<=0){const a=Math.atan2(e.x-H.x,e.z-H.z);e.path=planPath(e.x,e.z,H.x+Math.sin(a)*1.3,H.z+Math.cos(a)*1.3);e.wp=0;e.repath=1.2;}
     followPath(e,dt,speed*1.35);
     if(dH<1.7||e.timer<=0||dH>26){e.state='idle';e.timer=rnd(4,7);e.idlePose='sit';
@@ -2937,7 +3188,7 @@ function updatePet(e,dt,time){
     e.moving=Math.max(0,e.moving-dt*5);if(dL<6)faceLuna(e,dt);e.idlePose='sit';
     if(e.timer<=0){e.state='idle';e.timer=rnd(1,3);}
   }else if(e.state==='petted'){
-    e.moving=0;if(e.petBy==='moon')e.yaw+=normalizeAngle(Math.atan2(LM.x-e.x,LM.z-e.z)-e.yaw)*Math.min(1,dt*4);else faceLuna(e,dt);e.lonely=Math.max(0,e.lonely-dt*0.25);
+    e.moving=0;if(e.petBy==='solon')e.yaw+=normalizeAngle(Math.atan2(SL.x-e.x,SL.z-e.z)-e.yaw)*Math.min(1,dt*4);else if(e.petBy==='moon')e.yaw+=normalizeAngle(Math.atan2(LM.x-e.x,LM.z-e.z)-e.yaw)*Math.min(1,dt*4);else faceLuna(e,dt);e.lonely=Math.max(0,e.lonely-dt*0.25);
   }
   // friendly glance + heart when Luna walks by
   if(dL<2.6&&AI.state==='walk'&&time-e.lastGreet>18&&e.state!=='petted'){e.lastGreet=time;if(Math.random()<0.35)emote(e.root,'heart',e.kind==='bunny'?0.65:0.8,1.6,0.5);}
@@ -2976,7 +3227,8 @@ const GATE=(function(){
     leaves.push({leaf,dir});}
   return {leaves,open:0,target:0,closeAt:0,hold:false,update(dt){
     // swings open for Luna whenever she walks through, and for the let-out / bedtime routine
-    if(AI.state==='walk'&&Math.hypot(AI.x+26,AI.z-31.2)<2.6){this.target=1;if(this.closeAt)this.closeAt=Math.max(this.closeAt,simTime+2.5);else if(!this.hold)this.closeAt=simTime+2.5;}
+    const gateWalk=(o,st)=>st==='walk'&&Math.hypot(o.x+26,o.z-31.2)<2.6;
+    if(gateWalk(AI,AI.state)||(!LM.inside&&gateWalk(LM,LM.state))||(!SL.inside&&gateWalk(SL,SL.state))){this.target=1;if(this.closeAt)this.closeAt=Math.max(this.closeAt,simTime+2.5);else if(!this.hold)this.closeAt=simTime+2.5;}
     if(this.closeAt&&simTime>this.closeAt&&!this.hold){this.target=0;this.closeAt=0;}
     this.open+=clamp(this.target-this.open,-dt*1.6,dt*1.6);
     const e=smooth(0,1,this.open);for(const l of this.leaves)l.leaf.rotation.y=l.dir*e*1.45;}};
@@ -3002,7 +3254,7 @@ function updateDog(d,dt,time){
   const dL=Math.hypot(AI.x-d.x,AI.z-d.z);
   d.happy=Math.max(0,d.happy-dt);d.timer-=dt;
   if(d.state==='kennel'){
-    const night=nightK>0.55,gateD=Math.hypot(AI.x-GATE_SPOT[0],AI.z-GATE_SPOT[1]);
+    const night=nightK>0.55,gateL=Math.hypot(AI.x-GATE_SPOT[0],AI.z-GATE_SPOT[1]),gateS=SL.inside?1e9:Math.hypot(SL.x-GATE_SPOT[0],SL.z-GATE_SPOT[1]),gateD=Math.min(gateL,gateS);
     let goal=null;
     if(!night&&gateD<10)goal=[GATE_IN[0]-(d.side>0?0:0.8),GATE_IN[1]+d.side*0.8];   // Luna's coming: wait at the gate
     else if(night)goal=d.kennelSpot;
@@ -3010,7 +3262,7 @@ function updateDog(d,dt,time){
       if(Math.hypot(goal[0]-d.x,goal[1]-d.z)>0.5){d.repath-=dt;if(d.repath<=0||!d.path){d.path=planPath(d.x,d.z,goal[0],goal[1]);d.wp=0;d.repath=1.5;}followPath(d,dt,night?1.4:3,8);}
       else{d.moving=Math.max(0,d.moving-dt*5);
         if(night){d.idlePose='loaf';if(time-d.lastGreet>9){d.lastGreet=time;emote(d.root,'zzz',0.85,1.6,0.45);}}
-        else{d.idlePose='sit';d.happy=1;faceLuna(d,dt);if(time-d.lastGreet>5){d.lastGreet=time;emote(d.root,'heart',0.95,1.5,0.5);}}}
+        else{d.idlePose='sit';d.happy=1;if(gateS<gateL)d.yaw+=normalizeAngle(Math.atan2(SL.x-d.x,SL.z-d.z)-d.yaw)*Math.min(1,dt*4);else faceLuna(d,dt);if(time-d.lastGreet>5){d.lastGreet=time;emote(d.root,'heart',0.95,1.5,0.5);}}}
     }else{
       if(d.timer<=0){const[tx,tz]=yardSpot();d.path=planPath(d.x,d.z,tx,tz);d.wp=0;d.timer=rnd(5,11);d.idlePose=pick(IDLE_POSES.dog);}
       followPath(d,dt,1.7,8);
@@ -3032,7 +3284,7 @@ function updateDog(d,dt,time){
     followPath(d,dt,4.8,10);
     if(dL<1.5){BALL.state='held';d.state='sitWait';d.idlePose='sit';d.happy=3;emote(d.root,'heart',0.95);BRAIN.fetchReturned=true;}
   }else if(d.state==='sitWait'||d.state==='petted'||d.state==='await'){
-    d.moving=Math.max(0,d.moving-dt*5);if(d.petBy==='moon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(LM.x-d.x,LM.z-d.z)-d.yaw)*Math.min(1,dt*4);else faceLuna(d,dt);d.idlePose='sit';
+    d.moving=Math.max(0,d.moving-dt*5);if(d.petBy==='solon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(SL.x-d.x,SL.z-d.z)-d.yaw)*Math.min(1,dt*4);else if(d.petBy==='moon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(LM.x-d.x,LM.z-d.z)-d.yaw)*Math.min(1,dt*4);else faceLuna(d,dt);d.idlePose='sit';
     if(d.state==='await'&&d.timer<=0)d.state='follow';
     if(d.state==='petted')d.happy=1;
   }else{ // follow Luna around, one dog at each shoulder
@@ -3736,7 +3988,7 @@ const SHOP_MASKS=[{id:'bruno',name:'Bruno the Shepherd',price:240,base:'#cf8a3e'
 
 const OUTFITS=[
   {id:'rainbow',name:'Rainbow Onesie',bg:'#3eb54a',bottom:'pants',bcol:'#2276e3',shoe:['#283d6e','#f4f4f2'],draw:(c,S)=>{const b=['#e82c2a','#f28322','#f7d426','#3eb54a','#2276e3','#7a35c9'];for(let i=0;i<12;i++){c.fillStyle=b[i%6];c.fillRect(0,i*S/12,S,S/12+1);}c.fillStyle='#364152';c.fillRect(S/2-5,0,10,S);}},
-  {id:'usual',name:'Her usual',bottom:'shorts',bcol:'#f39c7d',shoe:['#2b2d31','#f2f2f0']},
+  {id:'usual',name:'Her usual',bottom:'shorts',bcol:'#f4a07a',shoe:['#f7f7f4','#2b2d31']},
   {id:'sheltie',name:'Sheltie Squad',bg:'#c9ecdf',bottom:'shorts',bcol:'#f39c7d',shoe:['#2b2d31','#f2f2f0'],
     draw:(c,S)=>CL.tile(c,S,4,4,(x,y)=>CL.dog(c,x,y,40,BREEDS.sheltie))},
   {id:'paws',name:'Paw Prints',bg:'#e6dcff',bottom:'skirt',bcol:'#8e6bd1',shoe:['#b79cff','#ffffff'],acc:'bow',accCol:'#ff8fab',
@@ -3910,7 +4162,8 @@ applyCloset(false);
   function card(label,cv,pressed,onPick){const b=document.createElement('button');b.type='button';b.className='card';b.setAttribute('aria-pressed',pressed);
     cv.setAttribute('aria-hidden','true');b.appendChild(cv);const s=document.createElement('span');s.textContent=label;b.appendChild(s);b.onclick=onPick;return b;}
   let who='luna';
-  const whoLuna=document.getElementById('whoLuna'),whoMoon=document.getElementById('whoMoon'),hatSec=document.getElementById('moonHatSec'),hatGrid=document.getElementById('moonHatGrid');
+  const whoLuna=document.getElementById('whoLuna'),whoMoon=document.getElementById('whoMoon'),whoSolon=document.getElementById('whoSolon'),hatSec=document.getElementById('moonHatSec'),hatGrid=document.getElementById('moonHatGrid'),solonSec=document.getElementById('solonSec'),solonGrid=document.getElementById('solonHatGrid'),outfitHead=document.getElementById('outfitHead'),maskHead=document.getElementById('maskHead');
+  function setWho(next){who=next;if(whoLuna)whoLuna.setAttribute('aria-selected',next==='luna');if(whoMoon)whoMoon.setAttribute('aria-selected',next==='moon');if(whoSolon)whoSolon.setAttribute('aria-selected',next==='solon');render();}
   function hatThumb(h){
     const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
     if(h.id==='none'){ // just her blue waves: a little hair swatch with a "no hat" slash
@@ -3924,13 +4177,31 @@ applyCloset(false);
     return cv;
   }
   if(whoLuna&&whoMoon){
-    whoLuna.onclick=()=>{who='luna';whoLuna.setAttribute('aria-selected','true');whoMoon.setAttribute('aria-selected','false');render();};
-    whoMoon.onclick=()=>{who='moon';whoMoon.setAttribute('aria-selected','true');whoLuna.setAttribute('aria-selected','false');render();};
+    whoLuna.onclick=()=>setWho('luna');
+    whoMoon.onclick=()=>setWho('moon');
+    if(whoSolon)whoSolon.onclick=()=>setWho('solon');
+  }
+  function solonBeanieThumb(on){
+    const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
+    c.fillStyle='#67b84e';c.beginPath();c.arc(84,96,46,Math.PI,0);c.lineTo(130,118);c.quadraticCurveTo(84,132,38,118);c.closePath();c.fill();
+    c.strokeStyle='rgba(31,36,64,0.35)';c.lineWidth=3;c.stroke();
+    if(on){for(const sx of[-1,1]){c.fillStyle='#67b84e';c.beginPath();c.arc(84+sx*22,48,14,0,6.28);c.fill();c.stroke();c.fillStyle='#fff';c.beginPath();c.arc(84+sx*22,46,9,0,6.28);c.fill();c.fillStyle='#161618';c.beginPath();c.arc(84+sx*22,46,5,0,6.28);c.fill();}}
+    else{c.strokeStyle='rgba(31,36,64,0.45)';c.lineWidth=5;c.beginPath();c.moveTo(48,40);c.lineTo(120,128);c.stroke();}
+    return cv;
   }
   function render(){
     og.textContent='';mg.textContent='';
+    const sol=who==='solon';
     if(hatSec)hatSec.hidden=(who!=='moon');
-    if(who==='moon'&&hatGrid){
+    if(solonSec)solonSec.hidden=!sol;
+    if(outfitHead)outfitHead.hidden=sol;
+    if(maskHead)maskHead.hidden=sol;
+    og.hidden=sol;mg.hidden=sol;
+    if(sol&&solonGrid){
+      solonGrid.textContent='';
+      solonGrid.appendChild(card('🐸 Beanie on',solonBeanieThumb(true),SOLON_STYLE.hat!==false,()=>{SOLON_STYLE.hat=true;applySolonCloset(true);render();}));
+      solonGrid.appendChild(card('Hair only',solonBeanieThumb(false),SOLON_STYLE.hat===false,()=>{SOLON_STYLE.hat=false;applySolonCloset(true);render();}));
+    }else if(who==='moon'&&hatGrid){
       hatGrid.textContent='';
       for(const h of MOON_HATS){
         hatGrid.appendChild(card(h.icon+' '+h.name,hatThumb(h),MOON_STYLE.hat===h.id,()=>{MOON_STYLE.hat=h.id;MOON_STYLE.userLockedHat=true;applyLadyMoonCloset(true);render();}));
@@ -3940,7 +4211,7 @@ applyCloset(false);
       for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),CLOSET.outfit===o.id,()=>{CLOSET.outfit=o.id;CLOSET.lastChanged='outfit';applyCloset(true);render();}));
     }
     if(who==='moon'){for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),MOON_STYLE.mask===m.id,()=>{MOON_STYLE.mask=m.id;applyLadyMoonCloset(true);render();}));}
-    else for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),CLOSET.mask===m.id,()=>{CLOSET.mask=m.id;CLOSET.lastChanged='mask';applyCloset(true);render();}));
+    else if(who==='luna') for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),CLOSET.mask===m.id,()=>{CLOSET.mask=m.id;CLOSET.lastChanged='mask';applyCloset(true);render();}));
   }
   CLOSET.thumb=teeThumb;CLOSET.maskThumb=maskThumb;
   function setOpen(v){if(v){render();const mk=document.getElementById('market');if(mk&&!mk.hidden){mk.hidden=true;document.getElementById('btnMarket').setAttribute('aria-expanded','false');}}panel.hidden=!v;btn.setAttribute('aria-expanded',v);if(v)panel.querySelector('.closet-close').focus();}
@@ -4443,6 +4714,7 @@ function resolveCollisions(){
   const lunaFree=!AI.inside&&!AI.seatObj&&!(AI.state==='act'&&AI.act==='swim');
   if(lunaFree)L.push({o:AI,r:0.3,w:0.25,luna:true});
   if(!LM.inside)L.push({o:LM,r:0.3,w:0.5,luna:true});
+  if(!SL.inside)L.push({o:SL,r:0.3,w:0.5,luna:true});
   for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'?0.3:e.kind==='cat'?0.25:0.22,w:1});}
   for(const it of L){it.ox=it.o.x;it.oz=it.o.z;}
   for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];let dx=b.o.x-a.o.x,dz=b.o.z-a.o.z,d=Math.hypot(dx,dz);const m=a.r+b.r;
@@ -4873,7 +5145,7 @@ function updateCaretakerAI(dt,time){
 
   if(AI.inside){insideUpdate(dt,time);return;}
   // "Luna still": she stays put, turns to face you and smiles for the camera
-  if(CTRL.on&&!FOLLOW_MOON){ctrlUpdate(dt,time);return;}
+  if(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON){ctrlUpdate(dt,time);return;}
   lunaReplan(dt);
   if(STILL.on){if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();if(AI.state==='skylook'){AI.skyObj=null;}
     AI.state='idle';AI.timer=1;AI.stretchT=0;AI.speed=lerp(AI.speed,0,Math.min(1,dt*10));
@@ -4914,7 +5186,7 @@ function updateCaretakerAI(dt,time){
 const ACT_WORDS={wave:'waving hello',inspect:'checking the pet bed',bow:'visiting the shrine',feed:'filling the food bowls'};
 const POI_WORDS={isle:'the view from the little island',zen:'the zen garden',waterfall:'the waterfall',torii:'the torii gate'};
 function lunaStatus(){
-  if(CTRL.on&&!FOLLOW_MOON)return ctrlStatus();
+  if(CTRL.on&&!FOLLOW_SOLON&&!FOLLOW_MOON)return ctrlStatus();
   if(STILL.on&&!(AI.inside&&INSIDE.ent.state==='act'))return 'Luna is holding still for you';
   if(AI.inside)return insideStatus();
   const tg=AI.target,tk=AI.task,night=nightK>0.55;
@@ -4955,6 +5227,7 @@ function lunaStatus(){
 function updateWildlifeAndVehicles(dt,time){
   ISLAND.update(dt);
   updateLadyMoon(dt,time);
+  updateSolon(dt,time);
   for(const e of PETS)updatePet(e,dt,time);
   for(const d of DOGS)if(!d.inside)updateDog(d,dt,time);
   SWING.update(dt);updateChops(dt);resolveCollisions();
@@ -5450,7 +5723,7 @@ function updateCam(){
 
   // Focus look target near the caretaker's current position so zoom focuses inward on her
   if(!FREE.on&&!INSIDE.on){
-    const fx=FOLLOW_MOON?LM.x:AI.x,fy=FOLLOW_MOON?LM.y:AI.y,fz=FOLLOW_MOON?LM.z:AI.z;
+    const F=focusBody(),fx=F.x,fy=F.y,fz=F.z;
     camTarget.x=lerp(camTarget.x,fx,kt);
     camTarget.y=lerp(camTarget.y,fy+1.2,kt);
     camTarget.z=lerp(camTarget.z,fz,kt);
@@ -5535,7 +5808,7 @@ function camBlocked(ax,ay,az,bx,by,bz){let h=0;for(let i=1;i<12;i++){const t=0.0
 const _cp=new T.Vector3(),_head=new T.Vector3();
 // wide coverage: the island from above, a slow orbit, a landscape over Luna's shoulder, a rising crane
 function wideShot(base,V){
-  const D=DIRECTOR,S=FOLLOW_MOON?LM:AI,e=smooth(0,1,D.wideAge/D.wideDur),cx=4,cz=4;
+  const D=DIRECTOR,S=focusBody(),e=smooth(0,1,D.wideAge/D.wideDur),cx=4,cz=4;
   switch(D.wideKind){
     case 'island':{const px=lerp(S.x,cx,0.55),pz=lerp(S.z,cz,0.55);
       return Object.assign(base,{id:'wide_island',label:'Island view',pivot:V(px,S.y,pz),yaw:D.wideYaw,az:0,dist:66,h:36,fov:46,look:V(px,2,pz)});}
@@ -5555,11 +5828,23 @@ function moonShotFor(V){   // auto cam shots for Lady Moon (when the camera foll
   if(LM.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(LM.x,LM.y+1.35,LM.z)});
   return Object.assign(base,{id:'follow',label:'Following Lady Moon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.35,dist:10,h:4.2,fov:42,look:V(LM.x+fx*2.5,LM.y+1.1,LM.z+fz*2.5)});
 }
+function solonShotFor(V){
+  const fx=Math.sin(SL.yaw),fz=Math.cos(SL.yaw),base={pivot:V(SL.x,SL.y,SL.z),yaw:SL.yaw};
+  if(SL.state==='act'){const a=SL.act;
+    if(a==='feed'||a==='train'||a==='herd'){const sp=SL.spot,e=sp&&(sp.dog||sp.bowl),m=e&&e.x!=null?V((SL.x+e.x)/2,SL.y+0.6,(SL.z+e.z)/2):V(SL.x,SL.y+0.9,SL.z);
+      return Object.assign(base,{id:'s_job',label:a==='herd'?'Rounding up the pups':a==='feed'?'Filling the bowls':'Training time',pivot:V(m.x,SL.y,m.z),az:0.85,dist:6.2,h:2.2,fov:40,look:m});}
+    if(a==='sweep')return Object.assign(base,{id:'s_sweep',label:'Tidying up',az:0.7,dist:5.2,h:1.8,fov:38,look:V(SL.x,SL.y+0.9,SL.z)});
+    if(a==='cheer'||a==='wave')return Object.assign(base,{id:'s_cheer',label:'Solon',az:0.4,dist:4.8,h:1.7,fov:36,look:V(SL.x,SL.y+1.15,SL.z)});
+    return Object.assign(base,{id:'s_act',label:'Solon',az:0.5,dist:5,h:1.8,fov:36,look:V(SL.x,SL.y+1.1,SL.z)});}
+  if(SL.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(SL.x,SL.y+1.35,SL.z)});
+  return Object.assign(base,{id:'follow',label:'Following Solon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.35,dist:10,h:4.2,fov:42,look:V(SL.x+fx*2.5,SL.y+1.1,SL.z+fz*2.5)});
+}
 function shotFor(){
   const night=nightK>0.55,fx=Math.sin(AI.yaw),fz=Math.cos(AI.yaw);
   _head.set(AI.x,AI.y+1.5,AI.z);
   const V=(x,y,z)=>new T.Vector3(x,y,z);
-  if(DIRECTOR.wideT>0){const S=FOLLOW_MOON?LM:AI;return wideShot({pivot:V(S.x,S.y,S.z),yaw:S.yaw},V);}
+  if(DIRECTOR.wideT>0){const S=focusBody();return wideShot({pivot:V(S.x,S.y,S.z),yaw:S.yaw},V);}
+  if(FOLLOW_SOLON)return solonShotFor(V);
   if(FOLLOW_MOON)return moonShotFor(V);
   const base={pivot:V(AI.x,AI.y,AI.z),yaw:AI.yaw};
   if(DIRECTOR.aerialT>0)return Object.assign(base,{id:'aerial',label:'Island view',yaw:DIRECTOR.smoothYaw,az:Math.PI*0.78,dist:27,h:17,fov:44,
@@ -5614,7 +5899,7 @@ function camPosFor(s,off,hb,out){
 const CAM_OFFS=[0,0.35,-0.35,0.7,-0.7,1.05,-1.05,1.5,-1.5,2.1,-2.1];
 function scoreCam(s,off,hb){
   camPosFor(s,off,hb,_cp);
-  const S=FOLLOW_MOON?LM:AI,blk=camBlocked(_cp.x,_cp.y,_cp.z,s.look.x,s.look.y,s.look.z)+camBlocked(_cp.x,_cp.y,_cp.z,S.x,S.y+1.2,S.z)*1.5;
+  const S=focusBody(),blk=camBlocked(_cp.x,_cp.y,_cp.z,s.look.x,s.look.y,s.look.z)+camBlocked(_cp.x,_cp.y,_cp.z,S.x,S.y+1.2,S.z)*1.5;
   return blk*4+(solidAt(_cp.x,_cp.y,_cp.z)?60:0)+Math.abs(off)*1.2+hb*0.35+_cp.distanceTo(camera.position)*0.025;
 }
 const _duoMid=new T.Vector3(),_duoPivot=new T.Vector3(),_sdC=new T.Vector3(),_sdT=new T.Vector3();
@@ -5631,12 +5916,15 @@ function smoothDamp(cur,target,vel,time,maxSpeed,dt){
 function directorUpdate(dt,time){
   const D=DIRECTOR;
   // Dual-Character Framing: calculate midpoint and distance between Luna (AI) and Lady Moon (LM)
-  const distBetween=Math.hypot(LM.x-AI.x, LM.z-AI.z);
-  const midX=(AI.x + LM.x) / 2;
-  const midZ=(AI.z + LM.z) / 2;
-  const midY=(AI.y + LM.y) / 2;
+  const Fa=FOLLOW_SOLON?SL:AI;
+  const Fb=FOLLOW_SOLON?(Math.hypot(SL.x-AI.x,SL.z-AI.z)<=(LM.inside?1e9:Math.hypot(SL.x-LM.x,SL.z-LM.z))?AI:LM):LM;
+  const duoLabel=FOLLOW_SOLON?(Fb===AI?'Solon & Luna':'Solon & Lady Moon'):'Luna & Lady Moon';
+  const distBetween=Math.hypot(Fb.x-Fa.x, Fb.z-Fa.z);
+  const midX=(Fa.x + Fb.x) / 2;
+  const midZ=(Fa.z + Fb.z) / 2;
+  const midY=(Fa.y + Fb.y) / 2;
 
-  const S=FOLLOW_MOON?LM:AI,steering=CTRL.on&&CTRL.m>0.1;
+  const S=focusBody(),steering=CTRL.on&&CTRL.m>0.1;
   D.smoothYaw+=normalizeAngle(S.yaw-D.smoothYaw)*Math.min(1,dt*1.1);
   D.nextAerial-=dt;D.aerialT=Math.max(0,D.aerialT-dt);
   D.stillT=(S.state==='idle'||S.state==='think')?(D.stillT||0)+dt:0;
@@ -5655,10 +5943,10 @@ function directorUpdate(dt,time){
   const s=shotFor();
   // Duo framing: when Lady Moon is close to Luna, centre the shot between them and pull back far enough to keep both in view.
   // (Previously the look point moved to the midpoint while the camera stayed at close-up distance, cutting Luna out of frame.)
-  const duo=distBetween<14&&!AI.inside&&!['aerial','sky','wide_island','wide_land','wide_crane','wide_orbit'].includes(s.id);
+  const duo=distBetween<14&&!Fa.inside&&!Fb.inside&&!['aerial','sky','wide_island','wide_land','wide_crane','wide_orbit'].includes(s.id);
   if(duo){_duoMid.set(midX,midY+1.1,midZ);const need=clamp(5.5+distBetween*1.15,5.5,20);
     if(s.dist<need){const k=need/s.dist;s.dist=need;s.h=Math.min(s.h*k,need*0.55);}
-    s.pivot=_duoPivot.set(midX,midY,midZ);s.look=_duoMid;s.label='Luna & Lady Moon';s.fov=Math.max(s.fov,40);}
+    s.pivot=_duoPivot.set(midX,midY,midZ);s.look=_duoMid;s.label=duoLabel;s.fov=Math.max(s.fov,40);}
   const changed=!D.shot||D.shot.id!==s.id,drift=(s.id==='follow'||s.id==='aerial'||s.id.startsWith('wide'))?0:Math.sin(D.orbPh)*0.5;
   D.evalT-=dt;
   if(changed||D.evalT<=0){
@@ -5964,6 +6252,7 @@ const CTRL={on:false,started:false,touch:{x:0,y:0},keys:new Set(),pad:{x:0,y:0},
 const STICK_DZ=0.12,PAD_DZ=0.16;const id_knob=document.getElementById('stickKnob');
 function stickCurve(x,y,dz){const m=Math.hypot(x,y);if(m<dz)return[0,0,0];const k=Math.min(1,(m-dz)/(1-dz)),c=Math.pow(k,1.25);return[x/m*c,y/m*c,c];}
 function ctrlAction(kind){
+  if(CTRL.on&&FOLLOW_SOLON){solonCtrlAction(kind);return;}
   if(CTRL.on&&FOLLOW_MOON){moonCtrlAction(kind);return;}
   if(!CTRL.on||AI.mAct)return;
   if(kind==='jump'){if(AI.jumpT<=0)AI.jumpT=0.62;return;}
@@ -6027,8 +6316,9 @@ function setCtrl(v){
   CTRL.on=v;CTRL.started=false;CTRL.touch.x=CTRL.touch.y=0;CTRL.keys.clear();AI.mAct=null;
   document.body.classList.toggle('ctrl',v);document.getElementById('btnCtrl').setAttribute('aria-pressed',v);document.getElementById('pad').hidden=!v;
   if(v){if(STILL.on)setStill(false);if(DIRECTOR.on)setAuto(false);if(FREE.on)setFree(false);orbit=false;document.getElementById('btnOrbit').setAttribute('aria-pressed','false');
-    if(PLACE.active)cancelPlacing();if(CHOP.on)setChop(false);tRadius=11;tPhi=1.02;tTheta=(FOLLOW_MOON?LM.yaw:AI.yaw)+Math.PI;toast('Controller mode: left stick moves '+(FOLLOW_MOON?'Lady Moon':'Luna')+' (press M to switch)');}
-  else{if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=1;AI.speed=0;LM.mAct=null;CTRL.moonStarted=false;if(LM.state!=='walk'){LM.state='idle';LM.timer=0.6;}}
+    if(PLACE.active)cancelPlacing();if(CHOP.on)setChop(false);tRadius=11;tPhi=1.02;tTheta=focusBody().yaw+Math.PI;toast('Controller mode: left stick moves '+(FOLLOW_SOLON?'Solon':FOLLOW_MOON?'Lady Moon':'Luna')+' (press M to switch)');}
+  else{if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=1;AI.speed=0;LM.mAct=null;CTRL.moonStarted=false;if(LM.state!=='walk'){LM.state='idle';LM.timer=0.6;}
+    if(CTRL.solonStarted||FOLLOW_SOLON){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}}
 }
 (function padUI(){
   const pad=document.getElementById('pad'),zone=document.getElementById('stickZone'),base=document.getElementById('stickBase'),knob=document.getElementById('stickKnob');
@@ -6074,26 +6364,36 @@ function setFree(v){
 function setAuto(v){
   if(v&&FREE.on)setFree(false);
   DIRECTOR.on=v;btnAuto.setAttribute('aria-pressed',v);shotChip.classList.toggle('on',v);
-  if(v){DIRECTOR.shot=null;DIRECTOR.lookInit=false;DIRECTOR.smoothYaw=(FOLLOW_MOON?LM:AI).yaw;DIRECTOR.wideT=0;DIRECTOR.nextWide=rnd(14,22);DIRECTOR.stillT=0;DIRECTOR.fov=camera.fov;idle=99;DIRECTOR.lastLabel='';}
+  if(v){DIRECTOR.shot=null;DIRECTOR.lookInit=false;DIRECTOR.smoothYaw=focusBody().yaw;DIRECTOR.wideT=0;DIRECTOR.nextWide=rnd(14,22);DIRECTOR.stillT=0;DIRECTOR.fov=camera.fov;idle=99;DIRECTOR.lastLabel='';}
 }
 btnAuto.onclick=()=>setAuto(!DIRECTOR.on);
 function setStill(v){STILL.on=v;document.getElementById('btnStill').setAttribute('aria-pressed',v);if(v){emote(caretaker.headGroup,'heart',0.85);toast('Luna will hold still until you turn this off');}else toast('Luna is back to her day');}
 document.getElementById('btnStill').onclick=()=>setStill(!STILL.on);
 
 const btnMoon=document.getElementById('btnMoon');
-function setFollowMoon(v){
-  FOLLOW_MOON=v;
-  if(btnMoon)btnMoon.setAttribute('aria-pressed',v);
-  if(CTRL.on){   // hand the controller to the other character; the one let go goes back to her own plans
-    if(v){if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=0.8;AI.speed=0;CTRL.started=false;tTheta=LM.yaw+Math.PI;}
-    else{LM.mAct=null;CTRL.moonStarted=false;LM.state='idle';LM.timer=0.6;tTheta=AI.yaw+Math.PI;}
+function followWho(){return FOLLOW_SOLON?'solon':FOLLOW_MOON?'moon':'luna';}
+function focusBody(){return FOLLOW_SOLON?SL:FOLLOW_MOON?LM:AI;}
+function setFollowWho(who){
+  const prev=followWho();if(prev===who)return;
+  if(CTRL.on){
+    if(prev==='luna'){if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=0.8;AI.speed=0;CTRL.started=false;}
+    if(prev==='moon'){LM.mAct=null;CTRL.moonStarted=false;LM.state='idle';LM.timer=0.6;LM.speed=0;}
+    if(prev==='solon'){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}
   }
-  if(DIRECTOR.on){DIRECTOR.shot=null;DIRECTOR.wideT=0;DIRECTOR.stillT=0;DIRECTOR.smoothYaw=(v?LM:AI).yaw;DIRECTOR.lastLabel='';}   // auto cam simply switches who it films
-  if(v){if(FREE.on)setFree(false);toast(CTRL.on?'The controller now steers Lady Moon (press M to switch)':'Camera is now following Lady Moon! (Press M to switch)');}
-  else toast(CTRL.on?'The controller now steers Luna (press M to switch)':'Camera is following Luna again');
+  FOLLOW_MOON=who==='moon';FOLLOW_SOLON=who==='solon';
+  const names={luna:'Luna',moon:'Lady Moon',solon:'Solon'};
+  const next=who==='luna'?'moon':who==='moon'?'solon':'luna';
+  const lbl=document.getElementById('moonLbl');if(lbl)lbl.textContent=names[next];
+  if(btnMoon){btnMoon.setAttribute('aria-pressed',who!=='luna');btnMoon.title='Follow '+names[next]+' (press M)';}
+  const S=focusBody();
+  if(CTRL.on)tTheta=S.yaw+Math.PI;
+  if(DIRECTOR.on){DIRECTOR.shot=null;DIRECTOR.wideT=0;DIRECTOR.stillT=0;DIRECTOR.smoothYaw=S.yaw;DIRECTOR.lastLabel='';}
+  if(who!=='luna'&&FREE.on)setFree(false);
+  toast(CTRL.on?('The controller now steers '+names[who]+' (press M to switch)'):('Camera is now following '+names[who]));
 }
-if(btnMoon)btnMoon.onclick=()=>setFollowMoon(!FOLLOW_MOON);
-addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;if(e.key==='m'||e.key==='M')setFollowMoon(!FOLLOW_MOON);});
+function cycleFollow(){const w=followWho();setFollowWho(w==='luna'?'moon':w==='moon'?'solon':'luna');}
+if(btnMoon)btnMoon.onclick=()=>cycleFollow();
+addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;if(e.key==='m'||e.key==='M')cycleFollow();});
 
 addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;if(e.key==='l'||e.key==='L')setStill(!STILL.on);});
 document.getElementById('btnFree').onclick=()=>setFree(!FREE.on);
@@ -6358,6 +6658,7 @@ function makeBroom(parent,x,y,z){
   return g;}
 PROPS.broom=makeBroom(caretaker.rightArm,0.25,-0.45,0.06);
 const MOON_BROOM=makeBroom(ladyMoon.rightArm,0.245,-0.4,0.03);
+solon.broom=makeBroom(solon.rightArm,0.24,-0.42,0.05);
 
 /* ---------- dogs: zoomies (a chase game around a friend) ---------- */
 function startZoomies(d,cx,cz,dur){d.state='zoomies';d.zoom={cx,cz,ang:Math.atan2(d.z-cz,d.x-cx),r:rnd(1.8,2.6),t:dur,dir:Math.random()<0.5?1:-1};d.happy=4;d.lonely=Math.max(0,(d.lonely||0)-0.5);emote(d.root,'heart',0.95);}
@@ -6371,7 +6672,14 @@ function zoomiesUpdate(d,dt,time){
 }
 
 /* ---------- pets: eating from bowls, begging, seeking company, shelter and naps ---------- */
-function humanNear(x,z){const dl=Math.hypot(AI.x-x,AI.z-z),dm=LM.inside?1e9:Math.hypot(LM.x-x,LM.z-z);return dm<dl?{who:'moon',x:LM.x,z:LM.z,d:dm}:{who:'luna',x:AI.x,z:AI.z,d:dl};}
+function humanNear(x,z){
+  const cands=[
+    {who:'luna',x:AI.x,z:AI.z,d:Math.hypot(AI.x-x,AI.z-z)},
+    {who:'moon',x:LM.x,z:LM.z,d:LM.inside?1e9:Math.hypot(LM.x-x,LM.z-z)},
+    {who:'solon',x:SL.x,z:SL.z,d:SL.inside?1e9:Math.hypot(SL.x-x,SL.z-z)}
+  ];
+  cands.sort((a,b)=>a.d-b.d);return cands[0];
+}
 function petThink(e){   // called when an idle pet decides what to do next; returns true if it chose something
   const wet=WEATHER.rainK>0.4,night=nightK>0.62;
   if(e.hunger>0.62){const b=nearestBowl(e.x,e.z,true);
@@ -6481,7 +6789,7 @@ function lunaNewActs(dt){   // per-frame work for the new jobs (called from actU
 let _replanT=0;
 function lunaReplan(dt){
   _replanT-=dt;if(_replanT>0)return;_replanT=1.5;
-  if(AI.inside||CTRL.on&&!FOLLOW_MOON||STILL.on||!AI.task)return;
+  if(AI.inside||(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON)||STILL.on||!AI.task)return;
   // caught in the rain on the way to an outdoor job: give it up and head for shelter
   if(AI.state==='walk'&&AI.task.dry&&WEATHER.rainK>0.45){abortTask();BRAIN.fail[AI.lastRid]=0;emote(caretaker.headGroup,'drop',0.85);return;}
   // walking to pet someone who has wandered off out of reach
@@ -6669,7 +6977,7 @@ const RADIO=(function(){
     if(!R.on&&AI.task&&AI.task.id==='radioDance'&&AI.state==='walk')abortTask();   // the music stopped before she got there
     // sometimes Luna stops what she's doing and comes over to dance
     if(R.invite&&!(AI.task&&AI.task.id==='radioDance')){R.joinT-=dt;if(R.joinT<=0){R.joinT=2;
-      if(!AI.inside&&!(CTRL.on&&!FOLLOW_MOON)&&!STILL.on&&AI.state!=='skylook'&&(canInterrupt()||R.jam&&AI.state==='act'&&!['swim','fetch','gate'].includes(AI.act))&&Math.hypot(AI.x-TX,AI.z-TZ)<75){
+      if(!AI.inside&&!(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON)&&!STILL.on&&AI.state!=='skylook'&&(canInterrupt()||R.jam&&AI.state==='act'&&!['swim','fetch','gate'].includes(AI.act))&&Math.hypot(AI.x-TX,AI.z-TZ)<75){
         const tgt=resolveTarget(RADIO_TASK);if(tgt){if(AI.state==='act')endAct();else abortTask();startTask({tk:RADIO_TASK,tgt,rid:'radioDance'});emote(caretaker.headGroup,'note',0.85);}}}}
   }
   // the Jam button: send Lady Moon to the radio right now (or, if the music's playing, have her switch it off)
@@ -6680,7 +6988,7 @@ const RADIO=(function(){
     if(LM.state==='act'&&LM.act==='radio'){if(LM.radioPhase!=='off')LM.timer=Math.min(LM.timer,1.85);toast('Lady Moon is switching the music off');return;}
     if(LM.state==='walk'&&LM.spot&&LM.spot.radio){toast('Lady Moon is already on her way to the radio \u266A');return;}
     if(INSIDE.on||LM.inside){toast('Head back outside to jam on the deck');return;}
-    if(CTRL.on&&FOLLOW_MOON){toast('Switch the controller to Luna (press M) so Lady Moon can go and jam');return;}
+    if(CTRL.on&&FOLLOW_MOON){toast('Switch the controller to Luna or Solon (press M) so Lady Moon can go and jam');return;}
     if(AUDIO.ctx&&AUDIO.ctx.state==='suspended')AUDIO.ctx.resume();
     moonFinish(false);LM.mAct=null;
     const d=Math.hypot(LM.x-STAND[0],LM.z-STAND[1]);
@@ -6795,6 +7103,288 @@ function moonCtrlUpdate(dt,time){
 function moonCtrlStatus(){const a=LM.mAct;if(a&&a.act==='pet')return 'Lady Moon is cuddling '+a.ent.name;if(a&&a.act==='wave')return 'Lady Moon waves hello';if(a&&a.act==='dogPlay')return 'Zoomies with Lady Moon!';
   return LM.state==='walk'?(CTRL.m>0.92?'Lady Moon is running':'You are walking Lady Moon around'):'Lady Moon is waiting for you';}
 
+/* =====================================================================================================
+   Island picture + Solon: a practical fixer who takes the jobs Luna is too busy for
+   ===================================================================================================== */
+const SOLON_NEEDS={duty:0.55,dogs:0.6,explore:0.4,play:0.35,social:0.28,rest:0.12};
+const SOLON_RATES={duty:0.0045,dogs:0.005,explore:0.004,play:0.004,social:0.003,rest:0.0025};
+const SOLON_SAT={feed:{duty:0.85},herd:{dogs:0.9,duty:0.45},sweep:{duty:0.75},train:{play:0.85,dogs:0.35},chat:{social:0.8},scout:{explore:0.45},hips:{rest:0.25,explore:0.2},sit:{rest:0.7},cheer:{play:0.25},wave:{social:0.25},stretch:{rest:0.2}};
+function islandPicture(){
+  const night=nightK>0.55,dusk=nightK>0.38,wet=WEATHER.rainK>0.35;
+  let hunger=0,beg=0;
+  for(const a of ALL_ANIMALS){hunger=Math.max(hunger,a.hunger||0);if(a.beg)beg=1;}
+  const bowls=ISLAND.bowls,anyEmpty=bowls.some(b=>b.food<0.2);
+  const dogsOut=DOGS.filter(d=>d.state==='follow'||d.state==='zoomies'||d.state==='sitWait');
+  const dogsIn=DOGS.filter(d=>d.state==='kennel');
+  const feedUrg=(anyEmpty?0.6:0)+(hunger>0.7?0.45:0)+beg*0.4;
+  const bedUrg=(dusk||night)&&dogsOut.length?(night?1.25:0.75)+dogsOut.length*0.12:0;
+  const letBlocked=BRAIN.nextLetOut&&simTime<BRAIN.nextLetOut;
+  const letUrg=(!wet&&nightK<0.25&&DOGS.length&&dogsIn.length===DOGS.length&&!letBlocked)?0.85:0;
+  return {night,dusk,wet,hunger,beg,anyEmpty,dogsOut,dogsIn,feedUrg,bedUrg,letUrg};
+}
+function handsBusy(who){
+  if(who==='luna'){
+    if(AI.inside||STILL.on||(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON))return 2;
+    if(AI.state==='act'&&['fish','swim','chop','build','gate','fetch','sell'].includes(AI.act))return 1;
+    if(AI.state==='walk'&&AI.task&&['fish','sell','bedtime','letOut','feedHouse','feedYard','chop'].includes(AI.task.id))return 1;
+    return 0;
+  }
+  if(who==='moon'){
+    if(LM.inside||(CTRL.on&&FOLLOW_MOON))return 2;
+    if(LM.state==='act'&&(LM.act==='radio'||LM.act==='tend'))return 1;
+    return 0;
+  }
+  if(SL.inside||(CTRL.on&&FOLLOW_SOLON))return 2;
+  if(SL.state==='act'&&['herd','feed','train'].includes(SL.act))return 1;
+  return 0;
+}
+function lunaTiedUp(x,z){
+  if(handsBusy('luna')>=1)return true;
+  if(x!=null&&Math.hypot(AI.x-x,AI.z-z)>24)return true;
+  return false;
+}
+function solonPing(job){ISLAND.note={job,until:simTime+14,from:'solon'};emote(solon.headGroup,'!',0.95,1.4,0.55);}
+function solonFinish(done){
+  const sp=SL.spot;
+  if(sp){
+    if(sp.mess){if(done){sp.mess.dirt=0;ISLAND.drawMess(sp.mess);}ISLAND.release('mess_'+sp.mess.id,'solon');}
+    if(sp.bowl)ISLAND.release('feed','solon');
+    if(sp.mode){ISLAND.release('dogs','solon');GATE.hold=false;GATE.closeAt=simTime+(sp.mode==='out'?4:1.1);}
+    if(sp.dog)ISLAND.release('pet_'+sp.dog.name,'solon');
+  }
+  if(done&&SL.act&&SOLON_SAT[SL.act])for(const k in SOLON_SAT[SL.act])SOLON_NEEDS[k]=Math.max(0,SOLON_NEEDS[k]-SOLON_SAT[SL.act][k]);
+  if(SL.faceMode!=='open'){SL.faceMode='open';solon.faceObj.drawFace('open');}
+}
+function beginSolonAct(name){
+  const sp=SL.spot;
+  SL.state='act';SL.act=name||(sp&&sp.act)||'hips';SL.actT=0;
+  const durs={feed:[4.2,6],herd:[6,8.5],sweep:[7,10],train:[6,9],chat:[5,8],scout:[3.2,5],hips:[4,7],sit:[6,10],cheer:[2.2,3.2],wave:[2.4,3.6],stretch:[3,4.5]};
+  const d=durs[SL.act]||[4,6];
+  SL.actDur=SL.timer=rnd(d[0],d[1]);
+  if(SL.act==='cheer'||SL.act==='wave'){SL.faceMode='happy';solon.faceObj.drawFace('happy');}
+  else if(SL.act==='train'){SL.faceMode='wink';solon.faceObj.drawFace('wink');}
+  else SL.faceMode='open';
+  if(SL.act==='feed'&&sp&&sp.bowl){sp.bowl.food=1;for(const a of ALL_ANIMALS){if(a.beg)a.beg=false;if(Math.hypot(a.x-SL.x,a.z-SL.z)<18)a.hunger=Math.min(a.hunger||1,0.25);}emote(solon.headGroup,'food',0.9);}
+  if(SL.act==='sweep'&&sp&&sp.mess){sp.start=sp.mess.dirt;emote(solon.headGroup,'leaf',0.9);}
+  if(SL.act==='herd'&&sp&&!sp.herdSent){sp.herdSent=true;
+    if(sp.mode==='bed'){for(const dog of DOGS)if(dog.state!=='kennel'&&dog.state!=='toKennel'&&!dog.inside){dog.state='toKennel';dog.path=null;dog.repath=0;dog.kennelT=0;}emote(solon.headGroup,'zzz',0.9);}
+    else{for(const dog of DOGS)if(dog.state==='kennel'){dog.state='follow';dog.path=null;dog.happy=3;emote(dog.root,'heart',0.9);}BRAIN.nextLetOut=simTime+rnd(90,160);emote(solon.headGroup,'heart',0.9);}}
+  if(SL.act==='train'&&sp&&sp.dog&&sp.dog.state==='follow'){startZoomies(sp.dog,SL.x,SL.z,SL.timer);emote(solon.headGroup,'ball',0.9);}
+  if(SL.act==='chat')emote(solon.headGroup,'note',0.9);
+}
+function solonHerdSpot(mode){
+  ISLAND.claim('dogs','solon',50);
+  GATE.target=1;GATE.hold=true;GATE.closeAt=0;
+  return {x:GATE_SPOT[0],z:GATE_SPOT[1],look:[-26.6,31.2],act:'herd',duty:true,mode};
+}
+function chooseSolonPlan(){
+  const pic=islandPicture(),N=SOLON_NEEDS;
+  const near=(x,z,r)=>{const s=snapWalkable(x+rnd(-r,r),z+rnd(-r,r));return s;};
+  let spot=null;
+  if(pic.anyEmpty&&pic.feedUrg>0.7&&ISLAND.free('feed','solon')){
+    const b=ISLAND.bowls.slice().sort((a,c)=>a.food-c.food)[0];
+    const lunaFar=Math.hypot(AI.x-b.x,AI.z-b.z)>Math.hypot(SL.x-b.x,SL.z-b.z)+6;
+    if(lunaTiedUp()||lunaFar){ISLAND.claim('feed','solon',40);const s=near(b.x+0.8,b.z+0.45,0.25);spot={x:s[0],z:s[1],look:[b.x,b.z],act:'feed',duty:true,bowl:b};}
+    else if(!ISLAND.note||ISLAND.note.until<simTime){solonPing('feed');spot={x:SL.x,z:SL.z,look:[AI.x,AI.z],act:'scout'};}
+  }
+  if(!spot&&pic.bedUrg>0.8&&pic.dogsOut.length&&ISLAND.free('dogs','solon')){
+    if(lunaTiedUp(GATE_SPOT[0],GATE_SPOT[1])||pic.wet)spot=solonHerdSpot('bed');
+    else if(pic.bedUrg>1.05&&(!ISLAND.note||ISLAND.note.until<simTime||ISLAND.note.job!=='bed')){solonPing('bed');spot={x:SL.x,z:SL.z,look:[AI.x,AI.z],act:'scout'};}
+  }
+  if(!spot&&pic.letUrg>0.6&&ISLAND.free('dogs','solon')&&lunaTiedUp(GATE_SPOT[0],GATE_SPOT[1]))spot=solonHerdSpot('out');
+  if(!spot){
+    const m=bestMess('solon',SL.x,SL.z);
+    if(m&&m.dirt>0.48&&(lunaTiedUp(m.x,m.z)||m.dirt>0.72||N.duty>0.65)){
+      ISLAND.claim('mess_'+m.id,'solon',40);const s=snapWalkable(m.x,m.z);
+      spot={x:s[0],z:s[1],look:m.look,act:'sweep',duty:true,mess:m};
+    }
+  }
+  if(!spot&&!pic.wet&&!pic.night&&N.play>0.4){
+    const dog=DOGS.find(d=>d.state==='follow'&&(d.lonely||0)>0.4&&Math.hypot(d.x-SL.x,d.z-SL.z)<18&&!(AI.state==='act'&&(AI.act==='fetch'||AI.act==='chase'))&&ISLAND.free('pet_'+d.name,'solon'));
+    if(dog){ISLAND.claim('pet_'+dog.name,'solon',22);const s=near(dog.x,dog.z,1.3);spot={x:s[0],z:s[1],look:[dog.x,dog.z],act:'train',dog};}
+  }
+  if(!spot&&N.social>0.5){
+    const pals=[];
+    if(!AI.inside&&!(AI.state==='act'&&['fish','swim','chop','sell','gate'].includes(AI.act)))pals.push(AI);
+    if(!LM.inside&&!(LM.state==='act'&&['radio','tend','sweep'].includes(LM.act)))pals.push(LM);
+    pals.sort((a,b)=>Math.hypot(a.x-SL.x,a.z-SL.z)-Math.hypot(b.x-SL.x,b.z-SL.z));
+    const p=pals[0];
+    if(p&&Math.hypot(p.x-SL.x,p.z-SL.z)<30){const s=near(p.x,p.z,1.8);spot={x:s[0],z:s[1],look:[p.x,p.z],act:'chat',who:p===AI?'luna':'moon'};}
+  }
+  if(!spot&&(pic.wet||pic.night&&N.rest>0.45)){const s=near(POI.veranda.x,POI.veranda.z,1.0);spot={x:s[0],z:s[1],look:POI.veranda.look,act:pic.wet?'sit':'hips'};}
+  if(!spot){
+    const poi=pick([POI.yard,POI.pier,POI.market,POI.shrine,POI.isle,POI.houseSteps]);
+    const s=snapWalkable(poi.x+rnd(-1.1,1.1),poi.z+rnd(-1.1,1.1));
+    spot={x:s[0],z:s[1],look:poi.look,act:Math.random()<0.55?'scout':'hips'};
+  }
+  SL.spot=spot;SL.walkSpeed=spot.duty?3.4:2.95;
+  SL.path=planPath(SL.x,SL.z,spot.x,spot.z);SL.wp=0;SL.state='walk';SL.timer=28;
+  SL.stuckT=0;SL.stuckN=0;SL.checkX=SL.x;SL.checkZ=SL.z;
+}
+function solonStuckCheck(dt){
+  SL.stuckT=(SL.stuckT||0)+dt;if(SL.stuckT<1.6)return;SL.stuckT=0;
+  if(Math.hypot(SL.x-(SL.checkX||0),SL.z-(SL.checkZ||0))<0.3){SL.stuckN=(SL.stuckN||0)+1;
+    if(SL.stuckN<=2&&SL.spot){SL.path=planPath(SL.x,SL.z,SL.spot.x,SL.spot.z);SL.wp=0;}
+    else{const s=snapWalkable(SL.x,SL.z);SL.x=s[0];SL.z=s[1];solonFinish(false);SL.spot=null;SL.state='idle';SL.timer=0.4;emote(solon.headGroup,'?',0.9,1.3,0.55);}}
+  else SL.stuckN=0;
+  SL.checkX=SL.x;SL.checkZ=SL.z;
+}
+function updateSolon(dt,time){
+  for(const k in SOLON_NEEDS)SOLON_NEEDS[k]=Math.min(1,SOLON_NEEDS[k]+SOLON_RATES[k]*dt);
+  SL.jumpT=Math.max(0,(SL.jumpT||0)-dt);
+  if(SL.faceMode==='open'){
+    SL.blinkTimer-=dt;
+    if(SL.blinkTimer<=0){
+      if(!SL.isBlinking){SL.isBlinking=true;solon.faceObj.drawFace('blink');SL.blinkTimer=0.12;}
+      else{SL.isBlinking=false;solon.faceObj.drawFace('open');SL.blinkTimer=rnd(2.2,4.8);}
+    }
+  }
+  if(INSIDE.on){
+    if(!SL.inside){SL.inside=true;scene.remove(solon.root);INSIDE.scene.add(solon.root);SL.ix=1.6;SL.iz=1.2;SL.yaw=-0.4;SL.speed=0;solonFinish(false);SL.spot={x:SL.ix,z:SL.iz,act:'hips'};beginSolonAct('hips');}
+    SL.timer-=dt;if(SL.timer<=0)beginSolonAct(pick(['hips','sit','wave','stretch']));
+    const svX=SL.x,svZ=SL.z;SL.x=SL.ix;SL.z=SL.iz;poseSolon(dt,time);SL.x=svX;SL.z=svZ;return;
+  }else if(SL.inside){
+    SL.inside=false;INSIDE.scene.remove(solon.root);scene.add(solon.root);
+    const s=snapWalkable(POI.houseSteps.x+1.8,POI.houseSteps.z+1.2);SL.x=s[0];SL.z=s[1];SL.state='idle';SL.timer=0.8;SL.spot=null;
+  }
+  if(CTRL.on&&FOLLOW_SOLON){solonCtrlUpdate(dt,time);return;}
+  if(CTRL.solonStarted){CTRL.solonStarted=false;SL.mAct=null;SL.state='idle';SL.timer=0.5;}
+  SL.timer-=dt;
+  if(SL.state==='idle'){
+    SL.speed=lerp(SL.speed,0,Math.min(1,dt*10));
+    if(SL.timer<=0)chooseSolonPlan();
+  }else if(SL.state==='walk'){
+    if(!SL.path||SL.wp>=SL.path.length||SL.timer<=0){
+      if(SL.spot&&SL.spot.look)SL.yaw=Math.atan2(SL.spot.look[0]-SL.x,SL.spot.look[1]-SL.z);
+      beginSolonAct(SL.spot?SL.spot.act:'scout');
+    }else{
+      const[wx,wz]=SL.path[SL.wp],dx=wx-SL.x,dz=wz-SL.z,d=Math.hypot(dx,dz),last=SL.wp===SL.path.length-1;
+      if(d<(last?0.35:0.65))SL.wp++;
+      else{
+        solonStuckCheck(dt);
+        const diff=normalizeAngle(Math.atan2(dx,dz)-SL.yaw);
+        SL.yaw+=diff*Math.min(1,dt*8);
+        const sp=SL.walkSpeed*clamp(1-Math.abs(diff)/2.4,0.35,1);
+        SL.speed=lerp(SL.speed,sp,Math.min(1,dt*7));
+        const nx=SL.x+Math.sin(SL.yaw)*SL.speed*dt,nz=SL.z+Math.cos(SL.yaw)*SL.speed*dt;
+        if(isPointWalkable(nx,nz,0.22)){SL.x=nx;SL.z=nz;}else{SL.x+=dx/d*SL.speed*dt;SL.z+=dz/d*SL.speed*dt;}
+      }
+    }
+  }else if(SL.state==='act'){
+    SL.speed=lerp(SL.speed,0,Math.min(1,dt*10));
+    SL.actT+=dt;
+    const sp=SL.spot;
+    if(SL.act==='sweep'&&sp&&sp.mess){const p=clamp(SL.actT/Math.max(0.1,SL.actDur),0,1);sp.mess.dirt=sp.start*(1-p);ISLAND.drawMess(sp.mess);}
+    if(SL.act==='herd')SL.yaw+=normalizeAngle(Math.atan2(-28-SL.x,31.2-SL.z)-SL.yaw)*Math.min(1,dt*4);
+    if(SL.act==='chat'&&sp&&sp.look)SL.yaw+=normalizeAngle(Math.atan2(sp.look[0]-SL.x,sp.look[1]-SL.z)-SL.yaw)*Math.min(1,dt*5);
+    if(SL.act==='train'&&sp&&sp.dog)SL.yaw+=normalizeAngle(Math.atan2(sp.dog.x-SL.x,sp.dog.z-SL.z)-SL.yaw)*Math.min(1,dt*6);
+    if(SL.timer<=0){
+      const duty=!!(sp&&sp.duty),act=SL.act;
+      solonFinish(true);
+      if(duty&&act!=='cheer'&&Math.random()<0.4){SL.spot={x:SL.x,z:SL.z,look:[SL.x,SL.z+2],act:'cheer'};beginSolonAct('cheer');}
+      else{SL.spot=null;SL.state='idle';SL.timer=rnd(0.45,1.5);}
+    }
+  }
+  poseSolon(dt,time);
+}
+function solonStatus(){
+  if(CTRL.on&&FOLLOW_SOLON)return solonCtrlStatus();
+  const hat=SOLON_STYLE.hat!==false?'🐸 ':'';
+  const sp=SL.spot;
+  if(SL.state==='walk')return 'Solon '+hat+'is heading out to see what the island needs';
+  if(SL.state==='act'){
+    if(SL.act==='feed')return 'Solon '+hat+'is filling the food bowls';
+    if(SL.act==='herd')return sp&&sp.mode==='out'?'Solon '+hat+'is letting Kiko and Bruno out':'Solon '+hat+'is bringing the pups in';
+    if(SL.act==='sweep')return 'Solon '+hat+'is sweeping '+((sp&&sp.mess&&sp.mess.label)||'up');
+    if(SL.act==='train')return 'Solon '+hat+'is coaching '+((sp&&sp.dog&&sp.dog.name)||'a pup');
+    if(SL.act==='chat')return 'Solon '+hat+'is checking in with '+(sp&&sp.who==='moon'?'Lady Moon':'Luna');
+    if(SL.act==='scout')return 'Solon '+hat+'is looking over the island';
+    if(SL.act==='sit')return 'Solon '+hat+'is waiting out the weather on the veranda';
+    if(SL.act==='cheer')return 'Solon '+hat+'hops, job done';
+    if(SL.act==='hips')return 'Solon '+hat+'is surveying the yard, hands on hips';
+    if(SL.act==='wave')return 'Solon '+hat+'waves hello';
+  }
+  return 'Solon '+hat+'is deciding the next job';
+}
+function solonCtrlAction(kind){
+  if(SL.mAct)return;
+  if(kind==='jump'){if(!(SL.jumpT>0))SL.jumpT=0.62;return;}
+  if(kind==='wave'){SL.mAct={act:'wave',t:2};emote(solon.headGroup,'note',0.9);return;}
+  if(kind==='pet'){let best=null,bd=2.8;for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;const d=Math.hypot(e.x-SL.x,e.z-SL.z);if(d<bd){bd=d;best=e;}}
+    if(!best){toast('Walk Solon up to a pet to give them a cuddle');return;}
+    best.prevState=best.state;best.state='petted';best.petBy='solon';best.lastPet=simTime;best.lonely=0;SL.mAct={act:'pet',t:2.6,ent:best,em:0};return;}
+  if(kind==='throw'){let dog=null,dd=12;for(const d of DOGS){const k=Math.hypot(d.x-SL.x,d.z-SL.z);if(d.state==='follow'&&k<dd){dd=k;dog=d;}}
+    if(!dog){toast('Bring a pup over so Solon can start zoomies');return;}SL.mAct={act:'train',t:5};startZoomies(dog,SL.x,SL.z,5);}
+}
+function solonCtrlUpdate(dt,time){
+  if(!CTRL.solonStarted){solonFinish(false);SL.spot=null;SL.state='idle';CTRL.solonStarted=true;}
+  const[x,y,m]=ctrlInput();
+  if(SL.mAct){const a=SL.mAct;a.t-=dt;SL.speed=lerp(SL.speed,0,Math.min(1,dt*10));SL.state='act';SL.act=a.act;SL.actT=(SL.actT||0)+dt;
+    if(a.act==='pet'&&a.ent){const e=a.ent;SL.yaw+=normalizeAngle(Math.atan2(e.x-SL.x,e.z-SL.z)-SL.yaw)*Math.min(1,dt*8);a.em-=dt;if(a.em<=0){a.em=0.8;emote(e.root,'heart',e.kind==='bunny'?0.65:e.kind==='dog'?0.95:0.8);}}
+    if(a.act==='wave')SL.faceMode='happy';
+    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):'idle';e.timer=rnd(3,6);e.petBy=null;}
+      SL.mAct=null;SL.state='idle';SL.act=null;if(SL.faceMode!=='open'){SL.faceMode='open';solon.faceObj.drawFace('open');}}}
+  else{SL.actT=0;let target=0;
+    if(m>0){const th=STEER.th,fx=-Math.sin(th),fz=-Math.cos(th),rx=Math.cos(th),rz=-Math.sin(th),dx=fx*y+rx*x,dz=fz*y+rz*x;
+      SL.yaw+=normalizeAngle(Math.atan2(dx,dz)-SL.yaw)*Math.min(1,dt*10);target=(m>0.92?4.5:2.85)*Math.min(1,m/0.92);
+      if(!FREE.on&&!DIRECTOR.on&&Math.abs(x)<0.45&&y>0.3)tTheta+=normalizeAngle(SL.yaw+Math.PI-tTheta)*dt*0.7;}
+    SL.speed=lerp(SL.speed,target,Math.min(1,dt*(target>SL.speed?6:10)));
+    if(SL.speed>0.02){const st=SL.speed*dt,nx=SL.x+Math.sin(SL.yaw)*st,nz=SL.z+Math.cos(SL.yaw)*st;
+      if(standable(nx,nz)){SL.x=nx;SL.z=nz;}else{let ok=false;
+        for(const o of[0.5,-0.5,1,-1,1.4,-1.4]){const yy=SL.yaw+o,sx=SL.x+Math.sin(yy)*st*0.8,sz=SL.z+Math.cos(yy)*st*0.8;if(standable(sx,sz)){SL.x=sx;SL.z=sz;ok=true;break;}}
+        if(!ok)SL.speed=Math.min(SL.speed,0.2);}}
+    SL.state=SL.speed>0.15?'walk':'idle';SL.act=null;SL.path=[];SL.spot=null;}
+  poseSolon(dt,time);
+}
+function solonCtrlStatus(){const a=SL.mAct;if(a&&a.act==='pet')return 'Solon is cuddling '+a.ent.name;if(a&&a.act==='wave')return 'Solon waves hello';if(a&&a.act==='train')return 'Zoomies with Solon!';
+  return SL.state==='walk'?(CTRL.m>0.92?'Solon is running':'You are walking Solon around'):'Solon is waiting for you';}
+
+const _resolveIsland=resolveTarget;
+resolveTarget=function(tk){
+  if((tk.id==='feedHouse'||tk.id==='feedYard')&&!ISLAND.free('feed','luna'))return null;
+  if((tk.id==='bedtime'||tk.id==='letOut')&&!ISLAND.free('dogs','luna'))return null;
+  return _resolveIsland(tk);
+};
+const _chooseIsland=chooseTask;
+chooseTask=function(){
+  if(!AI.inside&&!(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON)&&!STILL.on&&(AI.state==='idle'||AI.state==='think')){
+    const pic=islandPicture();
+    const offer=(id,key)=>{
+      if(!ISLAND.free(key,'luna'))return null;
+      const tk=TASKS.find(t=>t.id===id);if(!tk)return null;
+      const tgt=resolveTarget(tk);if(!tgt)return null;
+      ISLAND.claim(key,'luna',key==='dogs'?45:32);
+      return {tk,tgt,rid:id};
+    };
+    if(pic.feedUrg>0.9&&handsBusy('solon')<1){const yard=ISLAND.bowls[1].food<ISLAND.bowls[0].food;const c=offer(yard?'feedYard':'feedHouse','feed');if(c)return c;}
+    if(pic.bedUrg>1.05){const c=offer('bedtime','dogs');if(c)return c;}
+    if(pic.letUrg>0.7){const c=offer('letOut','dogs');if(c)return c;}
+  }
+  const c=_chooseIsland();
+  if(c&&(c.tk.id==='feedHouse'||c.tk.id==='feedYard')&&ISLAND.free('feed','luna'))ISLAND.claim('feed','luna',32);
+  if(c&&(c.tk.id==='bedtime'||c.tk.id==='letOut')&&ISLAND.free('dogs','luna'))ISLAND.claim('dogs','luna',45);
+  return c;
+};
+const _replanIsland=lunaReplan;
+lunaReplan=function(dt){
+  _replanIsland(dt);
+  if(AI.inside||(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON)||STILL.on||!AI.task)return;
+  const pic=islandPicture(),note=ISLAND.note;
+  const urgentBed=pic.bedUrg>1.15&&ISLAND.free('dogs','luna')&&!['bedtime','gate','feedHouse','feedYard'].includes(AI.task.id);
+  const pinged=note&&note.until>simTime&&note.job==='feed'&&pic.anyEmpty&&AI.task.act!=='feed'&&canInterrupt();
+  if((canInterrupt()&&urgentBed)||pinged){if(AI.state==='act')endAct();else abortTask();if(pinged)emote(caretaker.headGroup,'food',0.85);}
+};
+const _moonPlanSolon=moonPlan;
+moonPlan=function(){
+  const ch=_moonPlanSolon();
+  if(ch&&ch.radio)return ch;
+  if(!SL.inside&&!(CTRL.on&&FOLLOW_SOLON)&&Math.hypot(SL.x-LM.x,SL.z-LM.z)<8&&MOON_NEEDS.social>0.6&&SL.state!=='walk'&&Math.random()<0.45){
+    const[x,z]=randomSpotNear(SL.x,SL.z,2.1,1.2);
+    return {x,z,look:[SL.x,SL.z],act:'wave'};
+  }
+  return ch;
+};
+
 /* ---------------- loop ---------------- */
 const clock=new T.Clock(),M4=new T.Matrix4(),PERF={t:0,n:0,pr:PR};
 patchWeatherScene();
@@ -6824,7 +7414,10 @@ function frameLoop(){
     M4.compose(_v.set(WF.x+s[0]*(1+ph*0.4),WATER+0.2+ph*0.9,WF.zBot+0.6+s[1]),_q,_s.set(sc,sc*0.7,sc));foamPuffs.setMatrixAt(i,M4);});
   foamPuffs.instanceMatrix.needsUpdate=true;
   cloudGroup.rotation.y=time*0.002;updateSky(dt);
-  statusT-=dt;if(statusT<=0){statusT=0.4;const wx=WEATHER.storm?' · Storm':WEATHER.snow?' · Snow':'';const st=((CAL.holidayName?CAL.holidayName+' · ':'')+(FOLLOW_MOON?ladyMoonStatus()+' · '+lunaStatus():lunaStatus()+' · '+ladyMoonStatus())+wx).replace(/\s*<small>/g,' (').replace(/<\/small>/g,')').replace(/<[^>]*>/g,'').replace(/\s+/g,' ');
+  statusT-=dt;if(statusT<=0){statusT=0.4;const wx=WEATHER.storm?' · Storm':WEATHER.snow?' · Snow':'';
+    const order=FOLLOW_SOLON?['solon','luna','moon']:FOLLOW_MOON?['moon','luna','solon']:['luna','moon','solon'];
+    const say={luna:lunaStatus,moon:ladyMoonStatus,solon:solonStatus};
+    const st=((CAL.holidayName?CAL.holidayName+' · ':'')+order.map(k=>say[k]()).join(' · ')+wx).replace(/\s*<small>/g,' (').replace(/<\/small>/g,')').replace(/<[^>]*>/g,'').replace(/\s+/g,' ');
     if(st!==statusEl.textContent)statusEl.textContent=st;}
   // keep the frame rate smooth on slower devices by trading a little resolution
   PERF.t+=raw;PERF.n++;if(PERF.t>2){const avg=PERF.t/PERF.n;PERF.t=0;PERF.n=0;

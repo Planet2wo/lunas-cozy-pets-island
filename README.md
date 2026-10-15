@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v24)
+# Luna's Cozy Pets – The Island (v25)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -6,7 +6,7 @@ Claude and Gemini both edit these same files.
 ```
 index.html            page markup: HUD, dock buttons, closets, market, controller pad
 public/style.css      every style (dock, closets/market, controller layout, launch film)
-public/game.js        the whole game: world, pets, Luna's and Lady Moon's AI, weather, market, camera, controls
+public/game.js        the whole game: world, pets, Luna, Lady Moon and Solon, weather, market, camera, controls
 public/audio/         launch-theme.mp3: the launch-film soundtrack (55 s of the song, starting at 3:01)
 public/icons/         favicon, home-screen icons and the link-preview image (made from Sprites/)
 public/manifest.webmanifest   lets phones "Add to Home Screen" as a full-screen app
@@ -56,6 +56,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v25 (cast facelift + Solon):** Luna, Lady Moon, Kiko and Bruno are retuned to the stills: Luna's chestnut bob, freckles, cat-print tee, peach shorts and white sneakers; Lady Moon's brighter cobalt hair, rainbow onesie with the zipper in front, and bigger frog-hat eyes; Kiko reads as a sable Sheltie (dark saddle, white ruff and blaze, plumed tail); Bruno reads as a German Shepherd (black saddle and mask, tan legs, long muzzle, saber tail). **Solon** is a new chibi, built the same way as the other two: green frog beanie, black glasses, green controller shirt, navy shorts, green sneakers, and his own practical brain. He feeds empty bowls, herds the dogs at dusk or in the rain, lets them out in the morning when Luna is busy, sweeps, and coaches zoomies. The three share one island picture (hunger, empty bowls, dogs in or out, mess) and claim jobs so they don't double up. Press M to cycle who the camera and controller follow: Luna, Lady Moon, Solon. Solon's beanie toggle is saved under `solon-closet-v1`.
 - **v24 (Jam button):** A new 🎵 Jam button in the controls (or press J) sends Lady Moon straight to the deck radio to put on a song and dance, and Luna always comes over to join in. Press it again while the music's playing and Lady Moon switches it off. The button stays lit while a jam is on.
 - **v23 (deck radio + camera):** A little table with a teal retro radio now sits on the deck beside the front door. Every few minutes Lady Moon walks over, switches it on and dances to one of her favourite songs (Boy Harsher – “Pain” or The Stranglers – “Golden Brown”, in `public/audio/radio-*.mp3`), then switches it off. Often Luna comes over and dances with her. The music plays from the radio: it's louder near the deck, quieter and softer far away, muffled indoors, and paused during the launch film. Camera: all smoothing is now frame-rate independent. Slow Orbit eases in and out, pauses while you steer with the controller, and makes the Auto Cam close-ups drift gently around the characters. Auto Cam now also films Lady Moon (switching with M keeps it on), adds wide island shots every half-minute or so while she walks, waits a moment before cutting to a close-up, glides on a damped spring with a top speed instead of jumping, and travels around the subject when it changes angle. The controller's “forward” stays fixed while you hold the stick, so Auto Cam can't make you walk in circles.
 - **v22 (walking fix):** Luna's and Lady Moon's walk cycles ran in reverse: each foot was lifted while it swung backward and dragged forward along the ground. Each foot now lifts as it swings forward and stays planted as it pushes back, so they walk heel-to-toe in the direction they're heading. Their soles also stay flat on the ground through the stride, with a slight toe-up as each foot swings through.

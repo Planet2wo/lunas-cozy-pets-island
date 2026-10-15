@@ -192,6 +192,7 @@ body.ctrl .shot{top:calc(max(12px,env(safe-area-inset-top)) + 44px)}
 .who-tabs{display:flex;gap:6px;margin:6px 0 10px}
 .who-btn{flex:1;font:inherit;font-size:.8rem;font-weight:700;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
 .who-btn[aria-selected="true"]{background:var(--lacquer);color:#fff;border-color:transparent}
+.closet .tabnote{font-size:.72rem;color:var(--muted);margin:8px 0 0;line-height:1.35}
 /* release polish */
 #err{z-index:60;padding:14px 16px;border-radius:14px;background:rgba(20,26,48,.86);max-width:420px;margin:0 auto}
 #err .err-reload{margin-left:8px;padding:6px 14px;border:0;border-radius:999px;background:#f1ead9;color:#141a30;font:inherit;font-weight:700;cursor:pointer}
