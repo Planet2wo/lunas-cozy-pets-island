@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v24)
+# Luna's Cozy Pets – The Island (v25)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -51,11 +51,12 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 1. **Keep three files of code.** Edit `index.html`, `public/style.css`, and `public/game.js` in place. Don't split the game into modules or convert it to React/TypeScript. `game.js` is a single closure where everything shares scope.
 2. **Keep three.js at r128** (CDN tags in `index.html`). Newer versions renamed APIs that the game uses.
 3. **Place ground objects with `meshH(x,z)`** (the visible faceted terrain), not `hAt(x,z)`. Use `groundStone(x,z,s,sz,col)` for path stones.
-4. **Controller layout:** stick at bottom-left (`#stickBase`), buttons at bottom-right (`#padBtns`). Sizes come from the CSS variables on `#pad` (`--stick`, `--pb`, `--edge`), so tune those rather than hard-coding pixels.
+4. **Controller layout:** stick at bottom-left (`#stickBase`), diamond of buttons at bottom-right (`#padBtns`). Sizes come from the CSS variables on `#pad` (`--stick`, `--pb`, `--edge`, `--dx`, `--dy`), so tune those rather than hard-coding pixels.
 5. **Saves** live in `localStorage` (coins, items, outfits). Keep the existing keys so players keep their progress.
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v25 (controller overlay):** Controller mode now matches the reference overlay. The movement stick is a translucent disc with four direction marks and a white knob, anchored bottom-left. Pet, Jump, Wave and Fetch sit in a diamond at bottom-right, each a tinted circle with a white icon and its name underneath. "Controller mode" and Exit sit in a dark pill at the top-left, and the Auto cam chip stays at the top-right.
 - **v24 (Jam button):** A new 🎵 Jam button in the controls (or press J) sends Lady Moon straight to the deck radio to put on a song and dance, and Luna always comes over to join in. Press it again while the music's playing and Lady Moon switches it off. The button stays lit while a jam is on.
 - **v23 (deck radio + camera):** A little table with a teal retro radio now sits on the deck beside the front door. Every few minutes Lady Moon walks over, switches it on and dances to one of her favourite songs (Boy Harsher – “Pain” or The Stranglers – “Golden Brown”, in `public/audio/radio-*.mp3`), then switches it off. Often Luna comes over and dances with her. The music plays from the radio: it's louder near the deck, quieter and softer far away, muffled indoors, and paused during the launch film. Camera: all smoothing is now frame-rate independent. Slow Orbit eases in and out, pauses while you steer with the controller, and makes the Auto Cam close-ups drift gently around the characters. Auto Cam now also films Lady Moon (switching with M keeps it on), adds wide island shots every half-minute or so while she walks, waits a moment before cutting to a close-up, glides on a damped spring with a top speed instead of jumping, and travels around the subject when it changes angle. The controller's “forward” stays fixed while you hold the stick, so Auto Cam can't make you walk in circles.
 - **v22 (walking fix):** Luna's and Lady Moon's walk cycles ran in reverse: each foot was lifted while it swung backward and dragged forward along the ground. Each foot now lifts as it swings forward and stays planted as it pushes back, so they walk heel-to-toe in the direction they're heading. Their soles also stay flat on the ground through the stride, with a slight toe-up as each foot swings through.
