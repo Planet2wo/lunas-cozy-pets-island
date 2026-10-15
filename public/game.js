@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v24 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v25 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -1679,11 +1679,77 @@ const SPACE_LAUNCH = (function(){
         float a=(0.02+rim*0.75+rays*0.22+glow*0.12)*front*uA;gl_FragColor=vec4(col,a);}`});
   const bell=new T.Mesh(bg,bellMat);bell.visible=false;bell.renderOrder=4;bell.frustumCulled=false;bell.userData.noWx=true;scene.add(bell);
 
+  // ---- photographed twilight cloud (the still the launch blooms into) ----
+  // Starts with the big blow at about 7s, pinned so the photo's engine sits on the live engine, then
+  // expands slowly and thins away. The rocket, plume and bell underneath are left exactly as they are.
+  const CLOUD_UE=0.145,CLOUD_VE=0.507,CLOUD_ASPECT=2000/1342;
+  const photoTex=new T.TextureLoader().load((window.LUNA_ASSET_BASE||'')+'images/launch-cloud.jpg');
+  photoTex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+  photoTex.minFilter=T.LinearFilter;photoTex.magFilter=T.LinearFilter;photoTex.generateMipmaps=false;
+  const cloudVS=`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+  const cloudFS=`uniform sampler2D uMap;uniform float uOp;uniform float uT;uniform float uBillow;varying vec2 vUv;
+    void main(){
+      vec2 e=vec2(0.145,0.507);vec2 from=vUv-e;float rad=length(from);
+      float ang=sin(rad*7.0-uT*0.16)*0.010*uBillow;float cs=cos(ang),sn=sin(ang);
+      vec2 uv=e+vec2(cs*from.x-sn*from.y,sn*from.x+cs*from.y);
+      uv.x+=sin(uv.y*5.0+uT*0.14)*0.007*uBillow;uv.y+=sin(uv.x*4.2-uT*0.11)*0.005*uBillow;
+      if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0)discard;
+      vec3 col=texture2D(uMap,uv).rgb;
+      float luma=dot(col,vec3(0.299,0.587,0.114));
+      // navy sky stays out so the card never shows; the colored plume stays solid
+      float sky=smoothstep(0.11,0.20,luma);
+      float core=smoothstep(0.90,0.995,luma);
+      vec3 dye=col+(col-vec3(luma))*0.42;
+      dye=min(dye*1.06,vec3(1.25));
+      float vig=smoothstep(0.72,0.40,length(vUv-vec2(0.46,0.50)));
+      float band=smoothstep(0.06,0.20,vUv.y)*smoothstep(0.97,0.80,vUv.y);
+      float edge=smoothstep(0.0,0.04,vUv.x)*smoothstep(1.0,0.96,vUv.x)*smoothstep(0.0,0.04,vUv.y)*smoothstep(1.0,0.96,vUv.y);
+      edge*=band;
+      float a=sky*(1.0-core*0.45)*vig*edge*uOp;
+      if(a<0.025)discard;
+      gl_FragColor=vec4(dye*a,a);
+    }`;
+  const cloudMat=new T.ShaderMaterial({uniforms:{uMap:{value:photoTex},uOp:{value:0},uT:{value:0},uBillow:{value:0}},
+    transparent:true,depthWrite:false,depthTest:false,fog:false,
+    side:T.DoubleSide,
+    blending:T.CustomBlending,blendEquation:T.AddEquation,blendSrc:T.OneFactor,blendDst:T.OneMinusSrcAlphaFactor,
+    blendSrcAlpha:T.OneFactor,blendDstAlpha:T.OneMinusSrcAlphaFactor,
+    vertexShader:cloudVS,fragmentShader:cloudFS});
+  const glowFS=`uniform sampler2D uMap;uniform float uOp;uniform float uT;uniform float uBillow;varying vec2 vUv;
+    void main(){
+      vec2 uv=vUv;uv.x+=sin(uv.y*5.0+uT*0.16)*0.01*uBillow;uv.y+=sin(uv.x*4.0-uT*0.12)*0.008*uBillow;
+      vec3 col=texture2D(uMap,clamp(uv,0.0,1.0)).rgb;
+      float luma=dot(col,vec3(0.299,0.587,0.114));
+      float a=smoothstep(0.18,0.36,luma)*smoothstep(0.70,0.36,length(vUv-vec2(0.46,0.50)))*uOp;
+      if(a<0.01)discard;
+      gl_FragColor=vec4(col,a);
+    }`;
+  const glowMat=new T.ShaderMaterial({uniforms:{uMap:{value:photoTex},uOp:{value:0},uT:{value:0},uBillow:{value:0}},
+    transparent:true,depthWrite:false,depthTest:false,fog:false,side:T.DoubleSide,blending:T.AdditiveBlending,
+    vertexShader:cloudVS,fragmentShader:glowFS});
+  const cloudGeo=new T.PlaneGeometry(1,1);
+  const cloud=new T.Mesh(cloudGeo,cloudMat);cloud.visible=false;cloud.frustumCulled=false;cloud.renderOrder=6;cloud.userData.noWx=true;scene.add(cloud);
+  const glow=new T.Mesh(cloudGeo,glowMat);glow.visible=false;glow.frustumCulled=false;glow.renderOrder=5;glow.userData.noWx=true;scene.add(glow);
+
   // ---- state ----
   const P=new Float32Array(N_PLUME*3),V=new Float32Array(N_PLUME*3),Pd=new Float32Array(N_PLUME*8); // age,life,size0,grow,rot,spin,warm,alpha
   const TP=new Float32Array(N_TRAIL*3),TB=new Float32Array(N_TRAIL);   // trail position, birth time
   let active=false,t=0,pi=0,ti=0,tCount=0,looked=false;
   const eng=new T.Vector3(),prev=new T.Vector3(),lastTrail=new T.Vector3(),vel=new T.Vector3(),bellC=new T.Vector3(),tmp=new T.Vector3(),_q=new T.Quaternion(),Z=new T.Vector3(0,0,1);
+  const cX=new T.Vector3(),cY=new T.Vector3(),cZ=new T.Vector3(),cTo=new T.Vector3(),cBack=new T.Vector3(),cM=new T.Matrix4(),cUpW=new T.Vector3(0,1,0);
+  const photoCenter=new T.Vector3(),faceAnchor=new T.Vector3();let photoW=48,faceW=48,faceH=32;
+  function faceCloud(){
+    if(!cloud.visible)return;
+    const width=faceW,height=faceH,dir=bell.userData.dir||DIR;
+    cTo.copy(camera.position).sub(faceAnchor);if(cTo.lengthSq()<1)cTo.set(0,0.4,1);cTo.normalize();
+    cBack.copy(dir).multiplyScalar(-1);cX.copy(cBack).addScaledVector(cTo,-cBack.dot(cTo));
+    if(cX.lengthSq()<0.2){cX.crossVectors(cTo,cUpW);if(cX.lengthSq()<1e-4)cX.set(1,0,0);}
+    cX.normalize();
+    cY.crossVectors(cTo,cX).normalize();cZ.crossVectors(cX,cY).normalize();
+    cloud.position.copy(faceAnchor).addScaledVector(cX,(0.5-CLOUD_UE)*width).addScaledVector(cY,(0.5-CLOUD_VE)*height);
+    cM.makeBasis(cX,cY,cZ);cloud.quaternion.setFromRotationMatrix(cM);cloud.scale.set(width,height,1);
+    glow.position.copy(cloud.position);glow.quaternion.copy(cloud.quaternion);glow.scale.set(width*1.08,height*1.08,1);
+  }
   const focus=new T.Object3D();          // what Luna and the auto camera look at
   const aim=new T.Vector3(),midPath=new T.Vector3();pathAt(sOf(TA*0.7),midPath);
   const view={k:0,target:0};             // eases the free camera up toward the sky during the show
@@ -1704,6 +1770,10 @@ const SPACE_LAUNCH = (function(){
     get time(){return t;},
     get bellLen(){return bellLen;},
     bellDir(){return bell.userData.dir||DIR;},
+    get cloudSpan(){return photoW;},
+    get cloudCenter(){return photoCenter;},
+    get cloudCover(){return cloud.visible?cloudMat.uniforms.uOp.value:0;},
+    faceCloud,
     trigger(forced=false){
       if(active && !forced) return;
       let played=false;
@@ -1776,8 +1846,22 @@ const SPACE_LAUNCH = (function(){
         bell.position.copy(bellC).addScaledVector(dir,-bellLen*0.9);/* engine rides at the bright front tip */bellMat.uniforms.uA.value=bellA*0.6;bellMat.uniforms.uT.value=t;}
       // soft atmospheric halo around the whole jellyfish
       if(bell.visible){tmp.copy(bell.position).addScaledVector(bell.userData.dir,bellLen*0.35);setP(3,tmp.x,tmp.y,tmp.z,bellLen*2.8,0,2,0.3,0.48,1.1,0.16*bellA);}else hide(3);
+      // the still joins the blow at ~7s (where the reference film's big expansion is), grows with it, then fades
+      {
+        const growT=smooth(6.6,28,t),gone=smooth(32,45.4,t),op=smooth(6.6,10.5,t)*(1-gone);
+        const width=lerp(96,340,growT)*(1+gone*0.12);
+        const show=op>0.015&&!!(photoTex.image&&photoTex.image.width);
+        cloud.visible=glow.visible=show;
+        if(show){
+          const height=width/CLOUD_ASPECT,anchor=burning?eng:bellC,dir=bell.userData.dir||DIR,billow=smooth(9,22,t);
+          faceAnchor.copy(anchor);faceW=width;faceH=height;
+          photoW=width;photoCenter.copy(anchor).addScaledVector(dir,-width*0.36);
+          cloudMat.uniforms.uOp.value=op;cloudMat.uniforms.uT.value=t;cloudMat.uniforms.uBillow.value=billow*0.4;
+          glowMat.uniforms.uOp.value=op*0.08;glowMat.uniforms.uT.value=t;glowMat.uniforms.uBillow.value=billow*0.4;
+        }
+      }
       aPos.needsUpdate=true;aCol.needsUpdate=true;aDat.needsUpdate=true;
-      if(t>=TOTAL){active=false;parts.visible=false;bell.visible=false;view.target=0;}
+      if(t>=TOTAL){active=false;parts.visible=false;bell.visible=false;cloud.visible=false;glow.visible=false;view.target=0;}
     }
   };
 })();
@@ -5769,7 +5853,7 @@ const INSIDE=(function(){
   const q=new T.Mesh(new T.BoxGeometry(2.15,0.08,2.1),new T.MeshStandardMaterial({map:quiltTex,roughness:1}));q.position.set(0,0.62,0.4);q.castShadow=true;bed.add(q);
   for(const s of[-0.5,0.5])add(bed,BOX,M('#ffffff',{roughness:1}),s,0.66,-1.1,0.8,0.18,0.45);
   const ns=new T.Group();ns.position.set(3.0,0,-4.25);room.add(ns);add(ns,BOX,M('#6e4b33'),0,0.32,0,0.6,0.64,0.5);add(ns,CYL,M('#d9b65a',{metalness:0.4}),0,0.75,0,0.05,0.22,0.05);
-  add(ns,CONE,M('#fbe9d0',{emissive:'#ffd59a',emissiveIntensity:0.6}),0,0.98,0,0.22,0.28,0.22);
+  const bedShade=add(ns,CONE,M('#fbe9d0',{emissive:'#ffd59a',emissiveIntensity:0.6}),0,0.98,0,0.22,0.28,0.22);
   const bedLamp=new T.PointLight(0xffc98a,0.6,6,2);bedLamp.position.set(3.0,1.2,-4.0);S.add(bedLamp);
   // little kitchen along the right wall
   const kt=new T.Group();kt.position.set(6.05,0,1.9);room.add(kt);
@@ -5787,7 +5871,7 @@ const INSIDE=(function(){
   chair(1.75,1.9,Math.PI/2);chair(3.65,1.9,-Math.PI/2);
   // floor lamp and a big leafy plant
   const fl=new T.Group();fl.position.set(-6.0,0,2.45);room.add(fl);add(fl,CYL,M('#2b2d31'),0,0.03,0,0.22,0.06,0.22);add(fl,CYL,M('#2b2d31'),0,0.85,0,0.025,1.7,0.025);
-  add(fl,CONE,M('#fbe9d0',{emissive:'#ffcf8a',emissiveIntensity:0.7,side:T.DoubleSide}),0,1.78,0,0.32,0.36,0.32);
+  const floorShade=add(fl,CONE,M('#fbe9d0',{emissive:'#ffcf8a',emissiveIntensity:0.7,side:T.DoubleSide}),0,1.78,0,0.32,0.36,0.32);
   const floorLamp=new T.PointLight(0xffc98a,0.8,8,2);floorLamp.position.set(-5.9,1.7,2.3);S.add(floorLamp);
   const pl=new T.Group();pl.position.set(-6.0,0,-1.75);room.add(pl);add(pl,CYL,M('#c9734a'),0,0.25,0,0.3,0.5,0.3);
   for(let k=0;k<9;k++){const a=k*0.7,lf=add(pl,SPH,M(k%2?'#4f8a3a':'#5e9a3a'),Math.cos(a)*0.3,0.75+k*0.07,Math.sin(a)*0.3,0.2,0.05,0.34);lf.rotation.set(0.6*Math.sin(a),a,0.4);}
@@ -5852,7 +5936,7 @@ const INSIDE=(function(){
     {id:'table',name:'sitting at the table',walk:[1.75,2.75],via:[[1.2,2.6]],seat:[1.78,1.9],y:0.5,yaw:Math.PI/2,act:'sit',dur:[7,11],look:[2.7,1.9]},
     {id:'dogbed',name:'fluffing the dog beds',walk:[-4.1,-2.15],via:[[-2.3,-1.0]],yaw:Math.PI,act:'pet',dur:[4,6],look:[-4.1,-2.9]}
   ];
-  return {scene:S,room,WALLS,skyMat,fire,fireLight,floorLamp,bedLamp,bulbs,amb,hemi2,win,makePlush,PLUSH,SPOTS,HUB,dogBeds,W:W2,D:D2,on:false,
+  return {scene:S,room,WALLS,skyMat,fire,fireLight,floorLamp,bedLamp,floorShade,bedShade,bulbs,amb,hemi2,win,makePlush,PLUSH,SPOTS,HUB,dogBeds,W:W2,D:D2,on:false,
     ent:{x:0,z:3.9,yaw:Math.PI,y:0,yv:0,speed:0,state:'idle',act:null,actT:0,timer:1.5,path:[],spot:null,last:null,look:null}};
 })();
 // a plush pup Luna can carry and hug
@@ -5906,10 +5990,14 @@ INSIDE.dogs=[];
 const IN_DAY=new T.Color('#9cc8ee'),IN_NIGHT=new T.Color('#1a2548');
 function updateInsideLook(dt,time){
   const k=nightK;INSIDE.skyMat.color.copy(IN_DAY).lerp(IN_NIGHT,k);
-  INSIDE.hemi2.intensity=lerp(0.55,0.2,k);INSIDE.win.intensity=lerp(0.65,0.05,k);INSIDE.amb.intensity=lerp(0.34,0.2,k);
-  INSIDE.floorLamp.intensity=lerp(0.35,1.0,k);INSIDE.bedLamp.intensity=lerp(0.2,0.7,k);
-  const fl=0.85+Math.sin(time*11)*0.08+Math.sin(time*17.3)*0.06;INSIDE.fireLight.intensity=1.3*fl;INSIDE.fire.forEach((f,i)=>{f.scale.y=(i?0.36:0.5)*(0.9+0.15*Math.sin(time*(9+i*4)+i));});
-  INSIDE.bulbs.forEach((b,i)=>b.material.emissiveIntensity=0.6+k*0.6);
+  INSIDE.hemi2.intensity=lerp(0.55,0.16,k);INSIDE.win.intensity=lerp(0.65,0.05,k);INSIDE.amb.intensity=lerp(0.34,0.18,k);
+  // night lamps stay warm, but well under the old values that bloomed into a white glare
+  INSIDE.floorLamp.intensity=lerp(0.35,0.52,k);INSIDE.bedLamp.intensity=lerp(0.2,0.34,k);
+  INSIDE.floorShade.material.emissiveIntensity=lerp(0.55,0.26,k);
+  INSIDE.bedShade.material.emissiveIntensity=lerp(0.48,0.2,k);
+  const fl=0.85+Math.sin(time*11)*0.08+Math.sin(time*17.3)*0.06;INSIDE.fireLight.intensity=lerp(1.15,0.7,k)*fl;
+  INSIDE.fire.forEach((f,i)=>{f.material.emissiveIntensity=lerp(1.55,0.72,k);f.scale.y=(i?0.36:0.5)*(0.9+0.15*Math.sin(time*(9+i*4)+i));});
+  INSIDE.bulbs.forEach((b)=>b.material.emissiveIntensity=lerp(0.5,0.36,k));
   // dollhouse cutaway: hide the walls between the camera and the room
   for(const w of INSIDE.WALLS){const out=(camera.position.x-w.x)*w.nx+(camera.position.z-w.z)*w.nz;w.g.visible=out<0.4;}
 }
@@ -6102,9 +6190,9 @@ addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target insta
 
 /* ================= Cinematic launch: a short film that plays when the Launch button is pressed =================
    Six shots cut together like a movie trailer: an establishing shot low over the water, a low angle over Luna's
-   shoulder, a long-lens tracking shot of the climb, a rising crane over the island as the jellyfish blooms,
-   a reaction close-up, and a slow pull-back. Letterbox bars, a title card, dips to black between cuts and a
-   little handheld drift. Only the Launch button starts it (the automatic first-dusk launch stays a normal view). */
+   shoulder, a long-lens tracking shot that opens out as the blow grows, then a move from far away in to a closer
+   view of the whole cloud. Letterbox bars, a title card, dips to black between cuts and a little handheld drift.
+   The soundtrack is unchanged. Only the Launch button starts it (the automatic first-dusk launch stays a normal view). */
 
 /* Launch-film soundtrack: starts with the first shot and fades out when the scene ends (or is skipped).
    Uses Web Audio for the fades where it can (works on iPhone, where element volume is fixed); when the game is
@@ -6145,7 +6233,21 @@ const CINE=(function(){
   ui.skip=el('button','cineSkip','', 'Skip &#9656;');ui.skip.type='button';ui.skip.setAttribute('aria-label','Skip the launch film');
   const C={on:false,pending:false,t:0,shot:-1,dP:new T.Vector3(),side:new T.Vector3(),sideSign:1,base:new T.Vector3(),
     pos:new T.Vector3(),look:new T.Vector3(),smLook:new T.Vector3(),fov:40,cutT:-9,shake:0};
-  const v=new T.Vector3(),w=new T.Vector3(),head=new T.Vector3();
+  const v=new T.Vector3(),w=new T.Vector3(),head=new T.Vector3(),cPos=new T.Vector3(),cLook=new T.Vector3(),hdir=new T.Vector3();
+  // camera sits on the island side of the cloud, `dist` away, `drop` of that distance below it, swung by `arc`.
+  // kept inside the mountain ring so a ridge never slides in front of the show.
+  function placeSpectacle(dist,arc,drop){
+    const L=SPACE_LAUNCH;
+    cLook.copy(L.cloudCenter&&L.cloudCenter.lengthSq()>400?L.cloudCenter:L.focus.position);
+    hdir.set(AI.x-cLook.x,0,AI.z-cLook.z);
+    if(hdir.lengthSq()<9)hdir.set(-cLook.x,0,-cLook.z);
+    if(hdir.lengthSq()<1)hdir.set(-1,0,0.25);
+    hdir.normalize().applyAxisAngle(_up,arc);
+    const dropY=dist*drop,horiz=Math.sqrt(Math.max(4,dist*dist-dropY*dropY));
+    cPos.set(cLook.x+hdir.x*horiz,Math.max(42,cLook.y-dropY),cLook.z+hdir.z*horiz);
+    const rad=Math.hypot(cPos.x,cPos.z);
+    if(rad>245){const s=245/rad;cPos.x*=s;cPos.z*=s;}
+  }
   function groundClamp(p,m=0.6){const g=Math.max(meshH(p.x,p.z),0.4)+m;if(p.y<g)p.y=g;return p;}
   function dip(){ui.fade.classList.add('on');setTimeout(()=>ui.fade.classList.remove('on'),170);}
   function start(){
@@ -6187,22 +6289,21 @@ const CINE=(function(){
       case 'shoulder':{  // low angle over Luna's shoulder, the rocket climbing past her
         C.pos.copy(head).addScaledVector(d,-2.6).addScaledVector(sd,1.0-k*0.35);C.pos.y=AI.y+0.95+k*0.25;
         C.look.copy(eng);C.fov=52;C.shake=0.25;break;}
-      case 'track':{     // long lens from behind the island, tracking the climb; widens as the jellyfish blooms
+      case 'track':{     // long lens at first, then a wide view back inside the ring so the whole cloud fits
+        const open=smooth(0.05,0.55,k);
+        const fovTight=lerp(16,28,smooth(0.35,1,k));
         C.pos.copy(head).addScaledVector(d,-30).addScaledVector(sd,-12);C.pos.y=AI.y+9;
-        C.look.copy(eng);C.fov=lerp(16,30,smooth(0.35,1,k));C.shake=0.6;break;}
-      case 'crane':{     // rising crane & slow arc over the island, the whole jellyfish over the sea
-        const a=lerp(-0.5,0.35,k);v.copy(d).applyAxisAngle(_up,a);
-        C.pos.set(AI.x,0,AI.z).addScaledVector(v,-95);C.pos.y=lerp(6,58,smooth(0,1,k));
-        C.look.copy(aim).lerp(_cineMid.set(AI.x,AI.y,AI.z),0.18);C.fov=56;C.shake=0.12;break;}
-      case 'react':{     // reaction close-up: Luna (and Lady Moon if she's near) looking up, the sky glowing behind the camera
-        const near=Math.hypot(LM.x-AI.x,LM.z-AI.z)<9;
-        if(near)head.set((AI.x+LM.x)/2,(AI.y+LM.y)/2+1.4,(AI.z+LM.z)/2);
-        const dist=(near?5.2:3.0)-k*0.6;
-        C.pos.copy(head).addScaledVector(d,dist).addScaledVector(sd,0.7);C.pos.y=head.y-0.55;
-        C.look.copy(head).setY(head.y+0.15);C.fov=near?38:30;C.shake=0.2;break;}
-      case 'reveal':{    // pull back and up from behind Luna to reveal the fading jellyfish over the island
-        C.pos.copy(head).addScaledVector(d,-lerp(4,34,smooth(0,1,k))).addScaledVector(sd,lerp(0.8,8,k));C.pos.y=AI.y+lerp(1.6,20,smooth(0,1,k));
-        C.look.copy(aim).lerp(head,0.25*(1-k));C.fov=lerp(48,58,k);C.shake=0.1;break;}
+        placeSpectacle(lerp(460,360,open),lerp(0.04,0.18,k),0.30);
+        C.pos.lerp(cPos,open);C.look.copy(eng).lerp(cLook,open);C.fov=lerp(fovTight,50,open);C.shake=lerp(0.55,0.08,open);break;}
+      case 'crane':{     // from that far view, a slow dolly closer, the whole plume still in frame
+        placeSpectacle(lerp(360,230,smooth(0,1,k)),lerp(0.18,-0.12,k),lerp(0.30,0.16,k));
+        C.pos.copy(cPos);C.look.copy(cLook);C.fov=lerp(50,44,k);C.shake=0.06;break;}
+      case 'react':{     // closer still, the photograph large in the sky
+        placeSpectacle(lerp(230,185,k),lerp(-0.12,0.08,k),0.14);
+        C.pos.copy(cPos);C.look.copy(cLook);C.fov=lerp(44,40,k);C.shake=0.06;break;}
+      case 'reveal':{    // ease back and up as the cloud thins, still clear of the mountains
+        placeSpectacle(lerp(200,340,smooth(0,1,k)),lerp(0.08,0.22,k),lerp(0.14,0.22,k));
+        C.pos.copy(cPos);C.look.copy(cLook);C.fov=lerp(42,54,k);C.shake=0.05;break;}
     }
   }
   function update(dt){
@@ -6224,7 +6325,11 @@ const CINE=(function(){
     if(Math.abs(camera.fov-C.fov)>0.01){camera.fov=cut?C.fov:lerp(camera.fov,C.fov,1-Math.exp(-dt*3));camera.updateProjectionMatrix();}
     // title card over the opening shot
     ui.title.classList.toggle('on',lt>0.8&&lt<4.6);
-    if(bloom){bloom.strength=Math.max(bloom.strength,0.95);bloom.radius=Math.max(bloom.radius,0.75);}
+    if(bloom){
+      const cover=SPACE_LAUNCH.cloudCover||0;
+      if(cover<0.04){bloom.strength=Math.max(bloom.strength,0.95);bloom.radius=Math.max(bloom.radius,0.75);}
+      else{bloom.strength=lerp(0.9,0.34,cover);bloom.radius=lerp(0.7,0.38,cover);bloom.threshold=lerp(0.66,0.88,cover);}
+    }
     idle=0;return true;
   }
   return {start,stop,update,get on(){return C.on;}};
@@ -6838,6 +6943,18 @@ function frameLoop(){
   shotChip.classList.toggle('on',DIRECTOR.on);
   if(DIRECTOR.on&&!autoNow&&!INSIDE.on&&DIRECTOR.lastLabel!=='manual'){DIRECTOR.lastLabel='manual';document.getElementById('shotLbl').innerHTML='You have the camera <small>auto resumes</small>';}
   SHADOW_N++;renderer.shadowMap.needsUpdate=!INSIDE.on&&SHADOW_N%((MOBILE?3:2)+(PERF.pr<PR?1:0))===0;
+  // indoors at night the bloom was blowing the lamps out; outdoors keeps the usual look, and the film sets its own
+  if(bloom&&!CINE.on){
+    const k=nightK;
+    if(INSIDE.on){
+      bloom.strength=lerp(0.26,0.38,k);bloom.threshold=lerp(0.9,0.84,k);bloom.radius=lerp(0.4,0.45,k);
+      caretaker.charLight.intensity=lerp(0.28,0.34,k);
+    }else{
+      bloom.strength=lerp(0.28,0.72,k);bloom.threshold=lerp(0.9,0.64,k);bloom.radius=lerp(0.45,0.65,k);
+      caretaker.charLight.intensity=lerp(0.35,0.85,smooth(0.25,0.95,k));
+    }
+  }
+  if(SPACE_LAUNCH.active)SPACE_LAUNCH.faceCloud();
   const scn=INSIDE.on?INSIDE.scene:scene;if(composer){RPASS.scene=scn;composer.render();}else renderer.render(scn,camera);
   requestAnimationFrame(frameLoop);
 }
