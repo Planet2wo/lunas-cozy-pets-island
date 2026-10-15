@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Luna's Cozy Pets: a cozy 3D island where Luna cares for her dogs, gardens, fishes, sells at the market and decorates.">
+<meta name="theme-color" content="#141a30">
+<meta name="color-scheme" content="dark light">
+<meta property="og:title" content="Luna's Cozy Pets &#8212; The Island">
+<meta property="og:description" content="A cozy 3D island where Luna cares for her pets, gardens, fishes, sells at the market and decorates.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icons/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>Luna's Cozy Pets &#8212; The Island</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css?v=24">
+</head>
+<body>
+<div id="stage"></div>
+<div id="loading" role="status" aria-live="polite">Raising the island&#8230;</div>
+<noscript><p style="position:fixed;inset:auto 0 45% 0;text-align:center;color:#f1ead9;font-family:sans-serif">Luna's Island needs JavaScript turned on to play.</p></noscript>
+<div id="err">This scene needs WebGL. Try a recent version of Chrome, Safari or Firefox.</div>
+<header class="title">
+  <h1>Luna's Cozy Pets</h1>
+  <p id="status">The Island</p>
+</header>
+<section class="dock" aria-label="Scene controls">
+  <div class="time">
+    <span class="glyph" aria-hidden="true">&#9728;</span>
+    <input id="tod" type="range" min="0" max="1000" value="0" aria-label="Time of day, golden hour to night">
+    <span class="glyph" aria-hidden="true">&#9790;</span>
+    <label id="todLabel" for="tod">Golden hour</label>
+  </div>
+  <div class="row" id="dockRow">
+    <button id="btnDay" class="opt" aria-pressed="true">Golden hour</button>
+    <button id="btnNight" class="opt" aria-pressed="false">Night</button>
+    <button id="btnLaunch" class="opt" aria-pressed="false" title="Launch a rocket into the twilight sky">&#128640; Launch Rocket</button>
+    <button id="btnJam" class="opt" aria-pressed="false" title="Jam: Lady Moon puts on her favourite song on the deck radio and dances (press J). Press again to stop the music.">&#127925; Jam</button>
+    <button id="btnOrbit" class="opt" aria-pressed="true">Slow orbit</button>
+    <button id="btnAuto" aria-pressed="false" title="Auto camera (press C)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.2" r="3.6"/></svg>Auto cam</button>
+    <button id="btnFree" class="opt" aria-pressed="false" title="Free camera: stop following Luna (press F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><path d="M9 5.5L12 3l3 2.5M9 18.5l3 2.5 3-2.5M5.5 9L3 12l2.5 3M18.5 9l2.5 3-2.5 3"/></svg>Free cam</button>
+    <button id="btnMoon" aria-pressed="false" title="Follow Lady Moon (press M)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span id="moonLbl">Lady Moon</span></button>
+    <button id="btnStill" aria-pressed="false" title="Luna holds still and faces the camera (press L)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></svg>Luna still</button>
+    <button id="btnCtrl" aria-pressed="false" title="Controller mode: steer Luna with a thumb stick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8h10a4 4 0 0 1 4 4v1.5a3.5 3.5 0 0 1-6.3 2.1L14 14.5h-4l-.7 1.1A3.5 3.5 0 0 1 3 13.5V12a4 4 0 0 1 4-4z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="16" cy="11" r=".6" fill="currentColor"/><circle cx="17.5" cy="13" r=".6" fill="currentColor"/></svg>Controller</button>
+    <button id="btnHouse" aria-pressed="false" title="Go inside Luna's house (press H)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span id="houseLbl">Go inside</span></button>
+    <button id="btnRain" class="opt" aria-pressed="false" title="Rain and lightning (press R)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A5.5 5.5 0 0 1 18.5 8 3.5 3.5 0 0 1 18 15"/><path d="M12.5 12l-2 4h3l-2 4"/><path d="M7.5 18l-.8 2M16.5 18l-.8 2"/></svg>Rain &amp; lightning</button>
+    <button id="btnSnow" class="opt" aria-pressed="false" title="Snow (press N)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M10 5l2 2 2-2M10 19l2-2 2 2"/></svg>Snow</button>
+    <button id="btnCloset" aria-expanded="false" aria-controls="closet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7.2a2 2 0 1 1 2-2"/><path d="M12 7.2v1.3L3.3 15a1.4 1.4 0 0 0 .8 2.5h15.8a1.4 1.4 0 0 0 .8-2.5L12 8.5"/></svg>Clothing Closets</button>
+    <button id="btnMarket" aria-expanded="false" aria-controls="market"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 11.5V20h14v-8.5"/><path d="M10 20v-5h4v5"/></svg>Market <span class="badge"><span class="coin" aria-hidden="true"></span><span id="coinBadge">0</span></span></button>
+    <button id="btnChop" class="opt" aria-pressed="false" title="Pick trees to cut down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4l6 6-3 1-4-4z"/><path d="M15.5 8.5L4 20"/></svg>Chop trees</button>
+    <button id="btnClean" class="opt">Hide controls</button>
+    <button id="btnMore" aria-expanded="false" aria-controls="dockRow">More</button>
+  </div>
+  <p class="hint" id="camHint">Drag to orbit, pinch or scroll to zoom. Keys: C auto cam &#183; F free cam &#183; M Lady Moon (also switches who the controller steers) &#183; L Luna still &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v24</span></p>
+</section>
+<button id="restore">Show controls</button>
+<section class="closet" id="closet" hidden aria-label="Clothing Closets">
+  <header><h2>Clothing Closets</h2><button type="button" class="closet-close" aria-label="Close the closet"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+  <div class="who-tabs" id="closetWho" role="tablist" aria-label="Choose character"><button type="button" id="whoLuna" class="who-btn" aria-selected="true">Luna</button><button type="button" id="whoMoon" class="who-btn" aria-selected="false">Lady Moon</button></div>
+  <div id="moonHatSec" hidden><h3>Crocheted bucket hats</h3><div class="grid" id="moonHatGrid"></div></div>
+  <h3>Outfits</h3><div class="grid" id="outfitGrid"></div>
+  <h3>Animal masks</h3><div class="grid" id="maskGrid"></div>
+</section>
+<section class="closet market" id="market" hidden aria-label="Seaside Market">
+  <header><h2>Seaside Market</h2><button type="button" class="closet-close" aria-label="Close the market"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+  <div class="coins"><span class="coin" aria-hidden="true"></span><span id="mkCoins">0</span><small>coins</small></div>
+  <h3>Luna's basket</h3><div id="mkBasket"></div><button type="button" class="sell" id="mkSell">Sell basket</button>
+  <div class="rowi lumber"><span>&#129717; Lumber <small id="mkWood">0 wood</small></span><button type="button" id="mkSellWood">Sell 5 wood &#183; 40</button></div>
+  <h3>Shop</h3><div class="tabs" role="tablist" id="mkTabs" aria-label="Shop categories"></div><p class="tabnote" id="mkNote"></p><div class="grid" id="mkShop" role="tabpanel"></div>
+  <h3>On your island</h3><div id="mkPlaced"></div>
+  <h3>Market prices (coins each)</h3><div class="prices" id="mkPrices"></div>
+  <button type="button" class="reset" id="mkReset">Start over (erase coins, items and clothes)</button>
+</section>
+<div id="placeBar" hidden role="region" aria-label="Placing a decoration"><div id="placeTxt"></div><button type="button" id="placeRot">Rotate</button><button type="button" id="placeCancel">Cancel</button><button type="button" id="placeHere">Place here</button></div>
+<div id="chopBar" hidden role="region" aria-label="Clearing trees"><div id="chopTxt"></div><button type="button" id="chopDone">Done</button><button type="button" id="chopGo" disabled>Chop it down</button></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="fade" aria-hidden="true"></div>
+<section id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wTitle">
+  <div class="wcard">
+    <h2 id="wTitle">Welcome to Luna's Island</h2>
+    <p>Luna looks after her pups Kiko and Bruno, her cats and bunnies, a garden, and a little seaside market. She lives her own day, and you can join in.</p>
+    <ul>
+      <li><b>Watch</b> with Auto cam, or drag to look around.</li>
+      <li><b>Earn coins</b> as Luna harvests, fishes and sells at the Market.</li>
+      <li><b>Island life</b>: Luna and Lady Moon garden, sweep, feed the pets and play with the pups on their own.</li>
+      <li><b>Decorate</b> both islands, chop trees for wood, and build.</li>
+      <li><b>Play</b> in Controller mode with a thumb stick. Press M to switch between Luna and Lady Moon.</li>
+    </ul>
+    <button type="button" id="wStart">Start playing</button>
+  </div>
+</section>
+<section id="pad" hidden aria-label="Controller">
+  <div id="stickZone" aria-label="Movement stick: touch and drag on the left side"></div>
+  <div id="stickBase" aria-hidden="true"><div id="stickKnob"></div></div>
+  <div id="stickHint" aria-hidden="true">Move</div>
+  <div id="padBtns">
+    <button type="button" data-act="pet" class="pb b1" aria-label="Pet or cuddle (E)"><span>&#9829;</span><small>Pet</small></button>
+    <button type="button" data-act="jump" class="pb b2" aria-label="Jump (Space)"><span>&#8593;</span><small>Jump</small></button>
+    <button type="button" data-act="wave" class="pb b3" aria-label="Wave (Q)"><span>&#128075;</span><small>Wave</small></button>
+    <button type="button" data-act="throw" class="pb b4" aria-label="Throw the ball (T)"><span>&#127934;</span><small>Fetch</small></button>
+  </div>
+  <div id="ctrlBar"><span>Controller mode</span><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
+</section>
+<div class="shot" id="shot" aria-live="polite"><span class="rec" aria-hidden="true"></span><span class="lbl" id="shotLbl">Auto cam</span></div>
+<!-- three.js r128: the local copy (public/vendor, filled by `npm install`) loads first; the CDN is only a fallback -->
+<script src="/vendor/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+<script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>')</script>
+<script src="/vendor/three-postfx.js"></script>
+<script>if(window.THREE&&!THREE.UnrealBloomPass){['shaders/CopyShader','shaders/LuminosityHighPassShader','postprocessing/EffectComposer','postprocessing/RenderPass','postprocessing/ShaderPass','postprocessing/UnrealBloomPass'].forEach(function(f){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/'+f+'.js"><\/script>')})}</script>
+<script src="/game.js?v=24"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "luna-cozy-pets-island",
+  "private": true,
+  "version": "24.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "postinstall": "node tools/vendor-three.cjs"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "three": "0.128.0"
+  }
+}

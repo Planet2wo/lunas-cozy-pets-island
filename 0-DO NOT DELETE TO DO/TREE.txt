@@ -1,0 +1,1739 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\ecurb\Desktop\Luna's Cozy Pets - The Island> TREE /F
+Folder PATH listing
+Volume serial number is 2A25-2D44
+C:.
+│   desktop.ini
+│   index.html
+│   metadata.json
+│   package-lock.json
+│   package.json
+│   README.md
+│   RUN.bat
+│   vite.config.js
+│
+├───0-DO NOT DELETE TO DO
+│       Controller.jpg
+│
+├───node_modules
+│   │   .package-lock.json
+│   │
+│   ├───.bin
+│   │       esbuild
+│   │       esbuild.cmd
+│   │       esbuild.ps1
+│   │       nanoid
+│   │       nanoid.cmd
+│   │       nanoid.ps1
+│   │       rollup
+│   │       rollup.cmd
+│   │       rollup.ps1
+│   │       vite
+│   │       vite.cmd
+│   │       vite.ps1
+│   │
+│   ├───.vite
+│   │   └───deps
+│   │           package.json
+│   │           _metadata.json
+│   │
+│   ├───.vite-temp
+│   ├───@esbuild
+│   │   └───win32-x64
+│   │           esbuild.exe
+│   │           package.json
+│   │           README.md
+│   │
+│   ├───@rollup
+│   │   ├───rollup-win32-x64-gnu
+│   │   │       package.json
+│   │   │       README.md
+│   │   │       rollup.win32-x64-gnu.node
+│   │   │
+│   │   └───rollup-win32-x64-msvc
+│   │           package.json
+│   │           README.md
+│   │           rollup.win32-x64-msvc.node
+│   │
+│   ├───@types
+│   │   └───estree
+│   │           flow.d.ts
+│   │           index.d.ts
+│   │           LICENSE
+│   │           package.json
+│   │           README.md
+│   │
+│   ├───esbuild
+│   │   │   install.js
+│   │   │   LICENSE.md
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   ├───bin
+│   │   │       esbuild
+│   │   │
+│   │   └───lib
+│   │           main.d.ts
+│   │           main.js
+│   │
+│   ├───fdir
+│   │   │   LICENSE
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   └───dist
+│   │           index.cjs
+│   │           index.d.cts
+│   │           index.d.mts
+│   │           index.mjs
+│   │
+│   ├───nanoid
+│   │   │   index.browser.cjs
+│   │   │   index.browser.js
+│   │   │   index.cjs
+│   │   │   index.d.cts
+│   │   │   index.d.ts
+│   │   │   index.js
+│   │   │   LICENSE
+│   │   │   nanoid.js
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   ├───async
+│   │   │       index.browser.cjs
+│   │   │       index.browser.js
+│   │   │       index.cjs
+│   │   │       index.d.cts
+│   │   │       index.d.ts
+│   │   │       index.js
+│   │   │       index.native.js
+│   │   │       package.json
+│   │   │
+│   │   ├───bin
+│   │   │       nanoid.cjs
+│   │   │
+│   │   ├───non-secure
+│   │   │       index.cjs
+│   │   │       index.d.ts
+│   │   │       index.js
+│   │   │       package.json
+│   │   │
+│   │   └───url-alphabet
+│   │           index.cjs
+│   │           index.js
+│   │           package.json
+│   │
+│   ├───picocolors
+│   │       LICENSE
+│   │       package.json
+│   │       picocolors.browser.js
+│   │       picocolors.d.ts
+│   │       picocolors.js
+│   │       README.md
+│   │       types.d.ts
+│   │
+│   ├───picomatch
+│   │   │   index.js
+│   │   │   LICENSE
+│   │   │   package.json
+│   │   │   posix.js
+│   │   │   README.md
+│   │   │
+│   │   └───lib
+│   │           constants.js
+│   │           parse.js
+│   │           picomatch.js
+│   │           scan.js
+│   │           utils.js
+│   │
+│   ├───postcss
+│   │   │   LICENSE
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   └───lib
+│   │           at-rule.d.ts
+│   │           at-rule.js
+│   │           comment.d.ts
+│   │           comment.js
+│   │           container.d.ts
+│   │           container.js
+│   │           css-syntax-error.d.ts
+│   │           css-syntax-error.js
+│   │           declaration.d.ts
+│   │           declaration.js
+│   │           document.d.ts
+│   │           document.js
+│   │           fromJSON.d.ts
+│   │           fromJSON.js
+│   │           input.d.ts
+│   │           input.js
+│   │           lazy-result.d.ts
+│   │           lazy-result.js
+│   │           list.d.ts
+│   │           list.js
+│   │           map-generator.js
+│   │           no-work-result.d.ts
+│   │           no-work-result.js
+│   │           node.d.ts
+│   │           node.js
+│   │           parse.d.ts
+│   │           parse.js
+│   │           parser.js
+│   │           postcss.d.mts
+│   │           postcss.d.ts
+│   │           postcss.js
+│   │           postcss.mjs
+│   │           previous-map.d.ts
+│   │           previous-map.js
+│   │           processor.d.ts
+│   │           processor.js
+│   │           result.d.ts
+│   │           result.js
+│   │           root.d.ts
+│   │           root.js
+│   │           rule.d.ts
+│   │           rule.js
+│   │           stringifier.d.ts
+│   │           stringifier.js
+│   │           stringify.d.ts
+│   │           stringify.js
+│   │           symbols.js
+│   │           terminal-highlight.js
+│   │           tokenize.js
+│   │           warn-once.js
+│   │           warning.d.ts
+│   │           warning.js
+│   │
+│   ├───rollup
+│   │   │   LICENSE.md
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   └───dist
+│   │       │   getLogFilter.d.ts
+│   │       │   getLogFilter.js
+│   │       │   loadConfigFile.d.ts
+│   │       │   loadConfigFile.js
+│   │       │   native.js
+│   │       │   parseAst.d.ts
+│   │       │   parseAst.js
+│   │       │   rollup.d.ts
+│   │       │   rollup.js
+│   │       │
+│   │       ├───bin
+│   │       │       rollup
+│   │       │
+│   │       ├───es
+│   │       │   │   getLogFilter.js
+│   │       │   │   package.json
+│   │       │   │   parseAst.js
+│   │       │   │   rollup.js
+│   │       │   │
+│   │       │   └───shared
+│   │       │           node-entry.js
+│   │       │           parseAst.js
+│   │       │           watch.js
+│   │       │
+│   │       └───shared
+│   │               fsevents-importer.js
+│   │               index.js
+│   │               loadConfigFile.js
+│   │               node-entry.js
+│   │               parseAst.js
+│   │               rollup.js
+│   │               watch-cli.js
+│   │               watch.js
+│   │
+│   ├───source-map-js
+│   │   │   LICENSE
+│   │   │   package.json
+│   │   │   README.md
+│   │   │   source-map.d.ts
+│   │   │   source-map.js
+│   │   │
+│   │   └───lib
+│   │           array-set.js
+│   │           base64-vlq.js
+│   │           base64.js
+│   │           binary-search.js
+│   │           mapping-list.js
+│   │           quick-sort.js
+│   │           source-map-consumer.d.ts
+│   │           source-map-consumer.js
+│   │           source-map-generator.d.ts
+│   │           source-map-generator.js
+│   │           source-node.d.ts
+│   │           source-node.js
+│   │           util.js
+│   │
+│   ├───three
+│   │   │   LICENSE
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   ├───build
+│   │   │       three.js
+│   │   │       three.min.js
+│   │   │       three.module.js
+│   │   │
+│   │   ├───examples
+│   │   │   ├───fonts
+│   │   │   │   │   gentilis_bold.typeface.json
+│   │   │   │   │   gentilis_regular.typeface.json
+│   │   │   │   │   helvetiker_bold.typeface.json
+│   │   │   │   │   helvetiker_regular.typeface.json
+│   │   │   │   │   LICENSE
+│   │   │   │   │   optimer_bold.typeface.json
+│   │   │   │   │   optimer_regular.typeface.json
+│   │   │   │   │   README
+│   │   │   │   │
+│   │   │   │   ├───droid
+│   │   │   │   │       droid_sans_bold.typeface.json
+│   │   │   │   │       droid_sans_mono_regular.typeface.json
+│   │   │   │   │       droid_sans_regular.typeface.json
+│   │   │   │   │       droid_serif_bold.typeface.json
+│   │   │   │   │       droid_serif_regular.typeface.json
+│   │   │   │   │       NOTICE
+│   │   │   │   │       README.txt
+│   │   │   │   │
+│   │   │   │   └───ttf
+│   │   │   │           kenpixel.ttf
+│   │   │   │
+│   │   │   ├───js
+│   │   │   │   │   .DS_Store
+│   │   │   │   │   WebGL.js
+│   │   │   │   │
+│   │   │   │   ├───animation
+│   │   │   │   │       AnimationClipCreator.js
+│   │   │   │   │       CCDIKSolver.js
+│   │   │   │   │       MMDAnimationHelper.js
+│   │   │   │   │       MMDPhysics.js
+│   │   │   │   │
+│   │   │   │   ├───cameras
+│   │   │   │   │       CinematicCamera.js
+│   │   │   │   │
+│   │   │   │   ├───controls
+│   │   │   │   │   │   DeviceOrientationControls.js
+│   │   │   │   │   │   DragControls.js
+│   │   │   │   │   │   FirstPersonControls.js
+│   │   │   │   │   │   FlyControls.js
+│   │   │   │   │   │   OrbitControls.js
+│   │   │   │   │   │   PointerLockControls.js
+│   │   │   │   │   │   TrackballControls.js
+│   │   │   │   │   │   TransformControls.js
+│   │   │   │   │   │
+│   │   │   │   │   └───experimental
+│   │   │   │   │           CameraControls.js
+│   │   │   │   │
+│   │   │   │   ├───csm
+│   │   │   │   │       CSM.js
+│   │   │   │   │       CSMHelper.js
+│   │   │   │   │       CSMShader.js
+│   │   │   │   │       Frustum.js
+│   │   │   │   │
+│   │   │   │   ├───curves
+│   │   │   │   │       CurveExtras.js
+│   │   │   │   │       NURBSCurve.js
+│   │   │   │   │       NURBSSurface.js
+│   │   │   │   │       NURBSUtils.js
+│   │   │   │   │
+│   │   │   │   ├───deprecated
+│   │   │   │   │       Geometry.js
+│   │   │   │   │
+│   │   │   │   ├───effects
+│   │   │   │   │       AnaglyphEffect.js
+│   │   │   │   │       AsciiEffect.js
+│   │   │   │   │       OutlineEffect.js
+│   │   │   │   │       ParallaxBarrierEffect.js
+│   │   │   │   │       PeppersGhostEffect.js
+│   │   │   │   │       StereoEffect.js
+│   │   │   │   │
+│   │   │   │   ├───environments
+│   │   │   │   │       DebugEnvironment.js
+│   │   │   │   │       RoomEnvironment.js
+│   │   │   │   │
+│   │   │   │   ├───exporters
+│   │   │   │   │       ColladaExporter.js
+│   │   │   │   │       DRACOExporter.js
+│   │   │   │   │       GLTFExporter.js
+│   │   │   │   │       MMDExporter.js
+│   │   │   │   │       OBJExporter.js
+│   │   │   │   │       PLYExporter.js
+│   │   │   │   │       STLExporter.js
+│   │   │   │   │       USDZExporter.js
+│   │   │   │   │
+│   │   │   │   ├───geometries
+│   │   │   │   │       .DS_Store
+│   │   │   │   │       BoxLineGeometry.js
+│   │   │   │   │       ConvexGeometry.js
+│   │   │   │   │       DecalGeometry.js
+│   │   │   │   │       LightningStrike.js
+│   │   │   │   │       ParametricGeometries.js
+│   │   │   │   │       RoundedBoxGeometry.js
+│   │   │   │   │       TeapotGeometry.js
+│   │   │   │   │
+│   │   │   │   ├───helpers
+│   │   │   │   │       LightProbeHelper.js
+│   │   │   │   │       PositionalAudioHelper.js
+│   │   │   │   │       RectAreaLightHelper.js
+│   │   │   │   │       VertexNormalsHelper.js
+│   │   │   │   │       VertexTangentsHelper.js
+│   │   │   │   │
+│   │   │   │   ├───interactive
+│   │   │   │   │       HTMLMesh.js
+│   │   │   │   │       InteractiveGroup.js
+│   │   │   │   │       SelectionBox.js
+│   │   │   │   │       SelectionHelper.js
+│   │   │   │   │
+│   │   │   │   ├───libs
+│   │   │   │   │   │   .DS_Store
+│   │   │   │   │   │   ammo.wasm.js
+│   │   │   │   │   │   ammo.wasm.wasm
+│   │   │   │   │   │   chevrotain.min.js
+│   │   │   │   │   │   dat.gui.min.js
+│   │   │   │   │   │   fflate.min.js
+│   │   │   │   │   │   lottie_canvas.js
+│   │   │   │   │   │   meshopt_decoder.js
+│   │   │   │   │   │   opentype.min.js
+│   │   │   │   │   │   stats.min.js
+│   │   │   │   │   │
+│   │   │   │   │   ├───basis
+│   │   │   │   │   │       basis_transcoder.js
+│   │   │   │   │   │       basis_transcoder.wasm
+│   │   │   │   │   │       README.md
+│   │   │   │   │   │
+│   │   │   │   │   └───draco
+│   │   │   │   │       │   draco_decoder.js
+│   │   │   │   │       │   draco_decoder.wasm
+│   │   │   │   │       │   draco_encoder.js
+│   │   │   │   │       │   draco_wasm_wrapper.js
+│   │   │   │   │       │   README.md
+│   │   │   │   │       │
+│   │   │   │   │       └───gltf
+│   │   │   │   │               draco_decoder.js
+│   │   │   │   │               draco_decoder.wasm
+│   │   │   │   │               draco_encoder.js
+│   │   │   │   │               draco_wasm_wrapper.js
+│   │   │   │   │
+│   │   │   │   ├───lights
+│   │   │   │   │       LightProbeGenerator.js
+│   │   │   │   │       RectAreaLightUniformsLib.js
+│   │   │   │   │
+│   │   │   │   ├───lines
+│   │   │   │   │       Line2.js
+│   │   │   │   │       LineGeometry.js
+│   │   │   │   │       LineMaterial.js
+│   │   │   │   │       LineSegments2.js
+│   │   │   │   │       LineSegmentsGeometry.js
+│   │   │   │   │       Wireframe.js
+│   │   │   │   │       WireframeGeometry2.js
+│   │   │   │   │
+│   │   │   │   ├───loaders
+│   │   │   │   │   │   .DS_Store
+│   │   │   │   │   │   3DMLoader.js
+│   │   │   │   │   │   3MFLoader.js
+│   │   │   │   │   │   AMFLoader.js
+│   │   │   │   │   │   BasisTextureLoader.js
+│   │   │   │   │   │   BVHLoader.js
+│   │   │   │   │   │   ColladaLoader.js
+│   │   │   │   │   │   DDSLoader.js
+│   │   │   │   │   │   DRACOLoader.js
+│   │   │   │   │   │   EXRLoader.js
+│   │   │   │   │   │   FBXLoader.js
+│   │   │   │   │   │   GCodeLoader.js
+│   │   │   │   │   │   GLTFLoader.js
+│   │   │   │   │   │   HDRCubeTextureLoader.js
+│   │   │   │   │   │   KMZLoader.js
+│   │   │   │   │   │   KTXLoader.js
+│   │   │   │   │   │   LDrawLoader.js
+│   │   │   │   │   │   LottieLoader.js
+│   │   │   │   │   │   LUT3dlLoader.js
+│   │   │   │   │   │   LUTCubeLoader.js
+│   │   │   │   │   │   LWOLoader.js
+│   │   │   │   │   │   MD2Loader.js
+│   │   │   │   │   │   MDDLoader.js
+│   │   │   │   │   │   MMDLoader.js
+│   │   │   │   │   │   MTLLoader.js
+│   │   │   │   │   │   NRRDLoader.js
+│   │   │   │   │   │   OBJLoader.js
+│   │   │   │   │   │   PCDLoader.js
+│   │   │   │   │   │   PDBLoader.js
+│   │   │   │   │   │   PLYLoader.js
+│   │   │   │   │   │   PRWMLoader.js
+│   │   │   │   │   │   PVRLoader.js
+│   │   │   │   │   │   RGBELoader.js
+│   │   │   │   │   │   RGBMLoader.js
+│   │   │   │   │   │   STLLoader.js
+│   │   │   │   │   │   SVGLoader.js
+│   │   │   │   │   │   TDSLoader.js
+│   │   │   │   │   │   TGALoader.js
+│   │   │   │   │   │   TiltLoader.js
+│   │   │   │   │   │   TTFLoader.js
+│   │   │   │   │   │   VOXLoader.js
+│   │   │   │   │   │   VRMLLoader.js
+│   │   │   │   │   │   VRMLoader.js
+│   │   │   │   │   │   VTKLoader.js
+│   │   │   │   │   │   XYZLoader.js
+│   │   │   │   │   │
+│   │   │   │   │   └───lwo
+│   │   │   │   │           IFFParser.js
+│   │   │   │   │           LWO2Parser.js
+│   │   │   │   │           LWO3Parser.js
+│   │   │   │   │
+│   │   │   │   ├───math
+│   │   │   │   │       .DS_Store
+│   │   │   │   │       Capsule.js
+│   │   │   │   │       ColorConverter.js
+│   │   │   │   │       ConvexHull.js
+│   │   │   │   │       ImprovedNoise.js
+│   │   │   │   │       Lut.js
+│   │   │   │   │       MeshSurfaceSampler.js
+│   │   │   │   │       OBB.js
+│   │   │   │   │       Octree.js
+│   │   │   │   │       SimplexNoise.js
+│   │   │   │   │
+│   │   │   │   ├───misc
+│   │   │   │   │       .DS_Store
+│   │   │   │   │       ConvexObjectBreaker.js
+│   │   │   │   │       GPUComputationRenderer.js
+│   │   │   │   │       Gyroscope.js
+│   │   │   │   │       MD2Character.js
+│   │   │   │   │       MD2CharacterComplex.js
+│   │   │   │   │       MorphAnimMesh.js
+│   │   │   │   │       MorphBlendMesh.js
+│   │   │   │   │       ProgressiveLightMap.js
+│   │   │   │   │       RollerCoaster.js
+│   │   │   │   │       TubePainter.js
+│   │   │   │   │       Volume.js
+│   │   │   │   │       VolumeSlice.js
+│   │   │   │   │
+│   │   │   │   ├───modifiers
+│   │   │   │   │       CurveModifier.js
+│   │   │   │   │       EdgeSplitModifier.js
+│   │   │   │   │       SimplifyModifier.js
+│   │   │   │   │       TessellateModifier.js
+│   │   │   │   │
+│   │   │   │   ├───objects
+│   │   │   │   │       Lensflare.js
+│   │   │   │   │       LightningStorm.js
+│   │   │   │   │       MarchingCubes.js
+│   │   │   │   │       Reflector.js
+│   │   │   │   │       ReflectorForSSRPass.js
+│   │   │   │   │       ReflectorRTT.js
+│   │   │   │   │       Refractor.js
+│   │   │   │   │       ShadowMesh.js
+│   │   │   │   │       Sky.js
+│   │   │   │   │       Water.js
+│   │   │   │   │       Water2.js
+│   │   │   │   │
+│   │   │   │   ├───physics
+│   │   │   │   │       AmmoPhysics.js
+│   │   │   │   │
+│   │   │   │   ├───postprocessing
+│   │   │   │   │       AdaptiveToneMappingPass.js
+│   │   │   │   │       AfterimagePass.js
+│   │   │   │   │       BloomPass.js
+│   │   │   │   │       BokehPass.js
+│   │   │   │   │       ClearPass.js
+│   │   │   │   │       CubeTexturePass.js
+│   │   │   │   │       DotScreenPass.js
+│   │   │   │   │       EffectComposer.js
+│   │   │   │   │       FilmPass.js
+│   │   │   │   │       GlitchPass.js
+│   │   │   │   │       HalftonePass.js
+│   │   │   │   │       LUTPass.js
+│   │   │   │   │       MaskPass.js
+│   │   │   │   │       OutlinePass.js
+│   │   │   │   │       Pass.js
+│   │   │   │   │       RenderPass.js
+│   │   │   │   │       SAOPass.js
+│   │   │   │   │       SavePass.js
+│   │   │   │   │       ShaderPass.js
+│   │   │   │   │       SMAAPass.js
+│   │   │   │   │       SSAARenderPass.js
+│   │   │   │   │       SSAOPass.js
+│   │   │   │   │       SSRPass.js
+│   │   │   │   │       SSRrPass.js
+│   │   │   │   │       TAARenderPass.js
+│   │   │   │   │       TexturePass.js
+│   │   │   │   │       UnrealBloomPass.js
+│   │   │   │   │
+│   │   │   │   ├───renderers
+│   │   │   │   │       .DS_Store
+│   │   │   │   │       CSS2DRenderer.js
+│   │   │   │   │       CSS3DRenderer.js
+│   │   │   │   │       Projector.js
+│   │   │   │   │       SVGRenderer.js
+│   │   │   │   │
+│   │   │   │   ├───shaders
+│   │   │   │   │       .DS_Store
+│   │   │   │   │       ACESFilmicToneMappingShader.js
+│   │   │   │   │       AfterimageShader.js
+│   │   │   │   │       BasicShader.js
+│   │   │   │   │       BleachBypassShader.js
+│   │   │   │   │       BlendShader.js
+│   │   │   │   │       BokehShader.js
+│   │   │   │   │       BokehShader2.js
+│   │   │   │   │       BrightnessContrastShader.js
+│   │   │   │   │       ColorCorrectionShader.js
+│   │   │   │   │       ColorifyShader.js
+│   │   │   │   │       ConvolutionShader.js
+│   │   │   │   │       CopyShader.js
+│   │   │   │   │       DepthLimitedBlurShader.js
+│   │   │   │   │       DigitalGlitch.js
+│   │   │   │   │       DOFMipMapShader.js
+│   │   │   │   │       DotScreenShader.js
+│   │   │   │   │       FilmShader.js
+│   │   │   │   │       FocusShader.js
+│   │   │   │   │       FreiChenShader.js
+│   │   │   │   │       FresnelShader.js
+│   │   │   │   │       FXAAShader.js
+│   │   │   │   │       GammaCorrectionShader.js
+│   │   │   │   │       GodRaysShader.js
+│   │   │   │   │       HalftoneShader.js
+│   │   │   │   │       HorizontalBlurShader.js
+│   │   │   │   │       HorizontalTiltShiftShader.js
+│   │   │   │   │       HueSaturationShader.js
+│   │   │   │   │       KaleidoShader.js
+│   │   │   │   │       LuminosityHighPassShader.js
+│   │   │   │   │       LuminosityShader.js
+│   │   │   │   │       MirrorShader.js
+│   │   │   │   │       NormalMapShader.js
+│   │   │   │   │       ParallaxShader.js
+│   │   │   │   │       PixelShader.js
+│   │   │   │   │       RGBShiftShader.js
+│   │   │   │   │       SAOShader.js
+│   │   │   │   │       SepiaShader.js
+│   │   │   │   │       SMAAShader.js
+│   │   │   │   │       SobelOperatorShader.js
+│   │   │   │   │       SSAOShader.js
+│   │   │   │   │       SSRrShader.js
+│   │   │   │   │       SSRShader.js
+│   │   │   │   │       SubsurfaceScatteringShader.js
+│   │   │   │   │       TechnicolorShader.js
+│   │   │   │   │       ToneMapShader.js
+│   │   │   │   │       ToonShader.js
+│   │   │   │   │       TriangleBlurShader.js
+│   │   │   │   │       UnpackDepthRGBAShader.js
+│   │   │   │   │       VerticalBlurShader.js
+│   │   │   │   │       VerticalTiltShiftShader.js
+│   │   │   │   │       VignetteShader.js
+│   │   │   │   │       VolumeShader.js
+│   │   │   │   │       WaterRefractionShader.js
+│   │   │   │   │
+│   │   │   │   ├───textures
+│   │   │   │   │       FlakesTexture.js
+│   │   │   │   │
+│   │   │   │   └───utils
+│   │   │   │           .DS_Store
+│   │   │   │           BufferGeometryUtils.js
+│   │   │   │           GeometryCompressionUtils.js
+│   │   │   │           GeometryUtils.js
+│   │   │   │           RoughnessMipmapper.js
+│   │   │   │           SceneUtils.js
+│   │   │   │           ShadowMapViewer.js
+│   │   │   │           SkeletonUtils.js
+│   │   │   │           UVsDebug.js
+│   │   │   │
+│   │   │   └───jsm
+│   │   │       │   .DS_Store
+│   │   │       │   WebGL.js
+│   │   │       │
+│   │   │       ├───animation
+│   │   │       │       AnimationClipCreator.js
+│   │   │       │       CCDIKSolver.js
+│   │   │       │       MMDAnimationHelper.js
+│   │   │       │       MMDPhysics.js
+│   │   │       │
+│   │   │       ├───cameras
+│   │   │       │       CinematicCamera.js
+│   │   │       │
+│   │   │       ├───controls
+│   │   │       │   │   .DS_Store
+│   │   │       │   │   DeviceOrientationControls.js
+│   │   │       │   │   DragControls.js
+│   │   │       │   │   FirstPersonControls.js
+│   │   │       │   │   FlyControls.js
+│   │   │       │   │   OrbitControls.js
+│   │   │       │   │   PointerLockControls.js
+│   │   │       │   │   TrackballControls.js
+│   │   │       │   │   TransformControls.js
+│   │   │       │   │
+│   │   │       │   └───experimental
+│   │   │       │           CameraControls.js
+│   │   │       │
+│   │   │       ├───csm
+│   │   │       │       CSM.js
+│   │   │       │       CSMHelper.js
+│   │   │       │       CSMShader.js
+│   │   │       │       Frustum.js
+│   │   │       │
+│   │   │       ├───curves
+│   │   │       │       CurveExtras.js
+│   │   │       │       NURBSCurve.js
+│   │   │       │       NURBSSurface.js
+│   │   │       │       NURBSUtils.js
+│   │   │       │
+│   │   │       ├───deprecated
+│   │   │       │       .DS_Store
+│   │   │       │       Geometry.js
+│   │   │       │
+│   │   │       ├───effects
+│   │   │       │       AnaglyphEffect.js
+│   │   │       │       AsciiEffect.js
+│   │   │       │       OutlineEffect.js
+│   │   │       │       ParallaxBarrierEffect.js
+│   │   │       │       PeppersGhostEffect.js
+│   │   │       │       StereoEffect.js
+│   │   │       │
+│   │   │       ├───environments
+│   │   │       │       DebugEnvironment.js
+│   │   │       │       RoomEnvironment.js
+│   │   │       │
+│   │   │       ├───exporters
+│   │   │       │       .DS_Store
+│   │   │       │       ColladaExporter.js
+│   │   │       │       DRACOExporter.js
+│   │   │       │       GLTFExporter.js
+│   │   │       │       MMDExporter.js
+│   │   │       │       OBJExporter.js
+│   │   │       │       PLYExporter.js
+│   │   │       │       STLExporter.js
+│   │   │       │       USDZExporter.js
+│   │   │       │
+│   │   │       ├───geometries
+│   │   │       │       .DS_Store
+│   │   │       │       BoxLineGeometry.js
+│   │   │       │       ConvexGeometry.js
+│   │   │       │       DecalGeometry.js
+│   │   │       │       LightningStrike.js
+│   │   │       │       ParametricGeometries.js
+│   │   │       │       RoundedBoxGeometry.js
+│   │   │       │       TeapotGeometry.js
+│   │   │       │
+│   │   │       ├───helpers
+│   │   │       │       .DS_Store
+│   │   │       │       LightProbeHelper.js
+│   │   │       │       PositionalAudioHelper.js
+│   │   │       │       RectAreaLightHelper.js
+│   │   │       │       VertexNormalsHelper.js
+│   │   │       │       VertexTangentsHelper.js
+│   │   │       │
+│   │   │       ├───interactive
+│   │   │       │       HTMLMesh.js
+│   │   │       │       InteractiveGroup.js
+│   │   │       │       SelectionBox.js
+│   │   │       │       SelectionHelper.js
+│   │   │       │
+│   │   │       ├───libs
+│   │   │       │   │   .DS_Store
+│   │   │       │   │   chevrotain.module.min.js
+│   │   │       │   │   dat.gui.module.js
+│   │   │       │   │   fflate.module.js
+│   │   │       │   │   glslang.js
+│   │   │       │   │   glslang.wasm
+│   │   │       │   │   ktx-parse.module.js
+│   │   │       │   │   meshopt_decoder.module.js
+│   │   │       │   │   mmdparser.module.js
+│   │   │       │   │   motion-controllers.module.js
+│   │   │       │   │   opentype.module.min.js
+│   │   │       │   │   potpack.module.js
+│   │   │       │   │   stats.module.js
+│   │   │       │   │   tween.module.min.js
+│   │   │       │   │   zstddec.module.js
+│   │   │       │   │
+│   │   │       │   └───rhino3dm
+│   │   │       │           rhino3dm.js
+│   │   │       │           rhino3dm.module.js
+│   │   │       │           rhino3dm.wasm
+│   │   │       │
+│   │   │       ├───lights
+│   │   │       │       LightProbeGenerator.js
+│   │   │       │       RectAreaLightUniformsLib.js
+│   │   │       │
+│   │   │       ├───lines
+│   │   │       │       Line2.js
+│   │   │       │       LineGeometry.js
+│   │   │       │       LineMaterial.js
+│   │   │       │       LineSegments2.js
+│   │   │       │       LineSegmentsGeometry.js
+│   │   │       │       Wireframe.js
+│   │   │       │       WireframeGeometry2.js
+│   │   │       │
+│   │   │       ├───loaders
+│   │   │       │   │   .DS_Store
+│   │   │       │   │   3DMLoader.js
+│   │   │       │   │   3MFLoader.js
+│   │   │       │   │   AMFLoader.js
+│   │   │       │   │   BasisTextureLoader.js
+│   │   │       │   │   BVHLoader.js
+│   │   │       │   │   ColladaLoader.js
+│   │   │       │   │   DDSLoader.js
+│   │   │       │   │   DRACOLoader.js
+│   │   │       │   │   EXRLoader.js
+│   │   │       │   │   FBXLoader.js
+│   │   │       │   │   GCodeLoader.js
+│   │   │       │   │   GLTFLoader.js
+│   │   │       │   │   HDRCubeTextureLoader.js
+│   │   │       │   │   IFCLoader.js
+│   │   │       │   │   KMZLoader.js
+│   │   │       │   │   KTX2Loader.js
+│   │   │       │   │   KTXLoader.js
+│   │   │       │   │   LDrawLoader.js
+│   │   │       │   │   LottieLoader.js
+│   │   │       │   │   LUT3dlLoader.js
+│   │   │       │   │   LUTCubeLoader.js
+│   │   │       │   │   LWOLoader.js
+│   │   │       │   │   MD2Loader.js
+│   │   │       │   │   MDDLoader.js
+│   │   │       │   │   MMDLoader.js
+│   │   │       │   │   MTLLoader.js
+│   │   │       │   │   NodeMaterialLoader.js
+│   │   │       │   │   NRRDLoader.js
+│   │   │       │   │   OBJLoader.js
+│   │   │       │   │   PCDLoader.js
+│   │   │       │   │   PDBLoader.js
+│   │   │       │   │   PLYLoader.js
+│   │   │       │   │   PRWMLoader.js
+│   │   │       │   │   PVRLoader.js
+│   │   │       │   │   RGBELoader.js
+│   │   │       │   │   RGBMLoader.js
+│   │   │       │   │   STLLoader.js
+│   │   │       │   │   SVGLoader.js
+│   │   │       │   │   TDSLoader.js
+│   │   │       │   │   TGALoader.js
+│   │   │       │   │   TiltLoader.js
+│   │   │       │   │   TTFLoader.js
+│   │   │       │   │   VOXLoader.js
+│   │   │       │   │   VRMLLoader.js
+│   │   │       │   │   VRMLoader.js
+│   │   │       │   │   VTKLoader.js
+│   │   │       │   │   XYZLoader.js
+│   │   │       │   │
+│   │   │       │   ├───ifc
+│   │   │       │   │       .DS_Store
+│   │   │       │   │       web-ifc-api.js
+│   │   │       │   │       web-ifc.wasm
+│   │   │       │   │
+│   │   │       │   └───lwo
+│   │   │       │           IFFParser.js
+│   │   │       │           LWO2Parser.js
+│   │   │       │           LWO3Parser.js
+│   │   │       │
+│   │   │       ├───math
+│   │   │       │       Capsule.js
+│   │   │       │       ColorConverter.js
+│   │   │       │       ConvexHull.js
+│   │   │       │       ImprovedNoise.js
+│   │   │       │       Lut.js
+│   │   │       │       MeshSurfaceSampler.js
+│   │   │       │       OBB.js
+│   │   │       │       Octree.js
+│   │   │       │       SimplexNoise.js
+│   │   │       │
+│   │   │       ├───misc
+│   │   │       │       .DS_Store
+│   │   │       │       ConvexObjectBreaker.js
+│   │   │       │       GPUComputationRenderer.js
+│   │   │       │       Gyroscope.js
+│   │   │       │       MD2Character.js
+│   │   │       │       MD2CharacterComplex.js
+│   │   │       │       MorphAnimMesh.js
+│   │   │       │       MorphBlendMesh.js
+│   │   │       │       ProgressiveLightMap.js
+│   │   │       │       RollerCoaster.js
+│   │   │       │       TubePainter.js
+│   │   │       │       Volume.js
+│   │   │       │       VolumeSlice.js
+│   │   │       │
+│   │   │       ├───modifiers
+│   │   │       │       .DS_Store
+│   │   │       │       CurveModifier.js
+│   │   │       │       EdgeSplitModifier.js
+│   │   │       │       SimplifyModifier.js
+│   │   │       │       TessellateModifier.js
+│   │   │       │
+│   │   │       ├───nodes
+│   │   │       │   │   Nodes.js
+│   │   │       │   │
+│   │   │       │   ├───accessors
+│   │   │       │   │       CameraNode.js
+│   │   │       │   │       ColorsNode.js
+│   │   │       │   │       LightNode.js
+│   │   │       │   │       NormalNode.js
+│   │   │       │   │       PositionNode.js
+│   │   │       │   │       ReflectNode.js
+│   │   │       │   │       ResolutionNode.js
+│   │   │       │   │       ScreenUVNode.js
+│   │   │       │   │       UVNode.js
+│   │   │       │   │
+│   │   │       │   ├───core
+│   │   │       │   │       AttributeNode.js
+│   │   │       │   │       ConstNode.js
+│   │   │       │   │       ExpressionNode.js
+│   │   │       │   │       FunctionCallNode.js
+│   │   │       │   │       FunctionNode.js
+│   │   │       │   │       InputNode.js
+│   │   │       │   │       Node.js
+│   │   │       │   │       NodeBuilder.js
+│   │   │       │   │       NodeFrame.js
+│   │   │       │   │       NodeLib.js
+│   │   │       │   │       NodeUniform.js
+│   │   │       │   │       NodeUtils.js
+│   │   │       │   │       StructNode.js
+│   │   │       │   │       TempNode.js
+│   │   │       │   │       VarNode.js
+│   │   │       │   │
+│   │   │       │   ├───effects
+│   │   │       │   │       BlurNode.js
+│   │   │       │   │       ColorAdjustmentNode.js
+│   │   │       │   │       LuminanceNode.js
+│   │   │       │   │
+│   │   │       │   ├───inputs
+│   │   │       │   │       BoolNode.js
+│   │   │       │   │       ColorNode.js
+│   │   │       │   │       CubeTextureNode.js
+│   │   │       │   │       FloatNode.js
+│   │   │       │   │       IntNode.js
+│   │   │       │   │       Matrix3Node.js
+│   │   │       │   │       Matrix4Node.js
+│   │   │       │   │       PropertyNode.js
+│   │   │       │   │       ReflectorNode.js
+│   │   │       │   │       RTTNode.js
+│   │   │       │   │       ScreenNode.js
+│   │   │       │   │       TextureNode.js
+│   │   │       │   │       Vector2Node.js
+│   │   │       │   │       Vector3Node.js
+│   │   │       │   │       Vector4Node.js
+│   │   │       │   │
+│   │   │       │   ├───materials
+│   │   │       │   │   │   BasicNodeMaterial.js
+│   │   │       │   │   │   MeshStandardNodeMaterial.js
+│   │   │       │   │   │   NodeMaterial.js
+│   │   │       │   │   │   PhongNodeMaterial.js
+│   │   │       │   │   │   SpriteNodeMaterial.js
+│   │   │       │   │   │   StandardNodeMaterial.js
+│   │   │       │   │   │
+│   │   │       │   │   └───nodes
+│   │   │       │   │           BasicNode.js
+│   │   │       │   │           MeshStandardNode.js
+│   │   │       │   │           PhongNode.js
+│   │   │       │   │           RawNode.js
+│   │   │       │   │           SpriteNode.js
+│   │   │       │   │           StandardNode.js
+│   │   │       │   │
+│   │   │       │   ├───math
+│   │   │       │   │       CondNode.js
+│   │   │       │   │       MathNode.js
+│   │   │       │   │       OperatorNode.js
+│   │   │       │   │
+│   │   │       │   ├───misc
+│   │   │       │   │       BumpMapNode.js
+│   │   │       │   │       NormalMapNode.js
+│   │   │       │   │       TextureCubeNode.js
+│   │   │       │   │       TextureCubeUVNode.js
+│   │   │       │   │
+│   │   │       │   ├───postprocessing
+│   │   │       │   │       NodePass.js
+│   │   │       │   │       NodePostProcessing.js
+│   │   │       │   │
+│   │   │       │   ├───procedural
+│   │   │       │   │       CheckerNode.js
+│   │   │       │   │       NoiseNode.js
+│   │   │       │   │
+│   │   │       │   └───utils
+│   │   │       │           BypassNode.js
+│   │   │       │           ColorSpaceNode.js
+│   │   │       │           JoinNode.js
+│   │   │       │           MaxMIPLevelNode.js
+│   │   │       │           SpecularMIPLevelNode.js
+│   │   │       │           SubSlotNode.js
+│   │   │       │           SwitchNode.js
+│   │   │       │           TimerNode.js
+│   │   │       │           UVTransformNode.js
+│   │   │       │           VelocityNode.js
+│   │   │       │
+│   │   │       ├───objects
+│   │   │       │       .DS_Store
+│   │   │       │       Lensflare.js
+│   │   │       │       LightningStorm.js
+│   │   │       │       MarchingCubes.js
+│   │   │       │       Reflector.js
+│   │   │       │       ReflectorForSSRPass.js
+│   │   │       │       ReflectorRTT.js
+│   │   │       │       Refractor.js
+│   │   │       │       ShadowMesh.js
+│   │   │       │       Sky.js
+│   │   │       │       Water.js
+│   │   │       │       Water2.js
+│   │   │       │
+│   │   │       ├───offscreen
+│   │   │       │       jank.js
+│   │   │       │       offscreen.js
+│   │   │       │       scene.js
+│   │   │       │
+│   │   │       ├───physics
+│   │   │       │       .DS_Store
+│   │   │       │       AmmoPhysics.js
+│   │   │       │
+│   │   │       ├───postprocessing
+│   │   │       │       .DS_Store
+│   │   │       │       AdaptiveToneMappingPass.js
+│   │   │       │       AfterimagePass.js
+│   │   │       │       BloomPass.js
+│   │   │       │       BokehPass.js
+│   │   │       │       ClearPass.js
+│   │   │       │       CubeTexturePass.js
+│   │   │       │       DotScreenPass.js
+│   │   │       │       EffectComposer.js
+│   │   │       │       FilmPass.js
+│   │   │       │       GlitchPass.js
+│   │   │       │       HalftonePass.js
+│   │   │       │       LUTPass.js
+│   │   │       │       MaskPass.js
+│   │   │       │       OutlinePass.js
+│   │   │       │       Pass.js
+│   │   │       │       RenderPass.js
+│   │   │       │       SAOPass.js
+│   │   │       │       SavePass.js
+│   │   │       │       ShaderPass.js
+│   │   │       │       SMAAPass.js
+│   │   │       │       SSAARenderPass.js
+│   │   │       │       SSAOPass.js
+│   │   │       │       SSRPass.js
+│   │   │       │       SSRrPass.js
+│   │   │       │       TAARenderPass.js
+│   │   │       │       TexturePass.js
+│   │   │       │       UnrealBloomPass.js
+│   │   │       │
+│   │   │       ├───renderers
+│   │   │       │   │   .DS_Store
+│   │   │       │   │   CSS2DRenderer.js
+│   │   │       │   │   CSS3DRenderer.js
+│   │   │       │   │   Projector.js
+│   │   │       │   │   SVGRenderer.js
+│   │   │       │   │
+│   │   │       │   ├───nodes
+│   │   │       │   │   ├───accessors
+│   │   │       │   │   │       CameraNode.js
+│   │   │       │   │   │       MaterialNode.js
+│   │   │       │   │   │       MaterialReferenceNode.js
+│   │   │       │   │   │       ModelNode.js
+│   │   │       │   │   │       ModelViewProjectionNode.js
+│   │   │       │   │   │       NormalNode.js
+│   │   │       │   │   │       Object3DNode.js
+│   │   │       │   │   │       PositionNode.js
+│   │   │       │   │   │       ReferenceNode.js
+│   │   │       │   │   │       UVNode.js
+│   │   │       │   │   │
+│   │   │       │   │   ├───consts
+│   │   │       │   │   │       MathConsts.js
+│   │   │       │   │   │
+│   │   │       │   │   ├───core
+│   │   │       │   │   │       AttributeNode.js
+│   │   │       │   │   │       CodeNode.js
+│   │   │       │   │   │       constants.js
+│   │   │       │   │   │       ConstNode.js
+│   │   │       │   │   │       ContextNode.js
+│   │   │       │   │   │       FunctionCallNode.js
+│   │   │       │   │   │       FunctionNode.js
+│   │   │       │   │   │       InputNode.js
+│   │   │       │   │   │       Node.js
+│   │   │       │   │   │       NodeAttribute.js
+│   │   │       │   │   │       NodeBuilder.js
+│   │   │       │   │   │       NodeCode.js
+│   │   │       │   │   │       NodeFrame.js
+│   │   │       │   │   │       NodeFunctionInput.js
+│   │   │       │   │   │       NodeKeywords.js
+│   │   │       │   │   │       NodeSlot.js
+│   │   │       │   │   │       NodeUniform.js
+│   │   │       │   │   │       NodeVar.js
+│   │   │       │   │   │       NodeVary.js
+│   │   │       │   │   │       PropertyNode.js
+│   │   │       │   │   │       VarNode.js
+│   │   │       │   │   │       VaryNode.js
+│   │   │       │   │   │
+│   │   │       │   │   ├───functions
+│   │   │       │   │   │       BSDFs.js
+│   │   │       │   │   │       MathFunctions.js
+│   │   │       │   │   │
+│   │   │       │   │   ├───inputs
+│   │   │       │   │   │       ColorNode.js
+│   │   │       │   │   │       FloatNode.js
+│   │   │       │   │   │       Matrix3Node.js
+│   │   │       │   │   │       Matrix4Node.js
+│   │   │       │   │   │       TextureNode.js
+│   │   │       │   │   │       Vector2Node.js
+│   │   │       │   │   │       Vector3Node.js
+│   │   │       │   │   │       Vector4Node.js
+│   │   │       │   │   │
+│   │   │       │   │   ├───lights
+│   │   │       │   │   │       LightContextNode.js
+│   │   │       │   │   │       LightNode.js
+│   │   │       │   │   │       LightsNode.js
+│   │   │       │   │   │
+│   │   │       │   │   ├───math
+│   │   │       │   │   │       MathNode.js
+│   │   │       │   │   │       OperatorNode.js
+│   │   │       │   │   │
+│   │   │       │   │   └───utils
+│   │   │       │   │           SwitchNode.js
+│   │   │       │   │           TimerNode.js
+│   │   │       │   │
+│   │   │       │   ├───webgl
+│   │   │       │   │   └───nodes
+│   │   │       │   │           WebGLNodeBuilder.js
+│   │   │       │   │           WebGLNodes.js
+│   │   │       │   │
+│   │   │       │   └───webgpu
+│   │   │       │       │   constants.js
+│   │   │       │       │   WebGPU.js
+│   │   │       │       │   WebGPUAttributes.js
+│   │   │       │       │   WebGPUBackground.js
+│   │   │       │       │   WebGPUBinding.js
+│   │   │       │       │   WebGPUBindings.js
+│   │   │       │       │   WebGPUComputePipelines.js
+│   │   │       │       │   WebGPUGeometries.js
+│   │   │       │       │   WebGPUInfo.js
+│   │   │       │       │   WebGPUObjects.js
+│   │   │       │       │   WebGPUProperties.js
+│   │   │       │       │   WebGPURenderer.js
+│   │   │       │       │   WebGPURenderLists.js
+│   │   │       │       │   WebGPURenderPipelines.js
+│   │   │       │       │   WebGPUSampledTexture.js
+│   │   │       │       │   WebGPUSampler.js
+│   │   │       │       │   WebGPUStorageBuffer.js
+│   │   │       │       │   WebGPUTextureRenderer.js
+│   │   │       │       │   WebGPUTextures.js
+│   │   │       │       │   WebGPUTextureUtils.js
+│   │   │       │       │   WebGPUUniform.js
+│   │   │       │       │   WebGPUUniformsGroup.js
+│   │   │       │       │
+│   │   │       │       └───nodes
+│   │   │       │               ShaderLib.js
+│   │   │       │               WebGPUNodeBuilder.js
+│   │   │       │               WebGPUNodes.js
+│   │   │       │               WebGPUNodeSampledTexture.js
+│   │   │       │               WebGPUNodeSampler.js
+│   │   │       │               WebGPUNodeUniform.js
+│   │   │       │               WebGPUNodeUniformsGroup.js
+│   │   │       │
+│   │   │       ├───shaders
+│   │   │       │       .DS_Store
+│   │   │       │       ACESFilmicToneMappingShader.js
+│   │   │       │       AfterimageShader.js
+│   │   │       │       BasicShader.js
+│   │   │       │       BleachBypassShader.js
+│   │   │       │       BlendShader.js
+│   │   │       │       BokehShader.js
+│   │   │       │       BokehShader2.js
+│   │   │       │       BrightnessContrastShader.js
+│   │   │       │       ColorCorrectionShader.js
+│   │   │       │       ColorifyShader.js
+│   │   │       │       ConvolutionShader.js
+│   │   │       │       CopyShader.js
+│   │   │       │       DepthLimitedBlurShader.js
+│   │   │       │       DigitalGlitch.js
+│   │   │       │       DOFMipMapShader.js
+│   │   │       │       DotScreenShader.js
+│   │   │       │       FilmShader.js
+│   │   │       │       FocusShader.js
+│   │   │       │       FreiChenShader.js
+│   │   │       │       FresnelShader.js
+│   │   │       │       FXAAShader.js
+│   │   │       │       GammaCorrectionShader.js
+│   │   │       │       GodRaysShader.js
+│   │   │       │       HalftoneShader.js
+│   │   │       │       HorizontalBlurShader.js
+│   │   │       │       HorizontalTiltShiftShader.js
+│   │   │       │       HueSaturationShader.js
+│   │   │       │       KaleidoShader.js
+│   │   │       │       LuminosityHighPassShader.js
+│   │   │       │       LuminosityShader.js
+│   │   │       │       MirrorShader.js
+│   │   │       │       NormalMapShader.js
+│   │   │       │       ParallaxShader.js
+│   │   │       │       PixelShader.js
+│   │   │       │       RGBShiftShader.js
+│   │   │       │       SAOShader.js
+│   │   │       │       SepiaShader.js
+│   │   │       │       SMAAShader.js
+│   │   │       │       SobelOperatorShader.js
+│   │   │       │       SSAOShader.js
+│   │   │       │       SSRrShader.js
+│   │   │       │       SSRShader.js
+│   │   │       │       SubsurfaceScatteringShader.js
+│   │   │       │       TechnicolorShader.js
+│   │   │       │       ToneMapShader.js
+│   │   │       │       ToonShader.js
+│   │   │       │       TriangleBlurShader.js
+│   │   │       │       UnpackDepthRGBAShader.js
+│   │   │       │       VerticalBlurShader.js
+│   │   │       │       VerticalTiltShiftShader.js
+│   │   │       │       VignetteShader.js
+│   │   │       │       VolumeShader.js
+│   │   │       │       WaterRefractionShader.js
+│   │   │       │
+│   │   │       ├───textures
+│   │   │       │       FlakesTexture.js
+│   │   │       │
+│   │   │       ├───utils
+│   │   │       │       .DS_Store
+│   │   │       │       BufferGeometryUtils.js
+│   │   │       │       GeometryCompressionUtils.js
+│   │   │       │       GeometryUtils.js
+│   │   │       │       RoughnessMipmapper.js
+│   │   │       │       SceneUtils.js
+│   │   │       │       ShadowMapViewer.js
+│   │   │       │       SkeletonUtils.js
+│   │   │       │       UVsDebug.js
+│   │   │       │
+│   │   │       └───webxr
+│   │   │               .DS_Store
+│   │   │               ARButton.js
+│   │   │               VRButton.js
+│   │   │               XRControllerModelFactory.js
+│   │   │               XREstimatedLight.js
+│   │   │               XRHandModelFactory.js
+│   │   │               XRHandOculusMeshModel.js
+│   │   │               XRHandPrimitiveModel.js
+│   │   │
+│   │   └───src
+│   │       │   .DS_Store
+│   │       │   constants.js
+│   │       │   Three.js
+│   │       │   Three.Legacy.js
+│   │       │   utils.js
+│   │       │
+│   │       ├───animation
+│   │       │   │   AnimationAction.js
+│   │       │   │   AnimationClip.js
+│   │       │   │   AnimationMixer.js
+│   │       │   │   AnimationObjectGroup.js
+│   │       │   │   AnimationUtils.js
+│   │       │   │   KeyframeTrack.js
+│   │       │   │   PropertyBinding.js
+│   │       │   │   PropertyMixer.js
+│   │       │   │
+│   │       │   └───tracks
+│   │       │           BooleanKeyframeTrack.js
+│   │       │           ColorKeyframeTrack.js
+│   │       │           NumberKeyframeTrack.js
+│   │       │           QuaternionKeyframeTrack.js
+│   │       │           StringKeyframeTrack.js
+│   │       │           VectorKeyframeTrack.js
+│   │       │
+│   │       ├───audio
+│   │       │       Audio.js
+│   │       │       AudioAnalyser.js
+│   │       │       AudioContext.js
+│   │       │       AudioListener.js
+│   │       │       PositionalAudio.js
+│   │       │
+│   │       ├───cameras
+│   │       │       ArrayCamera.js
+│   │       │       Camera.js
+│   │       │       CubeCamera.js
+│   │       │       OrthographicCamera.js
+│   │       │       PerspectiveCamera.js
+│   │       │       StereoCamera.js
+│   │       │
+│   │       ├───core
+│   │       │       BufferAttribute.js
+│   │       │       BufferGeometry.js
+│   │       │       Clock.js
+│   │       │       EventDispatcher.js
+│   │       │       GLBufferAttribute.js
+│   │       │       InstancedBufferAttribute.js
+│   │       │       InstancedBufferGeometry.js
+│   │       │       InstancedInterleavedBuffer.js
+│   │       │       InterleavedBuffer.js
+│   │       │       InterleavedBufferAttribute.js
+│   │       │       Layers.js
+│   │       │       Object3D.js
+│   │       │       Raycaster.js
+│   │       │       Uniform.js
+│   │       │
+│   │       ├───extras
+│   │       │   │   .DS_Store
+│   │       │   │   DataUtils.js
+│   │       │   │   Earcut.js
+│   │       │   │   ImageUtils.js
+│   │       │   │   PMREMGenerator.js
+│   │       │   │   ShapeUtils.js
+│   │       │   │
+│   │       │   ├───core
+│   │       │   │       Curve.js
+│   │       │   │       CurvePath.js
+│   │       │   │       Font.js
+│   │       │   │       Interpolations.js
+│   │       │   │       Path.js
+│   │       │   │       Shape.js
+│   │       │   │       ShapePath.js
+│   │       │   │
+│   │       │   ├───curves
+│   │       │   │       ArcCurve.js
+│   │       │   │       CatmullRomCurve3.js
+│   │       │   │       CubicBezierCurve.js
+│   │       │   │       CubicBezierCurve3.js
+│   │       │   │       Curves.js
+│   │       │   │       EllipseCurve.js
+│   │       │   │       LineCurve.js
+│   │       │   │       LineCurve3.js
+│   │       │   │       QuadraticBezierCurve.js
+│   │       │   │       QuadraticBezierCurve3.js
+│   │       │   │       SplineCurve.js
+│   │       │   │
+│   │       │   └───objects
+│   │       │           ImmediateRenderObject.js
+│   │       │
+│   │       ├───geometries
+│   │       │       BoxGeometry.js
+│   │       │       CircleGeometry.js
+│   │       │       ConeGeometry.js
+│   │       │       CylinderGeometry.js
+│   │       │       DodecahedronGeometry.js
+│   │       │       EdgesGeometry.js
+│   │       │       ExtrudeGeometry.js
+│   │       │       Geometries.js
+│   │       │       IcosahedronGeometry.js
+│   │       │       LatheGeometry.js
+│   │       │       OctahedronGeometry.js
+│   │       │       ParametricGeometry.js
+│   │       │       PlaneGeometry.js
+│   │       │       PolyhedronGeometry.js
+│   │       │       RingGeometry.js
+│   │       │       ShapeGeometry.js
+│   │       │       SphereGeometry.js
+│   │       │       TetrahedronGeometry.js
+│   │       │       TextGeometry.js
+│   │       │       TorusGeometry.js
+│   │       │       TorusKnotGeometry.js
+│   │       │       TubeGeometry.js
+│   │       │       WireframeGeometry.js
+│   │       │
+│   │       ├───helpers
+│   │       │       ArrowHelper.js
+│   │       │       AxesHelper.js
+│   │       │       Box3Helper.js
+│   │       │       BoxHelper.js
+│   │       │       CameraHelper.js
+│   │       │       DirectionalLightHelper.js
+│   │       │       GridHelper.js
+│   │       │       HemisphereLightHelper.js
+│   │       │       PlaneHelper.js
+│   │       │       PointLightHelper.js
+│   │       │       PolarGridHelper.js
+│   │       │       SkeletonHelper.js
+│   │       │       SpotLightHelper.js
+│   │       │
+│   │       ├───lights
+│   │       │       AmbientLight.js
+│   │       │       AmbientLightProbe.js
+│   │       │       DirectionalLight.js
+│   │       │       DirectionalLightShadow.js
+│   │       │       HemisphereLight.js
+│   │       │       HemisphereLightProbe.js
+│   │       │       Light.js
+│   │       │       LightProbe.js
+│   │       │       LightShadow.js
+│   │       │       PointLight.js
+│   │       │       PointLightShadow.js
+│   │       │       RectAreaLight.js
+│   │       │       SpotLight.js
+│   │       │       SpotLightShadow.js
+│   │       │
+│   │       ├───loaders
+│   │       │       AnimationLoader.js
+│   │       │       AudioLoader.js
+│   │       │       BufferGeometryLoader.js
+│   │       │       Cache.js
+│   │       │       CompressedTextureLoader.js
+│   │       │       CubeTextureLoader.js
+│   │       │       DataTextureLoader.js
+│   │       │       FileLoader.js
+│   │       │       FontLoader.js
+│   │       │       ImageBitmapLoader.js
+│   │       │       ImageLoader.js
+│   │       │       Loader.js
+│   │       │       LoaderUtils.js
+│   │       │       LoadingManager.js
+│   │       │       MaterialLoader.js
+│   │       │       ObjectLoader.js
+│   │       │       TextureLoader.js
+│   │       │
+│   │       ├───materials
+│   │       │       LineBasicMaterial.js
+│   │       │       LineDashedMaterial.js
+│   │       │       Material.js
+│   │       │       Materials.js
+│   │       │       MeshBasicMaterial.js
+│   │       │       MeshDepthMaterial.js
+│   │       │       MeshDistanceMaterial.js
+│   │       │       MeshLambertMaterial.js
+│   │       │       MeshMatcapMaterial.js
+│   │       │       MeshNormalMaterial.js
+│   │       │       MeshPhongMaterial.js
+│   │       │       MeshPhysicalMaterial.js
+│   │       │       MeshStandardMaterial.js
+│   │       │       MeshToonMaterial.js
+│   │       │       PointsMaterial.js
+│   │       │       RawShaderMaterial.js
+│   │       │       ShaderMaterial.js
+│   │       │       ShadowMaterial.js
+│   │       │       SpriteMaterial.js
+│   │       │
+│   │       ├───math
+│   │       │   │   Box2.js
+│   │       │   │   Box3.js
+│   │       │   │   Color.js
+│   │       │   │   Cylindrical.js
+│   │       │   │   Euler.js
+│   │       │   │   Frustum.js
+│   │       │   │   Interpolant.js
+│   │       │   │   Line3.js
+│   │       │   │   MathUtils.js
+│   │       │   │   Matrix3.js
+│   │       │   │   Matrix4.js
+│   │       │   │   Plane.js
+│   │       │   │   Quaternion.js
+│   │       │   │   Ray.js
+│   │       │   │   Sphere.js
+│   │       │   │   Spherical.js
+│   │       │   │   SphericalHarmonics3.js
+│   │       │   │   Triangle.js
+│   │       │   │   Vector2.js
+│   │       │   │   Vector3.js
+│   │       │   │   Vector4.js
+│   │       │   │
+│   │       │   └───interpolants
+│   │       │           CubicInterpolant.js
+│   │       │           DiscreteInterpolant.js
+│   │       │           LinearInterpolant.js
+│   │       │           QuaternionLinearInterpolant.js
+│   │       │
+│   │       ├───objects
+│   │       │       Bone.js
+│   │       │       Group.js
+│   │       │       InstancedMesh.js
+│   │       │       Line.js
+│   │       │       LineLoop.js
+│   │       │       LineSegments.js
+│   │       │       LOD.js
+│   │       │       Mesh.js
+│   │       │       Points.js
+│   │       │       Skeleton.js
+│   │       │       SkinnedMesh.js
+│   │       │       Sprite.js
+│   │       │
+│   │       ├───renderers
+│   │       │   │   .DS_Store
+│   │       │   │   WebGL1Renderer.js
+│   │       │   │   WebGLCubeRenderTarget.js
+│   │       │   │   WebGLMultisampleRenderTarget.js
+│   │       │   │   WebGLRenderer.js
+│   │       │   │   WebGLRenderTarget.js
+│   │       │   │
+│   │       │   ├───shaders
+│   │       │   │   │   ShaderChunk.js
+│   │       │   │   │   ShaderLib.js
+│   │       │   │   │   UniformsLib.js
+│   │       │   │   │   UniformsUtils.js
+│   │       │   │   │
+│   │       │   │   ├───ShaderChunk
+│   │       │   │   │       .DS_Store
+│   │       │   │   │       alphamap_fragment.glsl.js
+│   │       │   │   │       alphamap_pars_fragment.glsl.js
+│   │       │   │   │       alphatest_fragment.glsl.js
+│   │       │   │   │       aomap_fragment.glsl.js
+│   │       │   │   │       aomap_pars_fragment.glsl.js
+│   │       │   │   │       beginnormal_vertex.glsl.js
+│   │       │   │   │       begin_vertex.glsl.js
+│   │       │   │   │       bsdfs.glsl.js
+│   │       │   │   │       bumpmap_pars_fragment.glsl.js
+│   │       │   │   │       clearcoat_normal_fragment_begin.glsl.js
+│   │       │   │   │       clearcoat_normal_fragment_maps.glsl.js
+│   │       │   │   │       clearcoat_pars_fragment.glsl.js
+│   │       │   │   │       clipping_planes_fragment.glsl.js
+│   │       │   │   │       clipping_planes_pars_fragment.glsl.js
+│   │       │   │   │       clipping_planes_pars_vertex.glsl.js
+│   │       │   │   │       clipping_planes_vertex.glsl.js
+│   │       │   │   │       color_fragment.glsl.js
+│   │       │   │   │       color_pars_fragment.glsl.js
+│   │       │   │   │       color_pars_vertex.glsl.js
+│   │       │   │   │       color_vertex.glsl.js
+│   │       │   │   │       common.glsl.js
+│   │       │   │   │       cube_uv_reflection_fragment.glsl.js
+│   │       │   │   │       defaultnormal_vertex.glsl.js
+│   │       │   │   │       default_fragment.glsl.js
+│   │       │   │   │       default_vertex.glsl.js
+│   │       │   │   │       displacementmap_pars_vertex.glsl.js
+│   │       │   │   │       displacementmap_vertex.glsl.js
+│   │       │   │   │       dithering_fragment.glsl.js
+│   │       │   │   │       dithering_pars_fragment.glsl.js
+│   │       │   │   │       emissivemap_fragment.glsl.js
+│   │       │   │   │       emissivemap_pars_fragment.glsl.js
+│   │       │   │   │       encodings_fragment.glsl.js
+│   │       │   │   │       encodings_pars_fragment.glsl.js
+│   │       │   │   │       envmap_common_pars_fragment.glsl.js
+│   │       │   │   │       envmap_fragment.glsl.js
+│   │       │   │   │       envmap_pars_fragment.glsl.js
+│   │       │   │   │       envmap_pars_vertex.glsl.js
+│   │       │   │   │       envmap_physical_pars_fragment.glsl.js
+│   │       │   │   │       envmap_vertex.glsl.js
+│   │       │   │   │       fog_fragment.glsl.js
+│   │       │   │   │       fog_pars_fragment.glsl.js
+│   │       │   │   │       fog_pars_vertex.glsl.js
+│   │       │   │   │       fog_vertex.glsl.js
+│   │       │   │   │       gradientmap_pars_fragment.glsl.js
+│   │       │   │   │       lightmap_fragment.glsl.js
+│   │       │   │   │       lightmap_pars_fragment.glsl.js
+│   │       │   │   │       lights_fragment_begin.glsl.js
+│   │       │   │   │       lights_fragment_end.glsl.js
+│   │       │   │   │       lights_fragment_maps.glsl.js
+│   │       │   │   │       lights_lambert_vertex.glsl.js
+│   │       │   │   │       lights_pars_begin.glsl.js
+│   │       │   │   │       lights_phong_fragment.glsl.js
+│   │       │   │   │       lights_phong_pars_fragment.glsl.js
+│   │       │   │   │       lights_physical_fragment.glsl.js
+│   │       │   │   │       lights_physical_pars_fragment.glsl.js
+│   │       │   │   │       lights_toon_fragment.glsl.js
+│   │       │   │   │       lights_toon_pars_fragment.glsl.js
+│   │       │   │   │       logdepthbuf_fragment.glsl.js
+│   │       │   │   │       logdepthbuf_pars_fragment.glsl.js
+│   │       │   │   │       logdepthbuf_pars_vertex.glsl.js
+│   │       │   │   │       logdepthbuf_vertex.glsl.js
+│   │       │   │   │       map_fragment.glsl.js
+│   │       │   │   │       map_pars_fragment.glsl.js
+│   │       │   │   │       map_particle_fragment.glsl.js
+│   │       │   │   │       map_particle_pars_fragment.glsl.js
+│   │       │   │   │       metalnessmap_fragment.glsl.js
+│   │       │   │   │       metalnessmap_pars_fragment.glsl.js
+│   │       │   │   │       morphnormal_vertex.glsl.js
+│   │       │   │   │       morphtarget_pars_vertex.glsl.js
+│   │       │   │   │       morphtarget_vertex.glsl.js
+│   │       │   │   │       normalmap_pars_fragment.glsl.js
+│   │       │   │   │       normal_fragment_begin.glsl.js
+│   │       │   │   │       normal_fragment_maps.glsl.js
+│   │       │   │   │       packing.glsl.js
+│   │       │   │   │       premultiplied_alpha_fragment.glsl.js
+│   │       │   │   │       project_vertex.glsl.js
+│   │       │   │   │       roughnessmap_fragment.glsl.js
+│   │       │   │   │       roughnessmap_pars_fragment.glsl.js
+│   │       │   │   │       shadowmap_pars_fragment.glsl.js
+│   │       │   │   │       shadowmap_pars_vertex.glsl.js
+│   │       │   │   │       shadowmap_vertex.glsl.js
+│   │       │   │   │       shadowmask_pars_fragment.glsl.js
+│   │       │   │   │       skinbase_vertex.glsl.js
+│   │       │   │   │       skinning_pars_vertex.glsl.js
+│   │       │   │   │       skinning_vertex.glsl.js
+│   │       │   │   │       skinnormal_vertex.glsl.js
+│   │       │   │   │       specularmap_fragment.glsl.js
+│   │       │   │   │       specularmap_pars_fragment.glsl.js
+│   │       │   │   │       tonemapping_fragment.glsl.js
+│   │       │   │   │       tonemapping_pars_fragment.glsl.js
+│   │       │   │   │       transmissionmap_fragment.glsl.js
+│   │       │   │   │       transmissionmap_pars_fragment.glsl.js
+│   │       │   │   │       uv2_pars_fragment.glsl.js
+│   │       │   │   │       uv2_pars_vertex.glsl.js
+│   │       │   │   │       uv2_vertex.glsl.js
+│   │       │   │   │       uv_pars_fragment.glsl.js
+│   │       │   │   │       uv_pars_vertex.glsl.js
+│   │       │   │   │       uv_vertex.glsl.js
+│   │       │   │   │       worldpos_vertex.glsl.js
+│   │       │   │   │
+│   │       │   │   └───ShaderLib
+│   │       │   │           background_frag.glsl.js
+│   │       │   │           background_vert.glsl.js
+│   │       │   │           cube_frag.glsl.js
+│   │       │   │           cube_vert.glsl.js
+│   │       │   │           depth_frag.glsl.js
+│   │       │   │           depth_vert.glsl.js
+│   │       │   │           distanceRGBA_frag.glsl.js
+│   │       │   │           distanceRGBA_vert.glsl.js
+│   │       │   │           equirect_frag.glsl.js
+│   │       │   │           equirect_vert.glsl.js
+│   │       │   │           linedashed_frag.glsl.js
+│   │       │   │           linedashed_vert.glsl.js
+│   │       │   │           meshbasic_frag.glsl.js
+│   │       │   │           meshbasic_vert.glsl.js
+│   │       │   │           meshlambert_frag.glsl.js
+│   │       │   │           meshlambert_vert.glsl.js
+│   │       │   │           meshmatcap_frag.glsl.js
+│   │       │   │           meshmatcap_vert.glsl.js
+│   │       │   │           meshphong_frag.glsl.js
+│   │       │   │           meshphong_vert.glsl.js
+│   │       │   │           meshphysical_frag.glsl.js
+│   │       │   │           meshphysical_vert.glsl.js
+│   │       │   │           meshtoon_frag.glsl.js
+│   │       │   │           meshtoon_vert.glsl.js
+│   │       │   │           normal_frag.glsl.js
+│   │       │   │           normal_vert.glsl.js
+│   │       │   │           points_frag.glsl.js
+│   │       │   │           points_vert.glsl.js
+│   │       │   │           shadow_frag.glsl.js
+│   │       │   │           shadow_vert.glsl.js
+│   │       │   │           sprite_frag.glsl.js
+│   │       │   │           sprite_vert.glsl.js
+│   │       │   │           vsm_frag.glsl.js
+│   │       │   │           vsm_vert.glsl.js
+│   │       │   │
+│   │       │   ├───webgl
+│   │       │   │       WebGLAnimation.js
+│   │       │   │       WebGLAttributes.js
+│   │       │   │       WebGLBackground.js
+│   │       │   │       WebGLBindingStates.js
+│   │       │   │       WebGLBufferRenderer.js
+│   │       │   │       WebGLCapabilities.js
+│   │       │   │       WebGLClipping.js
+│   │       │   │       WebGLCubeMaps.js
+│   │       │   │       WebGLExtensions.js
+│   │       │   │       WebGLGeometries.js
+│   │       │   │       WebGLIndexedBufferRenderer.js
+│   │       │   │       WebGLInfo.js
+│   │       │   │       WebGLLights.js
+│   │       │   │       WebGLMaterials.js
+│   │       │   │       WebGLMorphtargets.js
+│   │       │   │       WebGLObjects.js
+│   │       │   │       WebGLProgram.js
+│   │       │   │       WebGLPrograms.js
+│   │       │   │       WebGLProperties.js
+│   │       │   │       WebGLRenderLists.js
+│   │       │   │       WebGLRenderStates.js
+│   │       │   │       WebGLShader.js
+│   │       │   │       WebGLShadowMap.js
+│   │       │   │       WebGLState.js
+│   │       │   │       WebGLTextures.js
+│   │       │   │       WebGLUniforms.js
+│   │       │   │       WebGLUtils.js
+│   │       │   │
+│   │       │   └───webxr
+│   │       │           WebXRController.js
+│   │       │           WebXRManager.js
+│   │       │
+│   │       ├───scenes
+│   │       │       Fog.js
+│   │       │       FogExp2.js
+│   │       │       Scene.js
+│   │       │
+│   │       └───textures
+│   │               CanvasTexture.js
+│   │               CompressedTexture.js
+│   │               CubeTexture.js
+│   │               DataTexture.js
+│   │               DataTexture2DArray.js
+│   │               DataTexture3D.js
+│   │               DepthTexture.js
+│   │               Texture.js
+│   │               VideoTexture.js
+│   │
+│   ├───tinyglobby
+│   │   │   LICENSE
+│   │   │   package.json
+│   │   │   README.md
+│   │   │
+│   │   └───dist
+│   │           index.cjs
+│   │           index.d.cts
+│   │           index.d.mts
+│   │           index.mjs
+│   │
+│   └───vite
+│       │   client.d.ts
+│       │   index.cjs
+│       │   index.d.cts
+│       │   LICENSE.md
+│       │   package.json
+│       │   README.md
+│       │
+│       ├───bin
+│       │       openChrome.applescript
+│       │       vite.js
+│       │
+│       ├───dist
+│       │   ├───client
+│       │   │       client.mjs
+│       │   │       env.mjs
+│       │   │
+│       │   ├───node
+│       │   │   │   cli.js
+│       │   │   │   constants.js
+│       │   │   │   index.d.ts
+│       │   │   │   index.js
+│       │   │   │   module-runner.d.ts
+│       │   │   │   module-runner.js
+│       │   │   │   moduleRunnerTransport.d-DJ_mE5sf.d.ts
+│       │   │   │
+│       │   │   └───chunks
+│       │   │           dep-3O3b9SCF.js
+│       │   │           dep-3RmXg9uo.js
+│       │   │           dep-CvfTChi5.js
+│       │   │           dep-D2Nv_XqQ.js
+│       │   │           dep-nQZNP8DK.js
+│       │   │
+│       │   └───node-cjs
+│       │           publicUtils.cjs
+│       │
+│       ├───misc
+│       │       false.js
+│       │       true.js
+│       │
+│       └───types
+│           │   customEvent.d.ts
+│           │   hmrPayload.d.ts
+│           │   hot.d.ts
+│           │   import-meta.d.ts
+│           │   importGlob.d.ts
+│           │   importMeta.d.ts
+│           │   metadata.d.ts
+│           │   package.json
+│           │
+│           └───internal
+│                   cssPreprocessorOptions.d.ts
+│                   lightningcssOptions.d.ts
+│
+├───play
+│       Luna's Cozy Pets Island.html
+│
+├───public
+│   │   game.js
+│   │   manifest.webmanifest
+│   │   style.css
+│   │
+│   ├───audio
+│   │       launch-theme.mp3
+│   │       radio-golden-brown.mp3
+│   │       radio-pain.mp3
+│   │
+│   ├───icons
+│   │       apple-touch-icon.png
+│   │       favicon-32.png
+│   │       icon-192.png
+│   │       icon-512.png
+│   │       og-image.jpg
+│   │
+│   └───vendor
+│           three-postfx.js
+│           three.min.js
+│
+├───Sprites
+│       7b30f9df-d1f4-4576-a6f3-9325e0732f98.png
+│       German Sheperd (1).png
+│       German Sheperd (2).png
+│       German Sheperd (3).png
+│       German Sheperd (4).png
+│       German Sheperd (5).png
+│       Luna's Cozy Pets - The Island.jpg
+│       Luna's-Cozy-Pets---The-Island.ico
+│       Luna.png
+│       Shelty (1).png
+│       Shelty (2).png
+│       Shelty (3).png
+│
+└───tools
+        vendor-three.cjs
+
+PS C:\Users\ecurb\Desktop\Luna's Cozy Pets - The Island>
