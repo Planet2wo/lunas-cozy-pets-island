@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css?v=27">
+<link rel="stylesheet" href="/style.css?v=28">
 </head>
 <body>
 <div id="stage"></div>
@@ -40,6 +40,12 @@
     <span class="glyph" aria-hidden="true">&#9790;</span>
     <label id="todLabel" for="tod">Golden hour</label>
   </div>
+  <div class="cast" role="group" aria-label="Who the camera and controller follow">
+    <div class="who"><button type="button" id="btnFollowLuna" aria-pressed="true">Luna</button><button type="button" id="btnHoldLuna" class="hold" aria-pressed="false" title="Hold Luna still">Pause</button></div>
+    <div class="who"><button type="button" id="btnFollowMoon" aria-pressed="false">Lady Moon</button><button type="button" id="btnHoldMoon" class="hold" aria-pressed="false" title="Hold Lady Moon still">Pause</button></div>
+    <div class="who"><button type="button" id="btnFollowSolon" aria-pressed="false">Solon</button><button type="button" id="btnHoldSolon" class="hold" aria-pressed="false" title="Hold Solon still">Pause</button></div>
+    <button type="button" id="btnGather" title="Pick up a shell, blossom or berry beside you (G)">Gather</button>
+  </div>
   <div class="row" id="dockRow">
     <button id="btnDay" class="opt" aria-pressed="true">Golden hour</button>
     <button id="btnNight" class="opt" aria-pressed="false">Night</button>
@@ -48,8 +54,7 @@
     <button id="btnOrbit" class="opt" aria-pressed="true">Slow orbit</button>
     <button id="btnAuto" aria-pressed="false" title="Auto camera (press C)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.2" r="3.6"/></svg>Auto cam</button>
     <button id="btnFree" class="opt" aria-pressed="false" title="Free camera: stop following Luna (press F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><path d="M9 5.5L12 3l3 2.5M9 18.5l3 2.5 3-2.5M5.5 9L3 12l2.5 3M18.5 9l2.5 3-2.5 3"/></svg>Free cam</button>
-    <button id="btnMoon" aria-pressed="false" title="Cycle who the camera follows: Lady Moon, Solon, then Luna (press M)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span id="moonLbl">Lady Moon</span></button>
-    <button id="btnStill" aria-pressed="false" title="Luna holds still and faces the camera (press L)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></svg>Luna still</button>
+    <button id="btnMoon" class="opt" aria-pressed="false" title="Cycle who you follow (press M)"><span id="moonLbl">Next</span></button>
     <button id="btnCtrl" aria-pressed="false" title="Controller mode: steer Luna with a thumb stick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8h10a4 4 0 0 1 4 4v1.5a3.5 3.5 0 0 1-6.3 2.1L14 14.5h-4l-.7 1.1A3.5 3.5 0 0 1 3 13.5V12a4 4 0 0 1 4-4z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="16" cy="11" r=".6" fill="currentColor"/><circle cx="17.5" cy="13" r=".6" fill="currentColor"/></svg>Controller</button>
     <button id="btnHouse" aria-pressed="false" title="Go inside Luna's house (press H)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span id="houseLbl">Go inside</span></button>
     <button id="btnRain" class="opt" aria-pressed="false" title="Rain and lightning (press R)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A5.5 5.5 0 0 1 18.5 8 3.5 3.5 0 0 1 18 15"/><path d="M12.5 12l-2 4h3l-2 4"/><path d="M7.5 18l-.8 2M16.5 18l-.8 2"/></svg>Rain &amp; lightning</button>
@@ -60,14 +65,14 @@
     <button id="btnClean" class="opt">Hide controls</button>
     <button id="btnMore" aria-expanded="false" aria-controls="dockRow">More</button>
   </div>
-  <p class="hint" id="camHint">Drag to orbit, pinch or scroll to zoom. Keys: C auto cam &#183; F free cam &#183; M cycles who you follow (Luna, Lady Moon, Solon) &#183; L Luna still &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v27</span></p>
+  <p class="hint" id="camHint">Drag to orbit, scroll to zoom. Luna, Lady Moon and Solon each have a follow button and a Pause button. Keys: M cycle &#183; L pause whoever you follow &#183; G gather &#183; C auto cam &#183; F free cam &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v28</span></p>
 </section>
 <button id="restore">Show controls</button>
 <section class="closet" id="closet" hidden aria-label="Clothing Closets">
   <header><h2>Clothing Closets</h2><button type="button" class="closet-close" aria-label="Close the closet"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
   <div class="who-tabs" id="closetWho" role="tablist" aria-label="Choose character"><button type="button" id="whoLuna" class="who-btn" aria-selected="true">Luna</button><button type="button" id="whoMoon" class="who-btn" aria-selected="false">Lady Moon</button><button type="button" id="whoSolon" class="who-btn" aria-selected="false">Solon</button></div>
   <div id="moonHatSec" hidden><h3>Crocheted bucket hats</h3><div class="grid" id="moonHatGrid"></div></div>
-  <div id="solonSec" hidden><h3>Frog beanie</h3><div class="grid" id="solonHatGrid"></div><p class="tabnote">Solon keeps his green controller shirt, navy shorts, glasses and green sneakers.</p></div>
+  <div id="solonSec" hidden><h3>Green pom beanie</h3><div class="grid" id="solonHatGrid"></div><p class="tabnote">His own look is the green controller shirt, navy shorts, glasses and green sneakers. Every other outfit fits him too.</p></div>
   <h3 id="outfitHead">Outfits</h3><div class="grid" id="outfitGrid"></div>
   <h3 id="maskHead">Animal masks</h3><div class="grid" id="maskGrid"></div>
 </section>
@@ -94,7 +99,7 @@
       <li><b>Earn coins</b> as Luna harvests, fishes and sells at the Market.</li>
       <li><b>Island life</b>: Luna, Lady Moon and Solon share the chores. Solon feeds the pups, herds them at dusk and sweeps when the others are busy.</li>
       <li><b>Decorate</b> both islands, chop trees for wood, and build.</li>
-      <li><b>Play</b> in Controller mode with a thumb stick. Press M to cycle Luna, Lady Moon and Solon.</li>
+      <li><b>Play</b> with the controller. Pick Luna, Lady Moon or Solon, and press Pause if you want them to hold still.</li>
     </ul>
     <button type="button" id="wStart">Start playing</button>
   </div>
@@ -108,7 +113,7 @@
     <button type="button" data-act="wave" class="pb b3" aria-label="Wave (Q)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 13.2V8.4a1.2 1.2 0 0 1 2.4 0"/><path d="M10.6 12.4V6.1a1.2 1.2 0 0 1 2.4 0V12"/><path d="M13 12.5V7.3a1.2 1.2 0 0 1 2.4 0V13"/><path d="M15.4 12.8c.15-.9.85-1.4 1.5-1.1.65.28.8 1.15.45 1.85"/><path d="M16.9 14.4c.7 1.15.4 2.4-.45 3.3-1 1.1-2.4 1.7-4.3 1.7-2 0-3.35-.85-4.2-2.1L6 14.2a1.15 1.15 0 0 1 1.85-1.4l.85 1"/></svg><small>Wave</small></button>
     <button type="button" data-act="throw" class="pb b4" aria-label="Throw the ball (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg><small>Fetch</small></button>
   </div>
-  <div id="ctrlBar"><span>Controller mode</span><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
+  <div id="ctrlBar"><span>Steering</span><button type="button" data-who="luna">Luna</button><button type="button" data-who="moon">Moon</button><button type="button" data-who="solon">Solon</button><button type="button" id="ctrlHold">Pause</button><button type="button" id="ctrlGather">Gather</button><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
 </section>
 <div class="shot" id="shot" aria-live="polite"><span class="rec" aria-hidden="true"></span><span class="lbl" id="shotLbl">Auto cam</span></div>
 <!-- three.js r128: the local copy (public/vendor, filled by `npm install`) loads first; the CDN is only a fallback -->
@@ -117,6 +122,6 @@
 <script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>')</script>
 <script src="/vendor/three-postfx.js"></script>
 <script>if(window.THREE&&!THREE.UnrealBloomPass){['shaders/CopyShader','shaders/LuminosityHighPassShader','postprocessing/EffectComposer','postprocessing/RenderPass','postprocessing/ShaderPass','postprocessing/UnrealBloomPass'].forEach(function(f){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/'+f+'.js"><\/script>')})}</script>
-<script src="/game.js?v=27"></script>
+<script src="/game.js?v=28"></script>
 </body>
 </html>

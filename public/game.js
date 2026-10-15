@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v27 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v28 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -555,7 +555,7 @@ let zE=34;while(hAt(24,zE)>-1&&zE<90)zE+=0.25;
   addNightLight(24,top+2.4,zE+16.5);
 })();
 // seaside market at the foot of the pier: Luna sells her harvest and her catch here
-const PRICES={knit:18,herbs:6,honey:15,egg:5,apple:4,berries:3,wood:8,pumpkin:8,tomato:4,carrot:3,kale:4,lettuce:5,corn:4,garlic:3,
+const PRICES={knit:18,herbs:6,honey:15,egg:5,apple:4,berries:3,shell:4,blossom:3,wood:8,pumpkin:8,tomato:4,carrot:3,kale:4,lettuce:5,corn:4,garlic:3,
   'Bluegill':12,'Largemouth Bass':28,'Rainbow Trout':24,'Channel Catfish':30,'Koi':0,
   'Atlantic Mackerel':22,'Red Snapper':40,'Striped Bass':36,'Flounder':26,'Pufferfish':45};
 const MARKET=(function(){
@@ -1570,7 +1570,7 @@ function makeChestnutHairTexture(){
   const t=new T.CanvasTexture(cv);t.wrapS=T.RepeatWrapping;t.wrapT=T.ClampToEdgeWrapping;t.repeat.set(2.2,1);t.anisotropy=4;return t;
 }
 function buildCaretaker(){
-  const HIP=0.5,HEAD_S=0.84;
+  const HIP=0.86,HEAD_S=0.58;
   const root=new T.Group();const bodyPivot=new T.Group();root.add(bodyPivot);
   const skinMat=new T.MeshStandardMaterial({color:'#f8c6a6',roughness:0.6});
   const hairTex=makeChestnutHairTexture();
@@ -1596,27 +1596,27 @@ function buildCaretaker(){
   shadowDisc.rotation.x=-Math.PI/2;shadowDisc.position.y=0.03;root.add(shadowDisc);
   const charLight=new T.PointLight(0xffdfc2,0.35,7,2);charLight.position.set(0,2.0,1.15);root.add(charLight);
 
-  // head sits right on the collar; scaled so head+hair is ~3/4 of body height, like the reference
-  const headGroup=new T.Group();headGroup.position.set(0,1.02+0.47*HEAD_S,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
+  // head is smaller than the old chibi ball so the torso, arms and legs read at a human height, like her still
+  const headGroup=new T.Group();headGroup.position.set(0,HIP+0.92,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
   const headGeo=new T.SphereGeometry(0.51,36,28);headGeo.scale(1.02,0.95,1.12);headGeo.rotateY(-Math.PI/2); // after the turn: 0.571 wide, 0.52 deep
   const headMesh=new T.Mesh(headGeo,headMat);headMesh.castShadow=true;headGroup.add(headMesh);
   const noseMesh=new T.Mesh(new T.SphereGeometry(0.05,14,12),noseMat);noseMesh.scale.set(1.15,0.72,0.85);noseMesh.position.set(0,-0.02,0.49);headGroup.add(noseMesh);
   const hairGrp=new T.Group();hairGrp.add(buildHair(hairMat));hairGrp.add(buildHairLocks(hairShape(HAIR_LUNA),hairLockMat,{n:16,seed:17}));headGroup.add(hairGrp);
 
-  const neck=new T.Mesh(new T.CylinderGeometry(0.1,0.12,0.12,12),skinMat);neck.position.set(0,1.03,0);bodyPivot.add(neck);
-  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.26,0.33,0.54,24),shirtMat);shirtMesh.scale.set(1.12,1.0,0.82);shirtMesh.position.set(0,0.76,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
-  const collar=new T.Mesh(new T.TorusGeometry(0.125,0.02,8,20),shirtMat);collar.rotation.x=Math.PI/2;collar.position.set(0,1.03,0);bodyPivot.add(collar);
+  const neck=new T.Mesh(new T.CylinderGeometry(0.09,0.11,0.16,12),skinMat);neck.position.set(0,HIP+0.78,0);bodyPivot.add(neck);
+  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.24,0.32,0.74,24),shirtMat);shirtMesh.scale.set(1.05,1.0,0.78);shirtMesh.position.set(0,HIP+0.38,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
+  const collar=new T.Mesh(new T.TorusGeometry(0.12,0.02,8,20),shirtMat);collar.rotation.x=Math.PI/2;collar.position.set(0,HIP+0.76,0);bodyPivot.add(collar);
 
   let handR=null,can=null;
   function makeArm(side){
-    const g=new T.Group();g.position.set(side*0.27,0.97,0);
-    const sleeve=new T.Mesh(new T.CylinderGeometry(0.11,0.14,0.22,14),shirtMat);sleeve.position.set(side*0.06,-0.07,0);sleeve.rotation.z=side*0.6;g.add(sleeve);
-    const arm=new T.Mesh(new T.CylinderGeometry(0.062,0.055,0.32,12),skinMat);arm.position.set(side*0.17,-0.25,0);arm.rotation.z=side*0.42;g.add(arm);
-    const hand=new T.Mesh(new T.SphereGeometry(0.1,14,12),skinMat);hand.position.set(side*0.245,-0.41,0.01);g.add(hand);
+    const g=new T.Group();g.position.set(side*0.32,HIP+0.68,0);
+    const sleeve=new T.Mesh(new T.CylinderGeometry(0.09,0.11,0.28,14),shirtMat);sleeve.position.set(side*0.04,-0.12,0);sleeve.rotation.z=side*0.28;g.add(sleeve);
+    const arm=new T.Mesh(new T.CylinderGeometry(0.055,0.048,0.52,12),skinMat);arm.position.set(side*0.1,-0.46,0);arm.rotation.z=side*0.12;g.add(arm);
+    const hand=new T.Mesh(new T.SphereGeometry(0.085,14,12),skinMat);hand.position.set(side*0.14,-0.76,0.01);g.add(hand);
     if(side>0){
-      handR=new T.Object3D();handR.position.set(0.245,-0.45,0.06);g.add(handR);
+      handR=new T.Object3D();handR.position.set(0.14,-0.8,0.06);g.add(handR);
       // watering can, shown only while watering
-      can=new T.Group();can.position.set(0.25,-0.44,0.04);can.visible=false;g.add(can);
+      can=new T.Group();can.position.set(0.16,-0.78,0.04);can.visible=false;g.add(can);
       const cm=new T.MeshStandardMaterial({color:'#5fae6e',roughness:0.45,metalness:0.25});
       const body=new T.Mesh(new T.CylinderGeometry(0.085,0.095,0.16,14),cm);body.position.y=-0.04;can.add(body);
       const spout=new T.Mesh(new T.CylinderGeometry(0.014,0.02,0.24,8),cm);spout.position.set(0,0.0,0.15);spout.rotation.x=1.05;can.add(spout);
@@ -1630,12 +1630,12 @@ function buildCaretaker(){
   const pelvis=new T.Mesh(new T.CylinderGeometry(0.3,0.31,0.18,18),shortsMat);pelvis.scale.set(1.07,1,0.8);pelvis.position.set(0,HIP+0.02,0);bodyPivot.add(pelvis);
 
   function makeLeg(side){
-    const g=new T.Group();g.position.set(side*0.145,HIP,0);
-    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.15,0.155,0.2,16),shortsMat);shortLeg.position.set(0,-0.08,0);g.add(shortLeg);
-    const cuff=new T.Mesh(new T.CylinderGeometry(0.165,0.165,0.07,16),shortsCuffMat);cuff.position.set(0,-0.19,0);g.add(cuff);
-    const calf=new T.Mesh(new T.CylinderGeometry(0.07,0.064,0.26,12),skinMat);calf.position.set(0,-0.33,0);g.add(calf);
-    const pant=new T.Mesh(new T.CylinderGeometry(0.155,0.1,0.3,14),shortsMat);pant.position.set(0,-0.3,0);pant.visible=false;pant.castShadow=true;g.add(pant);
-    const foot=new T.Group();foot.position.set(0,-0.445,0.04);
+    const g=new T.Group();g.position.set(side*0.13,HIP,0);
+    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.13,0.135,0.32,16),shortsMat);shortLeg.position.set(0,-0.14,0);g.add(shortLeg);
+    const cuff=new T.Mesh(new T.CylinderGeometry(0.145,0.145,0.06,16),shortsCuffMat);cuff.position.set(0,-0.32,0);g.add(cuff);
+    const calf=new T.Mesh(new T.CylinderGeometry(0.062,0.055,0.46,12),skinMat);calf.position.set(0,-0.54,0);g.add(calf);
+    const pant=new T.Mesh(new T.CylinderGeometry(0.13,0.09,0.7,14),shortsMat);pant.position.set(0,-0.38,0);pant.visible=false;pant.castShadow=true;g.add(pant);
+    const foot=new T.Group();foot.position.set(0,-0.8,0.05);
     const sole=new T.Mesh(new T.BoxGeometry(0.2,0.04,0.33),shoeWhiteMat);sole.position.set(0,-0.04,0.02);foot.add(sole);
     const upper=new T.Mesh(new T.BoxGeometry(0.172,0.082,0.17),shoeBlackMat);upper.position.set(0,0.018,-0.025);foot.add(upper);
     const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhiteMat);toe.scale.set(1.05,0.46,0.72);toe.position.set(0,-0.012,0.128);foot.add(toe);
@@ -1644,7 +1644,7 @@ function buildCaretaker(){
     g.add(foot);bodyPivot.add(g);return {leg:g,foot,shortLeg,cuff,pant};
   }
   const leftLeg=makeLeg(-1),rightLeg=makeLeg(1);
-  bodyPivot.scale.setScalar(1.12);scene.add(root);
+  bodyPivot.scale.setScalar(1);scene.add(root);
   return {root,bodyPivot,headGroup,leftArm,rightArm,leftLeg,rightLeg,shadowDisc,charLight,faceObj,HIP,handR,can,nose:noseMesh,
     mats:{shirtMat,shortsMat,shortsCuffMat,shoeBlackMat,shoeWhiteMat,skinMat}};
 }
@@ -2209,7 +2209,7 @@ function buildLadyMoonProps(){
 }
 
 function buildLadyMoon(){
-  const HIP=0.5,HEAD_S=0.86;
+  const HIP=0.86,HEAD_S=0.58;
   const root=new T.Group(),bodyPivot=new T.Group();root.add(bodyPivot);
   const skinMat=new T.MeshStandardMaterial({color:'#f8c6a6',roughness:0.6});
   const noseMat=new T.MeshStandardMaterial({color:'#f08c64',roughness:0.55});
@@ -2239,7 +2239,7 @@ function buildLadyMoon(){
   shadowDisc.rotation.x=-Math.PI/2;shadowDisc.position.y=0.03;root.add(shadowDisc);
 
   // Head
-  const headGroup=new T.Group();headGroup.position.set(0,1.02+0.47*HEAD_S,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
+  const headGroup=new T.Group();headGroup.position.set(0,HIP+0.92,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
   const headGeo=new T.SphereGeometry(0.49,36,28);headGeo.scale(0.98,0.96,1.08);headGeo.rotateY(-Math.PI/2); // after the turn: 0.529 wide, 0.48 deep
   const headMesh=new T.Mesh(headGeo,headMat);headMesh.castShadow=true;headGroup.add(headMesh);
   // Small triangular nose
@@ -2260,19 +2260,19 @@ function buildLadyMoon(){
   for(const k in hats)headGroup.add(hats[k]);
 
   // Neck & Rainbow Onesie Torso
-  const neck=new T.Mesh(new T.CylinderGeometry(0.1,0.12,0.12,12),skinMat);neck.position.set(0,1.03,0);bodyPivot.add(neck);
-  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.26,0.33,0.54,24),shirtMat);shirtMesh.scale.set(1.12,1.0,0.84);shirtMesh.position.set(0,0.76,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
-  const collar=new T.Mesh(new T.TorusGeometry(0.13,0.025,8,20),mStd('#e82c2a',{roughness:0.8}));collar.rotation.x=Math.PI/2;collar.position.set(0,1.03,0);bodyPivot.add(collar);
+  const neck=new T.Mesh(new T.CylinderGeometry(0.09,0.11,0.16,12),skinMat);neck.position.set(0,HIP+0.78,0);bodyPivot.add(neck);
+  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.24,0.32,0.74,24),shirtMat);shirtMesh.scale.set(1.05,1.0,0.8);shirtMesh.position.set(0,HIP+0.38,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
+  const collar=new T.Mesh(new T.TorusGeometry(0.12,0.022,8,20),mStd('#e82c2a',{roughness:0.8}));collar.rotation.x=Math.PI/2;collar.position.set(0,HIP+0.76,0);bodyPivot.add(collar);
 
   // Full rainbow-striped long sleeves + round hands + crafter ring
   const ringMat=mStd('#f5c842',{metalness:0.7,roughness:0.25});
   function makeArm(side){
-    const g=new T.Group();g.position.set(side*0.27,0.97,0);
-    const sleeve=new T.Mesh(new T.CylinderGeometry(0.105,0.125,0.22,14),limbMat);sleeve.position.set(side*0.06,-0.07,0);sleeve.rotation.z=side*0.58;sleeve.castShadow=true;g.add(sleeve);
-    const arm=new T.Mesh(new T.CylinderGeometry(0.088,0.078,0.30,14),limbMat);arm.position.set(side*0.165,-0.24,0);arm.rotation.z=side*0.42;arm.castShadow=true;g.add(arm);
-    const cuff=new T.Mesh(new T.TorusGeometry(0.076,0.015,6,14),mStd('#e82c2a',{roughness:0.8}));cuff.position.set(side*0.22,-0.36,0);cuff.rotation.x=Math.PI/2;g.add(cuff);
-    const hand=new T.Mesh(new T.SphereGeometry(0.098,14,12),skinMat);hand.position.set(side*0.245,-0.41,0.01);g.add(hand);
-    const ring=new T.Mesh(new T.TorusGeometry(0.032,0.008,6,12),ringMat);ring.position.set(side*0.25,-0.43,0.085);g.add(ring);
+    const g=new T.Group();g.position.set(side*0.32,HIP+0.68,0);
+    const sleeve=new T.Mesh(new T.CylinderGeometry(0.085,0.095,0.34,14),limbMat);sleeve.position.set(side*0.03,-0.16,0);sleeve.rotation.z=side*0.16;sleeve.castShadow=true;g.add(sleeve);
+    const arm=new T.Mesh(new T.CylinderGeometry(0.07,0.062,0.42,14),limbMat);arm.position.set(side*0.07,-0.5,0);arm.rotation.z=side*0.08;arm.castShadow=true;g.add(arm);
+    const cuff=new T.Mesh(new T.TorusGeometry(0.064,0.014,6,14),mStd('#e82c2a',{roughness:0.8}));cuff.position.set(side*0.09,-0.72,0);cuff.rotation.x=Math.PI/2;g.add(cuff);
+    const hand=new T.Mesh(new T.SphereGeometry(0.08,14,12),skinMat);hand.position.set(side*0.1,-0.78,0.01);g.add(hand);
+    const ring=new T.Mesh(new T.TorusGeometry(0.028,0.007,6,12),ringMat);ring.position.set(side*0.1,-0.8,0.07);g.add(ring);
     bodyPivot.add(g);return g;
   }
   const leftArm=makeArm(-1),rightArm=makeArm(1);
@@ -2286,10 +2286,10 @@ function buildLadyMoon(){
   // Pelvis & Rainbow-striped full-length legs + sneakers + barefoot option
   const pelvis=new T.Mesh(new T.CylinderGeometry(0.3,0.31,0.18,18),shortsMat);pelvis.scale.set(1.08,1,0.82);pelvis.position.set(0,HIP+0.02,0);bodyPivot.add(pelvis);
   function makeLeg(side){
-    const g=new T.Group();g.position.set(side*0.145,HIP,0);
-    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.145,0.135,0.22,16),shortsMat);shortLeg.position.set(0,-0.09,0);shortLeg.castShadow=true;g.add(shortLeg);
-    const pant=new T.Mesh(new T.CylinderGeometry(0.135,0.108,0.28,16),shortsMat);pant.position.set(0,-0.29,0);pant.castShadow=true;g.add(pant);
-    const shoe=new T.Group();shoe.position.set(0,-0.445,0.04);
+    const g=new T.Group();g.position.set(side*0.13,HIP,0);
+    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.125,0.115,0.34,16),shortsMat);shortLeg.position.set(0,-0.16,0);shortLeg.castShadow=true;g.add(shortLeg);
+    const pant=new T.Mesh(new T.CylinderGeometry(0.12,0.085,0.72,16),shortsMat);pant.position.set(0,-0.4,0);pant.castShadow=true;g.add(pant);
+    const shoe=new T.Group();shoe.position.set(0,-0.8,0.05);
     const sole=new T.Mesh(new T.BoxGeometry(0.2,0.04,0.33),shoeWhiteMat);sole.position.set(0,-0.04,0.02);shoe.add(sole);
     const upper=new T.Mesh(new T.BoxGeometry(0.172,0.082,0.17),shoeBlackMat);upper.position.set(0,0.018,-0.025);shoe.add(upper);
     const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhiteMat);toe.scale.set(1.02,0.46,0.7);toe.position.set(0,-0.012,0.128);shoe.add(toe);
@@ -2297,14 +2297,14 @@ function buildLadyMoon(){
     for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.1,0.012,0.015),shoeBlackMat);lace.position.set(0,0.068,-0.01+k*0.028);shoe.add(lace);}
     g.add(shoe);
     // Barefoot mesh for cross-legged knitting pose
-    const bareFoot=new T.Group();bareFoot.position.set(0,-0.44,0.05);bareFoot.visible=false;
+    const bareFoot=new T.Group();bareFoot.position.set(0,-0.78,0.06);bareFoot.visible=false;
     blob(bareFoot,SPH,skinMat,0,0,0,0.085,0.055,0.13,false);
     for(let t=-2;t<=2;t++)blob(bareFoot,SPH,skinMat,t*0.026,-0.01,0.12,0.016,0.016,0.02,false);
     g.add(bareFoot);
     bodyPivot.add(g);return {leg:g,shoe,bareFoot,shortLeg,pant};
   }
   const leftLeg=makeLeg(-1),rightLeg=makeLeg(1);
-  bodyPivot.scale.setScalar(1.10);
+  bodyPivot.scale.setScalar(1);
   root.rotation.order='YXZ';
   root.userData.noWx=true;
   scene.add(root);
@@ -2323,9 +2323,9 @@ const MOON_HATS = [
   {id:'coral',name:'Coral Bucket Hat',icon:'🧶'},
   {id:'none',name:'No hat',icon:'💙'}
 ];
-const MOON_STYLE = {hat:'frog',outfit:'rainbow',mask:'none',userLockedHat:false};
+const MOON_STYLE = {hat:'strawberry',outfit:'rainbow',mask:'none',userLockedHat:false};
 try{
-  const ms=JSON.parse(localStorage.getItem('ladymoon-closet-v1')||'null');
+  const ms=JSON.parse(localStorage.getItem('ladymoon-closet-v2')||'null');
   if(ms){if(ms.hat)MOON_STYLE.hat=ms.hat;if(ms.outfit)MOON_STYLE.outfit=ms.outfit;if(ms.mask)MOON_STYLE.mask=ms.mask;if(ms.userLockedHat)MOON_STYLE.userLockedHat=true;}
 }catch(e){}
 
@@ -2373,7 +2373,7 @@ function applyLadyMoonCloset(fromUser){
   if(fromUser){
     LM.twirlT=0.95;
     emote(ladyMoon.headGroup,'sparkle',0.95);
-    try{localStorage.setItem('ladymoon-closet-v1',JSON.stringify(MOON_STYLE));}catch(e){}
+    try{localStorage.setItem('ladymoon-closet-v2',JSON.stringify(MOON_STYLE));}catch(e){}
   }
 }
 setTimeout(()=>applyLadyMoonCloset(false),0);
@@ -2452,28 +2452,26 @@ function buildSolonGlasses(){
   blob(g,BOX,frame,0,0.018,0.515,0.11,0.03,0.028,false);
   return g;
 }
-function buildFrogBeanie(){
+function buildPomBeanie(){
+  // knit cap with two round pom-poms, matching Solon's still (not a frog face)
   const g=new T.Group();
-  const col='#67b84e';
-  const hatMat=new T.MeshStandardMaterial({color:col,map:CROCHET_TEX,bumpMap:CROCHET_TEX,bumpScale:0.045,roughness:0.95,side:T.DoubleSide});
-  const geo=gridGeo(48,16,(u,v)=>{
-    const a=u*Math.PI*2,p=v*Math.PI*0.52;
-    let r=Math.sin(p)*0.55,y=Math.cos(p)*0.38;
-    if(v>0.84){const k=(v-0.84)/0.16;r=0.5+k*0.035;y=0.06-k*0.05;}
+  const col='#6fbf55';
+  const hatMat=new T.MeshStandardMaterial({color:col,map:CROCHET_TEX,bumpMap:CROCHET_TEX,bumpScale:0.05,roughness:0.96,side:T.DoubleSide});
+  const geo=gridGeo(48,18,(u,v)=>{
+    const a=u*Math.PI*2,p=v*Math.PI*0.48;
+    let r=Math.sin(p)*0.52,y=Math.cos(p)*0.42+0.02;
+    if(v>0.82){const k=(v-0.82)/0.18;r=0.5+k*0.06;y=0.08-k*0.06;}
     return [Math.cos(a)*r,y,Math.sin(a)*r];
   },true);
   const dome=new T.Mesh(geo,hatMat);dome.castShadow=true;dome.receiveShadow=true;g.add(dome);
-  const pupil=mStd('#1a2414',{roughness:0.35}),shine=mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.35});
+  const rib=new T.Mesh(new T.TorusGeometry(0.5,0.045,8,24),hatMat);rib.rotation.x=Math.PI/2;rib.position.y=0.02;g.add(rib);
   for(const sx of[-1,1]){
-    const eg=new T.Group();eg.position.set(sx*0.2,0.4,0.05);g.add(eg);
-    blob(eg,SPH,hatMat,0,0,0,0.145,0.15,0.145);
-    blob(eg,SPH,pupil,sx*0.02,0.02,0.1,0.055,0.058,0.03,false);
-    blob(eg,SPH,shine,sx*0.05,0.06,0.11,0.02,0.02,0.01,false);
+    const pom=new T.Mesh(new T.SphereGeometry(0.13,16,12),hatMat);pom.position.set(sx*0.16,0.46,0.02);pom.castShadow=true;g.add(pom);
   }
   return g;
 }
 function buildSolon(){
-  const HIP=0.5,HEAD_S=0.84;
+  const HIP=0.86,HEAD_S=0.58;
   const root=new T.Group(),bodyPivot=new T.Group();root.add(bodyPivot);
   const skinMat=new T.MeshStandardMaterial({color:'#f6c3a2',roughness:0.6});
   const hairTex=makeChestnutHairTexture();
@@ -2492,51 +2490,78 @@ function buildSolon(){
   sg.addColorStop(0,'rgba(15,20,35,0.48)');sg.addColorStop(1,'rgba(15,20,35,0)');sh.fillStyle=sg;sh.fillRect(0,0,128,128);
   const shadowDisc=new T.Mesh(new T.PlaneGeometry(1.55,1.55),new T.MeshBasicMaterial({map:new T.CanvasTexture(shCv),transparent:true,depthWrite:false}));
   shadowDisc.rotation.x=-Math.PI/2;shadowDisc.position.y=0.03;root.add(shadowDisc);
-  const headGroup=new T.Group();headGroup.position.set(0,1.02+0.47*HEAD_S,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
+  const headGroup=new T.Group();headGroup.position.set(0,HIP+0.92,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
   const headGeo=new T.SphereGeometry(0.5,36,28);headGeo.scale(1.0,0.96,1.08);headGeo.rotateY(-Math.PI/2);
   const headMesh=new T.Mesh(headGeo,headMat);headMesh.castShadow=true;headGroup.add(headMesh);
   const nose=new T.Mesh(new T.SphereGeometry(0.048,12,10),noseMat);nose.scale.set(1.2,0.75,0.85);nose.position.set(0,-0.02,0.49);headGroup.add(nose);
   const glasses=buildSolonGlasses();headGroup.add(glasses);
   const hair=buildHair(hairMat,HAIR_SOLON);headGroup.add(hair);
-  const beanie=buildFrogBeanie();beanie.position.set(0,0.34,0.02);beanie.scale.setScalar(1.05);headGroup.add(beanie);
-  const neck=new T.Mesh(new T.CylinderGeometry(0.1,0.12,0.12,12),skinMat);neck.position.set(0,1.03,0);bodyPivot.add(neck);
-  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.27,0.34,0.52,24),shirtMat);shirtMesh.scale.set(1.16,1,0.84);shirtMesh.position.set(0,0.76,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
-  const collar=new T.Mesh(new T.TorusGeometry(0.125,0.018,8,20),shirtMat);collar.rotation.x=Math.PI/2;collar.position.set(0,1.02,0);bodyPivot.add(collar);
+  const beanie=buildPomBeanie();beanie.position.set(0,0.28,0);beanie.scale.setScalar(1.02);headGroup.add(beanie);
+  const neck=new T.Mesh(new T.CylinderGeometry(0.09,0.11,0.16,12),skinMat);neck.position.set(0,HIP+0.78,0);bodyPivot.add(neck);
+  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.25,0.33,0.72,24),shirtMat);shirtMesh.scale.set(1.08,1,0.8);shirtMesh.position.set(0,HIP+0.38,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
+  const collar=new T.Mesh(new T.TorusGeometry(0.12,0.018,8,20),shirtMat);collar.rotation.x=Math.PI/2;collar.position.set(0,HIP+0.75,0);bodyPivot.add(collar);
   function makeArm(side){
-    const g=new T.Group();g.position.set(side*0.3,0.96,0);
-    const sleeve=new T.Mesh(new T.CylinderGeometry(0.11,0.13,0.16,14),shirtMat);sleeve.position.set(side*0.05,-0.04,0);sleeve.rotation.z=side*0.55;g.add(sleeve);
-    const arm=new T.Mesh(new T.CylinderGeometry(0.062,0.055,0.3,12),skinMat);arm.position.set(side*0.16,-0.22,0);arm.rotation.z=side*0.38;g.add(arm);
-    const hand=new T.Mesh(new T.SphereGeometry(0.095,14,12),skinMat);hand.position.set(side*0.24,-0.4,0.01);g.add(hand);
+    const g=new T.Group();g.position.set(side*0.32,HIP+0.68,0);
+    const sleeve=new T.Mesh(new T.CylinderGeometry(0.09,0.11,0.22,14),shirtMat);sleeve.position.set(side*0.03,-0.08,0);sleeve.rotation.z=side*0.22;g.add(sleeve);
+    const arm=new T.Mesh(new T.CylinderGeometry(0.055,0.048,0.5,12),skinMat);arm.position.set(side*0.08,-0.4,0);arm.rotation.z=side*0.1;g.add(arm);
+    const hand=new T.Mesh(new T.SphereGeometry(0.082,14,12),skinMat);hand.position.set(side*0.12,-0.7,0.01);g.add(hand);
     bodyPivot.add(g);return g;
   }
   const leftArm=makeArm(-1),rightArm=makeArm(1);
   const pelvis=new T.Mesh(new T.CylinderGeometry(0.3,0.32,0.16,18),shortsMat);pelvis.scale.set(1.1,1,0.82);pelvis.position.set(0,HIP+0.02,0);bodyPivot.add(pelvis);
   function makeLeg(side){
-    const g=new T.Group();g.position.set(side*0.15,HIP,0);
-    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.145,0.15,0.18,16),shortsMat);shortLeg.position.set(0,-0.07,0);g.add(shortLeg);
-    const cuff=new T.Mesh(new T.CylinderGeometry(0.158,0.158,0.05,16),shortsCuffMat);cuff.position.set(0,-0.17,0);g.add(cuff);
-    const calf=new T.Mesh(new T.CylinderGeometry(0.068,0.06,0.26,12),skinMat);calf.position.set(0,-0.32,0);g.add(calf);
-    const shoe=new T.Group();shoe.position.set(0,-0.44,0.04);
+    const g=new T.Group();g.position.set(side*0.13,HIP,0);
+    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.13,0.135,0.32,16),shortsMat);shortLeg.position.set(0,-0.14,0);g.add(shortLeg);
+    const cuff=new T.Mesh(new T.CylinderGeometry(0.142,0.142,0.055,16),shortsCuffMat);cuff.position.set(0,-0.32,0);g.add(cuff);
+    const calf=new T.Mesh(new T.CylinderGeometry(0.06,0.052,0.46,12),skinMat);calf.position.set(0,-0.54,0);g.add(calf);
+    const pant=new T.Mesh(new T.CylinderGeometry(0.13,0.09,0.7,14),shortsMat);pant.position.set(0,-0.38,0);pant.visible=false;pant.castShadow=true;g.add(pant);
+    const shoe=new T.Group();shoe.position.set(0,-0.8,0.05);
     const sole=new T.Mesh(new T.BoxGeometry(0.2,0.04,0.32),shoeWhite);sole.position.set(0,-0.04,0.02);shoe.add(sole);
     const upper=new T.Mesh(new T.BoxGeometry(0.17,0.08,0.16),shoeGreen);upper.position.set(0,0.016,-0.02);shoe.add(upper);
     const toe=new T.Mesh(new T.SphereGeometry(0.088,14,10),shoeWhite);toe.scale.set(1.02,0.46,0.7);toe.position.set(0,-0.012,0.125);shoe.add(toe);
     for(let k=0;k<3;k++){const lace=new T.Mesh(new T.BoxGeometry(0.1,0.012,0.014),shoeWhite);lace.position.set(0,0.064,-0.005+k*0.026);shoe.add(lace);}
-    g.add(shoe);bodyPivot.add(g);return {leg:g,shoe,shortLeg,cuff};
+    g.add(shoe);bodyPivot.add(g);return {leg:g,shoe,shortLeg,cuff,pant};
   }
   const leftLeg=makeLeg(-1),rightLeg=makeLeg(1);
-  bodyPivot.scale.setScalar(1.1);root.rotation.order='YXZ';root.userData.noWx=true;scene.add(root);
+  bodyPivot.scale.setScalar(1);root.rotation.order='YXZ';root.userData.noWx=true;scene.add(root);
   return {root,bodyPivot,headGroup,leftArm,rightArm,leftLeg,rightLeg,shadowDisc,faceObj,HIP,glasses,beanie,hair,nose,
-    mats:{shirtMat,shortsMat,skinMat,shoeGreen,shoeWhite}};
+    signatureShirt:shirtMat.map,
+    mats:{shirtMat,shortsMat,shortsCuffMat,skinMat,shoeGreen,shoeWhite}};
 }
 const solon=buildSolon();
-const SOLON_STYLE={hat:true};
-try{const ss=JSON.parse(localStorage.getItem('solon-closet-v1')||'null');if(ss&&ss.hat===false)SOLON_STYLE.hat=false;}catch(e){}
+const SOLON_STYLE={hat:true,outfit:'solon',mask:'none'};
+try{const ss=JSON.parse(localStorage.getItem('solon-closet-v2')||'null');if(ss){if(ss.hat===false)SOLON_STYLE.hat=false;if(ss.outfit)SOLON_STYLE.outfit=ss.outfit;if(ss.mask)SOLON_STYLE.mask=ss.mask;}}catch(e){}
 function applySolonCloset(fromUser){
-  solon.beanie.visible=SOLON_STYLE.hat!==false;
+  const M=solon.mats,W=solon.wardrobe;
+  const known=typeof OUTFITS!=='undefined'&&OUTFITS.some(o=>o.id===SOLON_STYLE.outfit&&!o.hidden&&(!o.price||owns(o.id)));
+  if(SOLON_STYLE.outfit!=='solon'&&!known)SOLON_STYLE.outfit='solon';
+  const sig=SOLON_STYLE.outfit==='solon';
+  const o=sig?null:OUTFITS.find(x=>x.id===SOLON_STYLE.outfit);
+  const masked=SOLON_STYLE.mask!=='none'&&!!W;
+  if(sig||!W){
+    M.shirtMat.map=solon.signatureShirt;M.shirtMat.color.set('#ffffff');M.shirtMat.needsUpdate=true;
+    M.shortsMat.map=TEX.fabric;M.shortsMat.color.set('#2a3f78');M.shortsMat.needsUpdate=true;
+    M.shortsCuffMat.color.set('#223668');
+    M.shoeGreen.color.set('#3cb44a');M.shoeWhite.color.set('#f4f4f2');
+    for(const L of[solon.leftLeg,solon.rightLeg]){L.shortLeg.visible=true;L.cuff.visible=true;if(L.pant)L.pant.visible=false;}
+    if(W){W.skirt.visible=false;for(const k in W.ACC)W.ACC[k].visible=false;for(const k in W.maskGroups)W.maskGroups[k].visible=masked&&k===SOLON_STYLE.mask;}
+    solon.glasses.visible=!masked;solon.nose.visible=!masked;
+  }else{
+    M.shirtMat.map=shirtTexture(o);M.shirtMat.color.set('#ffffff');M.shirtMat.needsUpdate=true;
+    M.shortsMat.map=null;M.shortsMat.color.set(o.bcol||'#2a3f78');M.shortsMat.needsUpdate=true;
+    M.shortsCuffMat.color.set(o.bcol||'#223668');
+    M.shoeGreen.color.set(o.shoe[0]);M.shoeWhite.color.set(o.shoe[1]);
+    for(const L of[solon.leftLeg,solon.rightLeg]){L.shortLeg.visible=o.bottom!=='skirt';L.cuff.visible=o.bottom==='shorts';if(L.pant)L.pant.visible=o.bottom==='pants';if(L.pant)L.pant.material=M.shortsMat;L.shortLeg.material=M.shortsMat;}
+    W.skirt.visible=o.bottom==='skirt';
+    for(const k in W.ACC)W.ACC[k].visible=o.acc===k&&!(masked&&k!=='bandana');
+    if(o.accCol)W.accMat.color.set(o.accCol);
+    for(const k in W.maskGroups)W.maskGroups[k].visible=k===SOLON_STYLE.mask;
+    solon.glasses.visible=!masked;solon.nose.visible=!masked;
+  }
+  solon.beanie.visible=SOLON_STYLE.hat!==false&&(sig||!(o&&(o.acc==='beanie'||o.acc==='cap')));
   solon.hair.visible=true;
-  if(fromUser){SL.twirlT=0.7;emote(solon.headGroup,'sparkle',0.9);try{localStorage.setItem('solon-closet-v1',JSON.stringify(SOLON_STYLE));}catch(e){}}
+  if(fromUser){SL.twirlT=0.7;emote(solon.headGroup,'sparkle',0.9);try{localStorage.setItem('solon-closet-v2',JSON.stringify(SOLON_STYLE));}catch(e){}}
 }
-applySolonCloset(false);
 const _solSpawn=snapWalkable(-18.2,25.8);
 const SL={
   x:_solSpawn[0],z:_solSpawn[1],y:0,yaw:-0.4,pitch:0,speed:0,walkSpeed:3.05,
@@ -2559,7 +2584,7 @@ function poseSolon(dt,time){
   if(SL.jumpT>0)hop+=Math.sin((1-SL.jumpT/0.62)*Math.PI)*0.72;
   const gy=SL.inside?0:walkHeight(SL.x,SL.z);
   SL.y=lerp(SL.y,gy,Math.min(1,dt*22));
-  M.root.position.set(SL.x,SL.y-SL.sitK*0.42-SL.squatK*0.2+hop,SL.z);
+  M.root.position.set(SL.x,SL.y-SL.sitK*0.7-SL.squatK*0.28+hop,SL.z);
   M.root.rotation.y=SL.yaw+tw;
   const mv=clamp(SL.speed/3.3,0,1),running=SL.speed>3.3;
   if(mv>0.03)SL.walkPhase+=dt*SL.speed*(running?4.1:3.6);
@@ -2710,7 +2735,7 @@ function poseLadyMoon(dt,time){
 
   const gy=LM.inside?0:walkHeight(LM.x,LM.z);
   LM.y=lerp(LM.y,gy,Math.min(1,dt*22));
-  M.root.position.set(LM.x,LM.y-LM.sitK*0.42-LM.squatK*0.22+hop,LM.z);
+  M.root.position.set(LM.x,LM.y-LM.sitK*0.7-LM.squatK*0.3+hop,LM.z);
   M.root.rotation.y=LM.yaw+tw;
 
   const mv=clamp(LM.speed/3.2,0,1),running=LM.speed>3.2;
@@ -2839,6 +2864,7 @@ function updateLadyMoon(dt,time){
       LM.inside=true;scene.remove(ladyMoon.root);INSIDE.scene.add(ladyMoon.root);
       LM.ix=-2.2;LM.iz=1.8;LM.yaw=0.5;LM.speed=0;beginLadyMoonAct('knitSit');
     }
+    if(HOLD.moon){LM.speed=0;poseLadyMoon(dt,time);return;}
     LM.timer-=dt;
     if(LM.timer<=0){
       const inActs=['knitSit','yarnBall','strawberry','dance','wave'];
@@ -2854,6 +2880,11 @@ function updateLadyMoon(dt,time){
     LM.x=s[0];LM.z=s[1];LM.state='idle';LM.timer=1.0;
   }
 
+  if(HOLD.moon){
+    LM.speed=lerp(LM.speed,0,Math.min(1,dt*12));
+    if(LM.state==='walk'){LM.state='idle';LM.path=[];}
+    poseLadyMoon(dt,time);return;
+  }
   if(CTRL.on&&FOLLOW_MOON){moonCtrlUpdate(dt,time);return;}
   if(CTRL.moonStarted){CTRL.moonStarted=false;LM.mAct=null;LM.state='idle';LM.timer=0.6;}
   LM.timer-=dt;
@@ -2904,6 +2935,7 @@ function updateLadyMoon(dt,time){
 }
 
 function ladyMoonStatus(){
+  if(HOLD.moon)return 'Lady Moon is holding still';
   if(CTRL.on&&FOLLOW_MOON)return moonCtrlStatus();
   const hatLbl={frog:'🐸',strawberry:'🍓',coral:'🧶',none:'💙'}[MOON_STYLE.hat]||'';
   const sp=LM.spot;
@@ -3772,6 +3804,7 @@ const AI={
 };
 AI.y=walkHeight(AI.x,AI.z);AI.checkX=AI.x;AI.checkZ=AI.z;
 const STILL={on:false};
+const HOLD={luna:false,moon:false,solon:false};
 caretaker.root.position.set(AI.x,AI.y,AI.z);
 caretaker.root.userData.noWx=true;
 
@@ -4014,7 +4047,7 @@ const CL={
 };
 
 /* ================= market economy: coins, Luna's basket, things she owns ================= */
-const GOOD_ICON={knit:'🧶',herbs:'🌿',honey:'🍯',egg:'🥚',apple:'🍎',berries:'🫐',wood:'🪵',pumpkin:'🎃',tomato:'🍅',carrot:'🥕',kale:'🥬',lettuce:'🥬',corn:'🌽',garlic:'🧄'};
+const GOOD_ICON={knit:'🧶',herbs:'🌿',honey:'🍯',egg:'🥚',apple:'🍎',berries:'🫐',shell:'🐚',blossom:'🌸',wood:'🪵',pumpkin:'🎃',tomato:'🍅',carrot:'🥕',kale:'🥬',lettuce:'🥬',corn:'🌽',garlic:'🧄'};
 function goodIcon(k){return GOOD_ICON[k]||(k==='Pufferfish'?'🐡':'🐟');}
 function goodName(k){return GOOD_ICON[k]?k.charAt(0).toUpperCase()+k.slice(1):k;}
 const ECON={coins:75,wood:0,inv:{},owned:[],placed:[],chopped:[],earned:0,listeners:[]};
@@ -4066,7 +4099,11 @@ const SHOP_OUTFITS=[
   {id:'sleepy',name:'Sleepy Pups',price:170,bg:'#26315e',bottom:'pants',bcol:'#3a4166',shoe:['#f2c94c','#26315e'],acc:'beanie',accCol:'#f2c94c',
     draw:(c,S)=>{CL.scatter(c,S,40,111,(x,y,a,k)=>CL.star(c,x,y,3+k*5,'#ffe48a'));CL.tile(c,S,3,4,(x,y,i)=>{if(i%2)CL.moon(c,x,y,22,'#ffe48a','#26315e');else CL.dog(c,x,y,32,BREEDS.sheltie);});}},
   {id:'seabreeze',name:'Sea Breeze',price:210,bg:'#f4f6fb',bottom:'skirt',bcol:'#26315e',shoe:['#ffffff','#26315e'],acc:'cap',accCol:'#26315e',
-    draw:(c,S)=>{c.fillStyle='#2f4a8a';for(let y=0;y<S;y+=42)c.fillRect(0,y,S,16);CL.tile(c,S,3,3,(x,y)=>{CL.ell(c,x,y,38,38,0,'#f4f6fb');CL.anchor(c,x,y,56,'#d9483b');});}}
+    draw:(c,S)=>{c.fillStyle='#2f4a8a';for(let y=0;y<S;y+=42)c.fillRect(0,y,S,16);CL.tile(c,S,3,3,(x,y)=>{CL.ell(c,x,y,38,38,0,'#f4f6fb');CL.anchor(c,x,y,56,'#d9483b');});}},
+  {id:'strawday',name:'Strawberry Day',price:145,bg:'#ffe4ec',bottom:'shorts',bcol:'#f4a07a',shoe:['#2b2d31','#f7f7f4'],acc:'bow',accCol:'#e23b45',
+    draw:(c,S)=>CL.scatter(c,S,22,17,(x,y,a,k)=>{const w=14+k*10;CL.ell(c,x,y,w,w*1.05,a,'#e23b45');c.fillStyle='#3ea845';c.beginPath();c.ellipse(x,y-w*0.7,w*0.45,w*0.22,0,Math.PI,0);c.fill();})},
+  {id:'greenteam',name:'Green Team',price:135,bg:'#3cb44a',bottom:'shorts',bcol:'#2a3f78',shoe:['#3cb44a','#ffffff'],acc:'beanie',accCol:'#2f8a3a',
+    draw:(c,S)=>{c.fillStyle='#2f8a3a';c.fillRect(0,0,S,S);CL.tile(c,S,3,4,(x,y)=>{c.fillStyle='#f4f6f2';c.fillRect(x-26,y-14,52,28);c.strokeStyle='#1b1b1b';c.lineWidth=4;c.strokeRect(x-26,y-14,52,28);c.fillStyle='#1b1b1b';c.fillRect(x-12,y-4,7,7);c.fillRect(x+5,y-4,7,7);});}}
 ];
 const SHOP_MASKS=[{id:'bruno',name:'Bruno the Shepherd',price:240,base:'#cf8a3e',cap:'#211b18',lower:'#e3aa62',liner:'#211b18',ear:'#211b18',inner:'#d99a80',snout:'#3a2a20',snoutLow:'#3a2a20',tongue:true}];
 
@@ -4152,7 +4189,7 @@ function buildWardrobe(C){
   const accMat=mStd('#ff8fab',{roughness:0.7}).clone();
   const skirt=new T.Mesh(new T.CylinderGeometry(0.31,0.45,0.27,28,1,true),M.shortsMat);skirt.position.set(0,C.HIP-0.07,0);skirt.material.side=T.DoubleSide;skirt.visible=false;skirt.castShadow=true;C.bodyPivot.add(skirt);
   // accessories
-  const bandana=new T.Group();bandana.position.set(0,0.93,0.215);bandana.rotation.x=-0.25;C.bodyPivot.add(bandana);
+  const bandana=new T.Group();bandana.position.set(0,C.HIP+0.72,0.22);bandana.rotation.x=-0.25;C.bodyPivot.add(bandana);
   blob(bandana,new T.ConeGeometry(1,1,3),accMat,0,-0.07,0,0.2,0.22,0.03).rotation.set(Math.PI,0,0);blob(bandana,SPH,accMat,0,0.04,-0.02,0.05,0.04,0.04,false);
   const bow=new T.Group();bow.position.set(-0.3,0.43,0.2);bow.rotation.set(0.3,0,0.5);head.add(bow);
   for(const s of[-1,1]){const w=blob(bow,CONE,accMat,s*0.09,0,0,0.075,0.17,0.05);w.rotation.z=-s*Math.PI/2;}blob(bow,SPH,accMat,0,0,0,0.045,0.045,0.04);
@@ -4188,7 +4225,10 @@ function buildWardrobe(C){
 }
 const WARDROBE=buildWardrobe(caretaker);
 const MOON_WARDROBE=buildWardrobe(ladyMoon);
-MOON_WARDROBE.skirt.scale.set(1.12,1,1.0);
+const SOLON_WARDROBE=buildWardrobe(solon);
+for(const W of[WARDROBE,MOON_WARDROBE,SOLON_WARDROBE])W.skirt.scale.set(1.05,1.15,1.0);
+solon.wardrobe=SOLON_WARDROBE;
+applySolonCloset(false);
 const SHIRT_TEX={};
 function shirtCanvas(o){
   const cv=document.createElement('canvas');cv.width=cv.height=512;const c=cv.getContext('2d');c.fillStyle=o.bg;c.fillRect(0,0,512,512);o.draw(c,512);return cv;
@@ -4269,33 +4309,44 @@ applyCloset(false);
     const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
     c.fillStyle='#67b84e';c.beginPath();c.arc(84,96,46,Math.PI,0);c.lineTo(130,118);c.quadraticCurveTo(84,132,38,118);c.closePath();c.fill();
     c.strokeStyle='rgba(31,36,64,0.35)';c.lineWidth=3;c.stroke();
-    if(on){for(const sx of[-1,1]){c.fillStyle='#67b84e';c.beginPath();c.arc(84+sx*22,48,14,0,6.28);c.fill();c.stroke();c.fillStyle='#fff';c.beginPath();c.arc(84+sx*22,46,9,0,6.28);c.fill();c.fillStyle='#161618';c.beginPath();c.arc(84+sx*22,46,5,0,6.28);c.fill();}}
+    if(on){c.fillStyle='#3f8f3a';for(const sx of[-1,1]){c.beginPath();c.arc(84+sx*26,50,15,0,6.28);c.fill();c.stroke();}}
     else{c.strokeStyle='rgba(31,36,64,0.45)';c.lineWidth=5;c.beginPath();c.moveTo(48,40);c.lineTo(120,128);c.stroke();}
     return cv;
   }
+  function solonUsualThumb(){
+    const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
+    c.fillStyle='#3cb44a';c.fillRect(36,28,96,78);c.fillStyle='#f4f6f2';c.fillRect(62,52,44,22);c.strokeStyle='#1b1b1b';c.lineWidth=3;c.strokeRect(62,52,44,22);
+    c.fillStyle='#2a3f78';c.fillRect(48,108,72,28);c.fillStyle='#3cb44a';c.fillRect(46,142,30,12);c.fillRect(92,142,30,12);return cv;
+  }
   function render(){
     og.textContent='';mg.textContent='';
-    const sol=who==='solon';
     if(hatSec)hatSec.hidden=(who!=='moon');
-    if(solonSec)solonSec.hidden=!sol;
-    if(outfitHead)outfitHead.hidden=sol;
-    if(maskHead)maskHead.hidden=sol;
-    og.hidden=sol;mg.hidden=sol;
-    if(sol&&solonGrid){
+    if(solonSec)solonSec.hidden=who!=='solon';
+    if(outfitHead)outfitHead.hidden=false;
+    if(maskHead)maskHead.hidden=false;
+    og.hidden=false;mg.hidden=false;
+    if(who==='solon'&&solonGrid){
       solonGrid.textContent='';
-      solonGrid.appendChild(card('🐸 Beanie on',solonBeanieThumb(true),SOLON_STYLE.hat!==false,()=>{SOLON_STYLE.hat=true;applySolonCloset(true);render();}));
+      solonGrid.appendChild(card('Pom beanie',solonBeanieThumb(true),SOLON_STYLE.hat!==false,()=>{SOLON_STYLE.hat=true;applySolonCloset(true);render();}));
       solonGrid.appendChild(card('Hair only',solonBeanieThumb(false),SOLON_STYLE.hat===false,()=>{SOLON_STYLE.hat=false;applySolonCloset(true);render();}));
-    }else if(who==='moon'&&hatGrid){
+    }
+    if(who==='moon'&&hatGrid){
       hatGrid.textContent='';
       for(const h of MOON_HATS){
         hatGrid.appendChild(card(h.icon+' '+h.name,hatThumb(h),MOON_STYLE.hat===h.id,()=>{MOON_STYLE.hat=h.id;MOON_STYLE.userLockedHat=true;applyLadyMoonCloset(true);render();}));
       }
+    }
+    if(who==='solon'){
+      og.appendChild(card('His usual',solonUsualThumb(),SOLON_STYLE.outfit==='solon',()=>{SOLON_STYLE.outfit='solon';applySolonCloset(true);render();}));
+      for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),SOLON_STYLE.outfit===o.id,()=>{SOLON_STYLE.outfit=o.id;applySolonCloset(true);render();}));
+      for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),SOLON_STYLE.mask===m.id,()=>{SOLON_STYLE.mask=m.id;applySolonCloset(true);render();}));
+    }else if(who==='moon'){
       for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),MOON_STYLE.outfit===o.id,()=>{MOON_STYLE.outfit=o.id;applyLadyMoonCloset(true);render();}));
+      for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),MOON_STYLE.mask===m.id,()=>{MOON_STYLE.mask=m.id;applyLadyMoonCloset(true);render();}));
     }else{
       for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),CLOSET.outfit===o.id,()=>{CLOSET.outfit=o.id;CLOSET.lastChanged='outfit';applyCloset(true);render();}));
+      for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),CLOSET.mask===m.id,()=>{CLOSET.mask=m.id;CLOSET.lastChanged='mask';applyCloset(true);render();}));
     }
-    if(who==='moon'){for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),MOON_STYLE.mask===m.id,()=>{MOON_STYLE.mask=m.id;applyLadyMoonCloset(true);render();}));}
-    else if(who==='luna') for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),CLOSET.mask===m.id,()=>{CLOSET.mask=m.id;CLOSET.lastChanged='mask';applyCloset(true);render();}));
   }
   CLOSET.thumb=teeThumb;CLOSET.maskThumb=maskThumb;
   function setOpen(v){if(v){render();const mk=document.getElementById('market');if(mk&&!mk.hidden){mk.hidden=true;document.getElementById('btnMarket').setAttribute('aria-expanded','false');}}panel.hidden=!v;btn.setAttribute('aria-expanded',v);if(v)panel.querySelector('.closet-close').focus();}
@@ -4504,6 +4555,23 @@ DECOR_CATALOG.push(
     blob(g,BOX,DM('#8e887d'),1.0,3.2,-0.6,0.5,1.6,0.5);decorPool(g,3.0);
     const puffs=[];for(let k=0;k<4;k++){const p=blob(g,SPH,DM('#d8d8d8',{transparent:true,opacity:0.5}),1.0,4.2,-0.6,0.25,0.25,0.25,false);puffs.push(p);}
     DECOR_ANIM.push((dt,t)=>puffs.forEach((p,k)=>{const ph=(t*0.35+k/4)%1;p.position.set(1.0+ph*0.6,4.1+ph*1.8,-0.6);p.scale.setScalar(0.18+ph*0.4);p.material.opacity=0.5*(1-ph);}));}}
+);
+Object.assign(DECOR_BY_ID,Object.fromEntries(DECOR_CATALOG.map(d=>[d.id,d])));
+DECOR_CATALOG.push(
+  {id:'shellpile',size:'small',name:'Seashell pile',icon:'🐚',price:35,r:0.4,produce:{good:'shell',every:150,n:1},use:'sorting seashells',build(g){
+    for(let k=0;k<7;k++){const sh=blob(g,SPH,DM('#f6efe6',{roughness:0.4}),rnd(-0.18,0.18),0.06,rnd(-0.12,0.12),0.1,0.045,0.08);sh.rotation.y=rnd(0,3);}}},
+  {id:'blossomcrate',size:'small',name:'Blossom crate',icon:'🌸',price:45,r:0.45,produce:{good:'blossom',every:160,n:1},use:'gathering blossoms',build(g){
+    blob(g,BOX,DM('#c9a06a'),0,0.16,0,0.55,0.32,0.4);
+    for(let k=0;k<6;k++){const x=rnd(-0.16,0.16),z=rnd(-0.1,0.1);blob(g,SPH,DM('#ffb7d0'),x,0.36,z,0.06,0.05,0.06,false);blob(g,SPH,DM('#f2c94c'),x,0.4,z,0.025,0.02,0.025,false);}}},
+  {id:'blanket',size:'medium',name:'Picnic blanket',icon:'🧺',price:80,r:1.05,use:'having a picnic',build(g){
+    const tx=canvasTex(64,64,c=>{c.fillStyle='#c63a2f';c.fillRect(0,0,64,64);c.fillStyle='#f4f0e6';for(let i=0;i<64;i+=16){c.fillRect(i,0,8,64);c.fillRect(0,i,64,8);}});
+    const m=new T.Mesh(new T.PlaneGeometry(2.2,1.6),new T.MeshStandardMaterial({map:tx,roughness:0.95,side:T.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.y=0.03;g.add(m);
+    blob(g,CYL,DM('#e8d7b0'),0.55,0.12,0.2,0.12,0.16,0.1);blob(g,SPH,DM('#e2432f'),-0.4,0.08,-0.15,0.07,0.07,0.07);}},
+  {id:'tidepool',size:'small',name:'Tide pool',icon:'🫧',price:55,r:0.55,produce:{good:'shell',every:170,n:1},use:'looking in the tide pool',build(g){
+    blob(g,CYL,DM('#8e887d'),0,0.06,0,0.55,0.12,0.42);blob(g,CYL,DM('#7ec8e3',{roughness:0.15,metalness:0.15}),0,0.1,0,0.42,0.04,0.3,false);
+    blob(g,SPH,DM('#f6efe6'),0.12,0.12,0.05,0.06,0.03,0.05,false);}},
+  {id:'berrybasket',size:'small',name:'Berry basket',icon:'🫐',price:50,r:0.35,produce:{good:'berries',every:140,n:2},use:'picking berries',act:'harvest',build(g){
+    blob(g,CYL,DM('#b5864a'),0,0.14,0,0.18,0.22,0.16);for(let k=0;k<6;k++){const a=k/6*6.28;blob(g,SPH,DM(k%2?'#5b4fcf':'#3f7a3a'),Math.cos(a)*0.06,0.28,Math.sin(a)*0.05,0.045,0.04,0.045,false);}}}
 );
 Object.assign(DECOR_BY_ID,Object.fromEntries(DECOR_CATALOG.map(d=>[d.id,d])));
 
@@ -5076,7 +5144,7 @@ function poseLuna(dt,time){
   const aheadY=AI.inside||AI.swimK>0?groundY:walkHeight(AI.x+Math.sin(AI.yaw)*0.45,AI.z+Math.cos(AI.yaw)*0.45);
   AI.pitch=lerp(AI.pitch,clamp((aheadY-groundY)*0.35,-0.18,0.18),Math.min(1,dt*10));
   AI.twirlT=Math.max(0,(AI.twirlT||0)-dt);const tw=AI.twirlT>0?smooth(0,1,1-AI.twirlT/0.9)*Math.PI*2:0;
-  C.root.position.set(AI.x,AI.y-AI.sitK*0.44-AI.crouchK*0.12+hop+Math.sin(tw*0.5)*0.12,AI.z);C.root.rotation.y=AI.yaw+tw;
+  C.root.position.set(AI.x,AI.y-AI.sitK*0.72-AI.crouchK*0.18+hop+Math.sin(tw*0.5)*0.12,AI.z);C.root.rotation.y=AI.yaw+tw;
   if(AI.seatObj){AI.seatObj.getWorldPosition(_seatV);C.root.position.set(_seatV.x,_seatV.y+0.04-C.HIP,_seatV.z);C.root.rotation.x=SWING.pv.rotation.x;C.root.rotation.y=SWING.ry;}else C.root.rotation.x=AI.divePitch||0;
 
   const mv=clamp(AI.speed/3,0,1);
@@ -5228,13 +5296,13 @@ function updateCaretakerAI(dt,time){
       else{AI.isBlinking=false;caretaker.faceObj.drawFace(false);AI.blinkTimer=rnd(2.2,5.2);}}}
 
   if(AI.inside){insideUpdate(dt,time);return;}
-  // "Luna still": she stays put, turns to face you and smiles for the camera
-  if(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON){ctrlUpdate(dt,time);return;}
-  lunaReplan(dt);
+  // Pause: she stays put and faces the camera, even if the stick is on
   if(STILL.on){if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();if(AI.state==='skylook'){AI.skyObj=null;}
-    AI.state='idle';AI.timer=1;AI.stretchT=0;AI.speed=lerp(AI.speed,0,Math.min(1,dt*10));
+    AI.state='idle';AI.timer=1;AI.stretchT=0;AI.mAct=null;AI.speed=lerp(AI.speed,0,Math.min(1,dt*10));
     AI.yaw+=normalizeAngle(Math.atan2(camera.position.x-AI.x,camera.position.z-AI.z)-AI.yaw)*Math.min(1,dt*3);
     poseLuna(dt,time);return;}
+  if(CTRL.on&&!FOLLOW_MOON&&!FOLLOW_SOLON){ctrlUpdate(dt,time);return;}
+  lunaReplan(dt);
   // sky traffic catches her eye: stop, look up and wave
   AI.skyCheck-=dt;
   if(AI.skyCheck<=0){AI.skyCheck=0.4;
@@ -5788,7 +5856,7 @@ let orbit=true,idle=0;
 let CAM_DT=1/60,ORBIT_K=0;const STEER={held:false,th:0};   // frame time for the camera smoothing, slow-orbit ease, latched stick direction
 const FREE={on:false,keys:new Set()};
 
-let CAM_PULL=175,OCC_BOXES=null;const _occRay=new T.Ray(),_occP=new T.Vector3(),_occM=new T.Matrix4();
+let CAM_PULL=175,CAM_SNAP=0,OCC_N=0,OCC_NEAR=175,OCC_BOXES=null;const _occRay=new T.Ray(),_occP=new T.Vector3(),_occM=new T.Matrix4();
 function camOcclusion(maxR){
   if(!OCC_BOXES){OCC_BOXES=[];
     for(const b of[B.roofBox,B.roofPyr,B.plaster]){if(!b||!b.im)continue;if(!b.g.boundingBox)b.g.computeBoundingBox();
@@ -5798,6 +5866,11 @@ function camOcclusion(maxR){
   return Math.max(2.4,near);}
 const _lkA=new T.Vector3(),_lkB=new T.Vector3();
 function updateCam(){
+  if(CAM_SNAP){
+    const F=focusBody();
+    camTarget.set(F.x,(F.y||0)+1.2,F.z);
+    theta=tTheta;phi=tPhi;radius=tRadius;CAM_SNAP=0;
+  }
   // Smoothly interpolate camera position and angles for silky smooth motion
   // frame-rate independent smoothing (the same feel at 30, 60 or 144 fps)
   const kc=1-Math.exp(-CAM_DT*7.7),kt=1-Math.exp(-CAM_DT*6.3);
@@ -5815,7 +5888,10 @@ function updateCam(){
 
   // when a roof or wall sits between Luna and the camera, glide in front of it (close follow views only)
   let rr=radius;const ph=phi;
-  if(!FREE.on&&!INSIDE.on&&radius<45){const near=camOcclusion(radius);CAM_PULL=lerp(CAM_PULL,near,near<CAM_PULL?0.5:0.06);rr=Math.min(radius,CAM_PULL);}else CAM_PULL=radius;
+  if(!FREE.on&&!INSIDE.on&&radius<45){
+    OCC_N++;if((OCC_N%4)===1)OCC_NEAR=camOcclusion(radius);
+    CAM_PULL=lerp(CAM_PULL,OCC_NEAR,OCC_NEAR<CAM_PULL?0.5:0.08);rr=Math.min(radius,CAM_PULL);
+  }else CAM_PULL=radius;
   camera.position.set(
     camTarget.x+rr*Math.sin(ph)*Math.sin(theta),
     camTarget.y+rr*Math.cos(ph),
@@ -6340,6 +6416,7 @@ const CTRL={on:false,started:false,touch:{x:0,y:0},keys:new Set(),pad:{x:0,y:0},
 const STICK_DZ=0.12,PAD_DZ=0.16;const id_knob=document.getElementById('stickKnob');
 function stickCurve(x,y,dz){const m=Math.hypot(x,y);if(m<dz)return[0,0,0];const k=Math.min(1,(m-dz)/(1-dz)),c=Math.pow(k,1.25);return[x/m*c,y/m*c,c];}
 function ctrlAction(kind){
+  if(HOLD[followWho()]){toast((followWho()==='moon'?'Lady Moon':followWho()==='solon'?'Solon':'Luna')+' is paused. Turn Pause off to move.');return;}
   if(CTRL.on&&FOLLOW_SOLON){solonCtrlAction(kind);return;}
   if(CTRL.on&&FOLLOW_MOON){moonCtrlAction(kind);return;}
   if(!CTRL.on||AI.mAct)return;
@@ -6403,7 +6480,7 @@ function setCtrl(v){
   if(v&&INSIDE.on){toast('Step outside to use controller mode');return;}
   CTRL.on=v;CTRL.started=false;CTRL.touch.x=CTRL.touch.y=0;CTRL.keys.clear();AI.mAct=null;
   document.body.classList.toggle('ctrl',v);document.getElementById('btnCtrl').setAttribute('aria-pressed',v);document.getElementById('pad').hidden=!v;
-  if(v){if(STILL.on)setStill(false);if(DIRECTOR.on)setAuto(false);if(FREE.on)setFree(false);orbit=false;document.getElementById('btnOrbit').setAttribute('aria-pressed','false');
+  if(v){if(HOLD[followWho()])setHold(followWho(),false,true);if(DIRECTOR.on)setAuto(false);if(FREE.on)setFree(false);orbit=false;document.getElementById('btnOrbit').setAttribute('aria-pressed','false');
     if(PLACE.active)cancelPlacing();if(CHOP.on)setChop(false);tRadius=11;tPhi=1.02;tTheta=focusBody().yaw+Math.PI;toast('Controller mode: left stick moves '+(FOLLOW_SOLON?'Solon':FOLLOW_MOON?'Lady Moon':'Luna')+' (press M to switch)');}
   else{if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=1;AI.speed=0;LM.mAct=null;CTRL.moonStarted=false;if(LM.state!=='walk'){LM.state='idle';LM.timer=0.6;}
     if(CTRL.solonStarted||FOLLOW_SOLON){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}}
@@ -6447,7 +6524,8 @@ function setFree(v){
   if(v){if(DIRECTOR.on)setAuto(false);orbit=false;document.getElementById('btnOrbit').setAttribute('aria-pressed','false');}
   {const h=document.getElementById('camHint');if(!h.dataset.orig)h.dataset.orig=h.innerHTML;
    if(v)h.textContent='Free cam: drag to orbit, right-drag (or two fingers) to pan, scroll to zoom, WASD or arrows to fly, Q/E down and up.';else h.innerHTML=h.dataset.orig;}
-  toast(v?'Free cam: the camera stays wherever you put it':'The camera follows Luna again');
+  const who=followWho();
+  toast(v?'Free cam: the camera stays wherever you put it':'The camera follows '+(who==='moon'?'Lady Moon':who==='solon'?'Solon':'Luna')+' again');
 }
 function setAuto(v){
   if(v&&FREE.on)setFree(false);
@@ -6455,35 +6533,70 @@ function setAuto(v){
   if(v){DIRECTOR.shot=null;DIRECTOR.lookInit=false;DIRECTOR.smoothYaw=focusBody().yaw;DIRECTOR.wideT=0;DIRECTOR.nextWide=rnd(14,22);DIRECTOR.stillT=0;DIRECTOR.fov=camera.fov;idle=99;DIRECTOR.lastLabel='';}
 }
 btnAuto.onclick=()=>setAuto(!DIRECTOR.on);
-function setStill(v){STILL.on=v;document.getElementById('btnStill').setAttribute('aria-pressed',v);if(v){emote(caretaker.headGroup,'heart',0.85);toast('Luna will hold still until you turn this off');}else toast('Luna is back to her day');}
-document.getElementById('btnStill').onclick=()=>setStill(!STILL.on);
+const CAST_NAME={luna:'Luna',moon:'Lady Moon',solon:'Solon'};
+function setHold(who,v,quiet){
+  HOLD[who]=!!v;
+  if(who==='luna')STILL.on=HOLD.luna;
+  syncCastUI();
+  if(quiet)return;
+  const n=CAST_NAME[who];
+  if(HOLD[who]){const head=who==='solon'?solon.headGroup:who==='moon'?ladyMoon.headGroup:caretaker.headGroup;emote(head,'heart',0.85);toast(n+' will hold still until you turn Pause off');}
+  else toast(n+' is moving again');
+}
+function setStill(v){setHold('luna',v);}
 
 const btnMoon=document.getElementById('btnMoon');
 function followWho(){return FOLLOW_SOLON?'solon':FOLLOW_MOON?'moon':'luna';}
 function focusBody(){return FOLLOW_SOLON?SL:FOLLOW_MOON?LM:AI;}
-function setFollowWho(who){
-  const prev=followWho();if(prev===who)return;
-  if(CTRL.on){
-    if(prev==='luna'){if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=0.8;AI.speed=0;CTRL.started=false;}
-    if(prev==='moon'){LM.mAct=null;CTRL.moonStarted=false;LM.state='idle';LM.timer=0.6;LM.speed=0;}
-    if(prev==='solon'){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}
-  }
-  FOLLOW_MOON=who==='moon';FOLLOW_SOLON=who==='solon';
-  const names={luna:'Luna',moon:'Lady Moon',solon:'Solon'};
-  const next=who==='luna'?'moon':who==='moon'?'solon':'luna';
-  const lbl=document.getElementById('moonLbl');if(lbl)lbl.textContent=names[next];
-  if(btnMoon){btnMoon.setAttribute('aria-pressed',who!=='luna');btnMoon.title='Follow '+names[next]+' (press M)';}
+function frameCast(){
   const S=focusBody();
-  if(CTRL.on)tTheta=S.yaw+Math.PI;
-  if(DIRECTOR.on){DIRECTOR.shot=null;DIRECTOR.wideT=0;DIRECTOR.stillT=0;DIRECTOR.smoothYaw=S.yaw;DIRECTOR.lastLabel='';}
-  if(who!=='luna'&&FREE.on)setFree(false);
-  toast(CTRL.on?('The controller now steers '+names[who]+' (press M to switch)'):('Camera is now following '+names[who]));
+  tTheta=S.yaw+Math.PI;tPhi=1.05;tRadius=9.2;
+  CAM_SNAP=1;CAM_PULL=9.2;idle=0;
+}
+function syncCastUI(){
+  const w=followWho();
+  const follow={luna:'btnFollowLuna',moon:'btnFollowMoon',solon:'btnFollowSolon'};
+  const hold={luna:'btnHoldLuna',moon:'btnHoldMoon',solon:'btnHoldSolon'};
+  for(const k in follow){const b=document.getElementById(follow[k]);if(b)b.setAttribute('aria-pressed',k===w);}
+  for(const k in hold){const b=document.getElementById(hold[k]);if(b)b.setAttribute('aria-pressed',HOLD[k]);}
+  document.querySelectorAll('#ctrlBar [data-who]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.who===w));
+  const ch=document.getElementById('ctrlHold');if(ch)ch.setAttribute('aria-pressed',HOLD[w]);
+  const next=w==='luna'?'moon':w==='moon'?'solon':'luna';
+  if(btnMoon){btnMoon.setAttribute('aria-pressed','false');btnMoon.title='Follow '+CAST_NAME[next]+' next (press M)';}
+}
+function setFollowWho(who){
+  const prev=followWho(),same=prev===who;
+  if(!same){
+    if(CTRL.on){
+      if(prev==='luna'){if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=0.8;AI.speed=0;CTRL.started=false;}
+      if(prev==='moon'){LM.mAct=null;CTRL.moonStarted=false;LM.state='idle';LM.timer=0.6;LM.speed=0;}
+      if(prev==='solon'){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}
+    }
+    FOLLOW_MOON=who==='moon';FOLLOW_SOLON=who==='solon';
+    if(DIRECTOR.on){DIRECTOR.shot=null;DIRECTOR.wideT=0;DIRECTOR.stillT=0;DIRECTOR.smoothYaw=focusBody().yaw;DIRECTOR.lastLabel='';}
+  }
+  if(FREE.on)setFree(false);
+  frameCast();
+  syncCastUI();
+  if(!same)toast(CTRL.on?('The controller now steers '+CAST_NAME[who]):('Camera is now following '+CAST_NAME[who]));
 }
 function cycleFollow(){const w=followWho();setFollowWho(w==='luna'?'moon':w==='moon'?'solon':'luna');}
 if(btnMoon)btnMoon.onclick=()=>cycleFollow();
+{const follow={btnFollowLuna:'luna',btnFollowMoon:'moon',btnFollowSolon:'solon'};
+  for(const id in follow){const b=document.getElementById(id);if(b)b.onclick=()=>setFollowWho(follow[id]);}
+  const hold={btnHoldLuna:'luna',btnHoldMoon:'moon',btnHoldSolon:'solon'};
+  for(const id in hold){const b=document.getElementById(id);if(b)b.onclick=()=>setHold(hold[id],!HOLD[hold[id]]);}
+  const g=document.getElementById('btnGather');if(g)g.onclick=()=>gatherNearby();
+  document.querySelectorAll('#ctrlBar [data-who]').forEach(b=>b.addEventListener('click',()=>setFollowWho(b.dataset.who)));
+  const ch=document.getElementById('ctrlHold');if(ch)ch.onclick=()=>setHold(followWho(),!HOLD[followWho()]);
+  const cg=document.getElementById('ctrlGather');if(cg)cg.onclick=()=>gatherNearby();
+  syncCastUI();
+}
 addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;if(e.key==='m'||e.key==='M')cycleFollow();});
 
-addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;if(e.key==='l'||e.key==='L')setStill(!STILL.on);});
+addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;
+  if(e.key==='l'||e.key==='L')setHold(followWho(),!HOLD[followWho()]);
+  else if(e.key==='g'||e.key==='G')gatherNearby();});
 document.getElementById('btnFree').onclick=()=>setFree(!FREE.on);
 addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement)return;if(e.key==='c'||e.key==='C')setAuto(!DIRECTOR.on);else if(e.key==='f'||e.key==='F')setFree(!FREE.on);});
 
@@ -6644,7 +6757,9 @@ slider.addEventListener('change',()=>{dragging=false;});
 function setPressed(){bDay.setAttribute('aria-pressed',todTarget<0.5);bNight.setAttribute('aria-pressed',todTarget>=0.5);}
 bDay.onclick=()=>{todTarget=0;setPressed();};bNight.onclick=()=>{todTarget=1;setPressed();};
   document.getElementById('btnLaunch').onclick=()=>{todTarget=1;setPressed();SPACE_LAUNCH.trigger(true);CINE.start();};
-bOrbit.onclick=()=>{orbit=!orbit;bOrbit.setAttribute('aria-pressed',orbit);toast(orbit?'Slow orbit on: the camera circles gently whenever you let go':'Slow orbit off: the camera stays where you put it');};
+bOrbit.onclick=()=>{orbit=!orbit;bOrbit.setAttribute('aria-pressed',orbit);
+  if(orbit&&(tRadius>70||radius>70)){tRadius=28;tPhi=0.92;}
+  toast(orbit?'Slow orbit on: the camera circles gently whenever you let go':'Slow orbit off: the camera stays where you put it');};
 document.getElementById('btnClean').onclick=()=>document.body.classList.add('clean');
 {const mb=document.getElementById('btnMore'),dk=document.querySelector('.dock');mb.onclick=()=>{const o=!dk.classList.contains('open');dk.classList.toggle('open',o);mb.textContent=o?'Less':'More';mb.setAttribute('aria-expanded',o);};}
 const bRain=document.getElementById('btnRain'),bSnow=document.getElementById('btnSnow');
@@ -7346,11 +7461,17 @@ function updateSolon(dt,time){
   }
   if(INSIDE.on){
     if(!SL.inside){SL.inside=true;scene.remove(solon.root);INSIDE.scene.add(solon.root);SL.ix=1.6;SL.iz=1.2;SL.yaw=-0.4;SL.speed=0;solonFinish(false);SL.spot={x:SL.ix,z:SL.iz,act:'hips'};beginSolonAct('hips');}
+    if(HOLD.solon){SL.speed=0;poseSolon(dt,time);return;}
     SL.timer-=dt;if(SL.timer<=0)beginSolonAct(pick(['hips','sit','wave','stretch']));
     const svX=SL.x,svZ=SL.z;SL.x=SL.ix;SL.z=SL.iz;poseSolon(dt,time);SL.x=svX;SL.z=svZ;return;
   }else if(SL.inside){
     SL.inside=false;INSIDE.scene.remove(solon.root);scene.add(solon.root);
     const s=snapWalkable(POI.houseSteps.x+1.8,POI.houseSteps.z+1.2);SL.x=s[0];SL.z=s[1];SL.state='idle';SL.timer=0.8;SL.spot=null;
+  }
+  if(HOLD.solon){
+    SL.speed=lerp(SL.speed,0,Math.min(1,dt*12));
+    if(SL.state==='walk'){SL.state='idle';SL.path=[];}
+    poseSolon(dt,time);return;
   }
   if(CTRL.on&&FOLLOW_SOLON){solonCtrlUpdate(dt,time);return;}
   if(CTRL.solonStarted){CTRL.solonStarted=false;SL.mAct=null;SL.state='idle';SL.timer=0.5;}
@@ -7393,8 +7514,9 @@ function updateSolon(dt,time){
   poseSolon(dt,time);
 }
 function solonStatus(){
+  if(HOLD.solon)return 'Solon is holding still';
   if(CTRL.on&&FOLLOW_SOLON)return solonCtrlStatus();
-  const hat=SOLON_STYLE.hat!==false?'🐸 ':'';
+  const hat='';
   const sp=SL.spot;
   if(SL.state==='walk')return 'Solon '+hat+'is heading out to see what the island needs';
   if(SL.state==='act'){
@@ -7508,6 +7630,7 @@ function frameLoop(){
   else if(wxChanged)applyTOD(tod);
 
   updateCaretakerAI(dt,time);
+  updateForage(dt);
   updateWildlifeAndVehicles(dt,time);
   SPACE_LAUNCH.update(dt);
   RADIO.update(dt,time);
@@ -7559,6 +7682,53 @@ document.addEventListener('visibilitychange',()=>{
 renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();const er=document.getElementById('err');
   er.textContent='The graphics were paused by your device. Your coins and items are saved. ';
   const b=document.createElement('button');b.type='button';b.textContent='Reload';b.className='err-reload';b.onclick=()=>location.reload();er.appendChild(b);er.style.display='block';});
+const FORAGE=[];
+function seedForage(){
+  const spots=[],Ru=(a,b)=>a+(b-a)*Math.random();
+  let tries=0;
+  while(spots.filter(s=>s.kind==='shell').length<6&&tries<800){
+    tries++;const x=Ru(-48,68),z=Ru(-36,48);
+    if(typeof isOnDock==='function'&&isOnDock(x,z))continue;
+    if(!isPointWalkable(x,z,0.25))continue;
+    const wd=waterDist(x,z);if(wd<1.15||wd>4.4)continue;
+    if(spots.some(s=>Math.hypot(s.x-x,s.z-z)<3.4))continue;
+    spots.push({kind:'shell',x,z});
+  }
+  tries=0;
+  while(spots.filter(s=>s.kind==='blossom').length<5&&tries<800){
+    tries++;const x=Ru(6,52),z=Ru(-30,24);
+    if(!isPointWalkable(x,z,0.25))continue;
+    if(waterDist(x,z)<2.2)continue;
+    if(spots.some(s=>Math.hypot(s.x-x,s.z-z)<3.6))continue;
+    spots.push({kind:'blossom',x,z});
+  }
+  const shellMat=mStd('#f4efe4',{roughness:0.42});
+  const petal=mStd('#ffb7d0',{roughness:0.55}),heart=mStd('#f2c94c',{roughness:0.5});
+  for(const s of spots){
+    const g=new T.Group(),y=meshH(s.x,s.z);g.position.set(s.x,y+0.02,s.z);
+    if(s.kind==='shell'){const sh=new T.Mesh(new T.SphereGeometry(0.1,12,8),shellMat);sh.scale.set(1.35,0.42,0.95);sh.rotation.y=Ru(0,3);g.add(sh);}
+    else{for(let k=0;k<5;k++){const a=k/5*6.28,p=new T.Mesh(new T.SphereGeometry(0.042,8,6),petal);p.position.set(Math.cos(a)*0.055,0.06,Math.sin(a)*0.055);g.add(p);}
+      const c=new T.Mesh(new T.SphereGeometry(0.028,8,6),heart);c.position.y=0.07;g.add(c);}
+    g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+    scene.add(g);FORAGE.push({kind:s.kind,x:s.x,z:s.z,g,wait:0});
+  }
+}
+function updateForage(dt){
+  for(const f of FORAGE)if(f.wait>0){f.wait-=dt;if(f.wait<=0){f.wait=0;f.g.visible=true;f.g.position.y=meshH(f.x,f.z)+0.02;}}
+}
+function gatherNearby(){
+  const who=followWho();
+  const body=who==='solon'?SL:who==='moon'?LM:AI;
+  if(INSIDE.on||body.inside){toast('Step outside to gather');return;}
+  let best=null,bd=2.4;
+  for(const f of FORAGE){if(!f.g.visible||f.wait>0)continue;const d=Math.hypot(f.x-body.x,f.z-body.z);if(d<bd){bd=d;best=f;}}
+  if(!best){toast('Walk up to a shell or a blossom, then press Gather');return;}
+  addGood(best.kind,1);best.g.visible=false;best.wait=42;
+  const head=who==='solon'?solon.headGroup:who==='moon'?ladyMoon.headGroup:caretaker.headGroup;
+  emote(head,'sparkle',0.9);
+  toast(CAST_NAME[who]+' picked up a '+(best.kind==='shell'?'seashell':'blossom')+' · worth '+PRICES[best.kind]+' coins');
+}
+seedForage();
 requestAnimationFrame(()=>{frameLoop();document.getElementById('loading').classList.add('gone');
   // first visit: a short welcome card
   let seen=false;try{seen=!!localStorage.getItem('lunas-welcomed-v2');}catch(e){}
