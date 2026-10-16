@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v29)
+# Luna's Cozy Pets – The Island (v30)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v30 (disk play):** Opening `play/Luna's Cozy Pets Island.html` from the desktop no longer stops at startup when Solon has a saved outfit. Shirt textures are built before his closet is applied, so `SHIRT_TEX` exists when that outfit is painted on. The twilight launch photo is also loaded from `public/images/launch-cloud.js` (a data URL of `launch-cloud.jpg`, rebuilt by `tools/launch-cloud-data.cjs`) because Chrome will not use that JPEG as a WebGL texture on a `file://` page.
 - **v29 (launch video):** Pressing Launch Rocket plays `public/video/launch-backdrop.mp4` behind the island, with the sound from that video. The clip is cued at 1:56; this file ends there, so it plays from the beginning and still covers the scene. When the rocket scene ends, or you skip it, the picture and the sound fade out over 3 seconds as the camera returns to the island.
 - **v28 (cast, pause, gather):** Luna, Lady Moon and Solon are rebuilt closer to the Sprites stills: longer torso, arms and legs, a smaller head, Lady Moon in the strawberry hat (the frog hat still comes out sometimes), and Solon in the green pom-pom beanie, glasses and controller shirt. Each person has a follow button and a Pause button in the dock and in the controller bar, so any of them can be held still. Press L to pause whoever you are following, and G or Gather to pick up a nearby shell or blossom. Slow orbit pulls in from the wide opening view, and switching people snaps the camera onto them. Seashells and blossoms on the island sell for a few coins, and the market has a shell pile, blossom crate, picnic blanket, tide pool, berry basket, plus Strawberry Day and Green Team outfits that fit all three.
 - **v27 (controller overlay):** Controller mode now matches the reference overlay. The movement stick is a translucent disc with four direction marks and a white knob, anchored bottom-left. Pet, Jump, Wave and Fetch sit in a diamond at bottom-right, each a tinted circle with a white icon and its name underneath. "Controller mode" and Exit sit in a dark pill at the top-left, and the Auto cam chip stays at the top-right.
