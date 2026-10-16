@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v28 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v29 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -6605,31 +6605,51 @@ addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target insta
    Six shots cut together like a movie trailer: an establishing shot low over the water, a low angle over Luna's
    shoulder, a long-lens tracking shot that opens out as the blow grows, then a move from far away in to a closer
    view of the whole cloud. Letterbox bars, a title card, dips to black between cuts and a little handheld drift.
-   The soundtrack is unchanged. Only the Launch button starts it (the automatic first-dusk launch stays a normal view). */
+   The soundtrack is the video behind the scene. Only the Launch button starts it (the automatic first-dusk launch stays a normal view). */
 
-/* Launch-film soundtrack: starts with the first shot and fades out when the scene ends (or is skipped).
+/* Launch-film soundtrack: a video sits behind the island and plays with the first shot.
+   It is cued at 1:56. This clip ends there, so it plays from the start and still covers the scene;
+   a longer file begins at 1:56. The picture and the sound fade out together over 3 seconds when the
+   scene ends or is skipped, the same moment the camera returns to the island.
    Uses Web Audio for the fades where it can (works on iPhone, where element volume is fixed); when the game is
    opened straight from disk (file://) browsers block Web Audio from reading the file, so it fades the element volume instead. */
 const FILM_MUSIC=(function(){
   const M={el:null,gain:null,vol:0,target:0,rate:1,raf:0,wasPlaying:false};
-  const src=()=>(window.LUNA_ASSET_BASE||'')+'audio/launch-theme.mp3';
+  const IN=116; // 1:56
+  const src=()=>(window.LUNA_ASSET_BASE||'')+'video/launch-backdrop.mp4';
   function apply(){if(M.gain)M.gain.gain.value=M.vol;else if(M.el)M.el.volume=clamp(M.vol,0,1);}
   let last=0;
+  function settled(){document.body.classList.remove('launch-vid','launch-vid-out');if(M.el){M.el.pause();}}
   function tick(now){M.raf=0;const dt=last?Math.min(0.1,(now-last)/1000):0.016;last=now;
     const step=dt/M.rate;M.vol=M.target>M.vol?Math.min(M.target,M.vol+step):Math.max(M.target,M.vol-step);apply();
-    if(M.vol===0&&M.target===0){if(M.el){M.el.pause();try{M.el.currentTime=0;}catch(e){}}last=0;return;}
+    if(M.vol===0&&M.target===0){settled();last=0;return;}
     if(M.vol!==M.target)M.raf=requestAnimationFrame(tick);else last=0;}
   function ramp(target,seconds){M.target=target;M.rate=Math.max(0.05,seconds)/Math.max(0.05,Math.abs(target-M.vol)||1);if(!M.raf){last=0;M.raf=requestAnimationFrame(tick);}}
+  function cue(){
+    const d=M.el.duration;
+    const t=(isFinite(d)&&d>IN+2)?IN:0;
+    M.el.dataset.cue=String(t);
+    try{M.el.currentTime=t;}catch(e){}
+  }
   function ensure(){
     if(M.el)return;
-    M.el=new Audio();M.el.preload='auto';M.el.src=src();M.el.loop=false;
+    const v=document.createElement('video');
+    v.id='launchVid';v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
+    v.preload='auto';v.src=src();v.loop=false;v.setAttribute('aria-hidden','true');
+    document.body.insertBefore(v,document.body.firstChild);
+    M.el=v;
     if(location.protocol!=='file:'){ensureAudio();
       if(AUDIO.ctx){try{const node=AUDIO.ctx.createMediaElementSource(M.el);M.gain=AUDIO.ctx.createGain();M.gain.gain.value=0;node.connect(M.gain).connect(AUDIO.ctx.destination);}catch(e){M.gain=null;}}}
   }
   return {
     play(){ensure();if(AUDIO.ctx&&AUDIO.ctx.state==='suspended')AUDIO.ctx.resume();
-      try{M.el.currentTime=0;}catch(e){}M.vol=0;apply();const p=M.el.play();if(p&&p.catch)p.catch(()=>{});ramp(0.9,1.2);},
-    fadeOut(seconds=3){if(M.el&&!M.el.paused)ramp(0,seconds);},
+      document.body.classList.remove('launch-vid-out');document.body.classList.add('launch-vid');
+      M.vol=0;apply();
+      const arm=()=>cue();
+      if(M.el.readyState>=1)arm();else M.el.addEventListener('loadedmetadata',arm,{once:true});
+      const p=M.el.play();if(p&&p.catch)p.catch(()=>{});ramp(0.9,1.2);},
+    fadeOut(seconds=3){document.body.classList.remove('launch-vid');document.body.classList.add('launch-vid-out');
+      if(M.el&&!M.el.paused)ramp(0,seconds);else settled();},
     pauseForTab(hidden){if(!M.el)return;if(hidden){M.wasPlaying=!M.el.paused;if(M.wasPlaying)M.el.pause();}else if(M.wasPlaying){const p=M.el.play();if(p&&p.catch)p.catch(()=>{});M.wasPlaying=false;}}
   };
 })();

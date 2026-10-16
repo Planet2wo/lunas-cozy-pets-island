@@ -33,6 +33,10 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--
   font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Nunito","Segoe UI",system-ui,sans-serif;}
 #stage{position:fixed;inset:0}
 #stage canvas{display:block;touch-action:none;outline:none}
+/* Launch video sits behind the island. It fades out with the return from the rocket scene. */
+#launchVid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:0;background:#000}
+body.launch-vid #launchVid{opacity:1}
+body.launch-vid-out #launchVid{opacity:0;transition:opacity 3s linear}
 .title{position:fixed;left:max(14px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));
   background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border:1px solid var(--line);border-radius:18px 18px 18px 4px;padding:10px 14px 9px;max-width:70vw}
