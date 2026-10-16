@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v30 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v31 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -11,6 +11,20 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const lerp=(a,b,t)=>a+(b-a)*t;
 function smooth(e0,e1,x){const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);}
 function segDist(px,pz,ax,az,bx,bz){const dx=bx-ax,dz=bz-az;const t=clamp(((px-ax)*dx+(pz-az)*dz)/(dx*dx+dz*dz),0,1);return Math.hypot(px-(ax+dx*t),pz-(az+dz*t));}
+/* Radio songs and the launch video are stored as small pieces (public/media) so every
+   file stays under GitHub's 1 MB contents limit. Join them back into the original bytes. */
+const _mediaCache={};
+function mediaURL(rel){
+  if(_mediaCache[rel])return _mediaCache[rel];
+  const bag=window.LUNA_PARTS,parts=bag&&bag[rel];
+  if(!parts||!parts.length)return (window.LUNA_ASSET_BASE||'')+rel;
+  const b64=parts.join('');
+  bag[rel]=[];
+  const bin=atob(b64),bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  const type=rel.endsWith('.mp4')?'video/mp4':'audio/mpeg';
+  return _mediaCache[rel]=URL.createObjectURL(new Blob([bytes],{type}));
+}
 
 
 /* ---------------- calendar: real-date season & holiday ----------------
@@ -6624,7 +6638,7 @@ addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target insta
 const FILM_MUSIC=(function(){
   const M={el:null,gain:null,vol:0,target:0,rate:1,raf:0,wasPlaying:false};
   const IN=116; // 1:56
-  const src=()=>(window.LUNA_ASSET_BASE||'')+'video/launch-backdrop.mp4';
+  const src=()=>mediaURL('video/launch-backdrop.mp4');
   function apply(){if(M.gain)M.gain.gain.value=M.vol;else if(M.el)M.el.volume=clamp(M.vol,0,1);}
   let last=0;
   function settled(){document.body.classList.remove('launch-vid','launch-vid-out');if(M.el){M.el.pause();}}
@@ -7186,7 +7200,7 @@ const RADIO=(function(){
   const _w=new T.Vector3();
   function wire(i){
     if(R.els[i])return R.els[i];
-    const el=new Audio();el.preload='auto';el.loop=true;el.src=(window.LUNA_ASSET_BASE||'')+TRACKS[i].file;R.els[i]=el;
+    const el=new Audio();el.preload='auto';el.loop=true;el.src=mediaURL(TRACKS[i].file);R.els[i]=el;
     if(location.protocol!=='file:'){ensureAudio();
       if(AUDIO.ctx){try{const src=AUDIO.ctx.createMediaElementSource(el),hp=AUDIO.ctx.createBiquadFilter(),lp=AUDIO.ctx.createBiquadFilter(),g=AUDIO.ctx.createGain();
         hp.type='highpass';hp.frequency.value=90;lp.type='lowpass';lp.frequency.value=9000;g.gain.value=0;src.connect(hp).connect(lp).connect(g).connect(AUDIO.ctx.destination);R.nodes[i]={g,lp};}catch(e){R.nodes[i]=null;}}}
