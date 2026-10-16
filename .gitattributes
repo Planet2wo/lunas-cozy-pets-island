@@ -1,0 +1,9 @@
+*.mp3 binary
+*.mp4 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+public/media/*.js linguist-generated
+public/vendor/* linguist-generated
+public/images/launch-cloud.js linguist-generated

@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v30)
+# Luna's Cozy Pets – The Island (v31)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -7,8 +7,8 @@ Claude and Gemini both edit these same files.
 index.html            page markup: HUD, dock buttons, closets, market, controller pad
 public/style.css      every style (dock, closets/market, controller layout, launch film)
 public/game.js        the whole game: world, pets, Luna, Lady Moon and Solon, weather, market, camera, controls
-public/audio/         launch-theme.mp3: the older launch-film song (kept; the launch now plays public/video/launch-backdrop.mp4)
-public/video/         launch-backdrop.mp4: the rocket-scene video, played behind the island with its own sound
+public/audio/         launch-theme.mp3: the older launch-film song (kept; the launch now plays the video in public/media)
+public/media/         the two radio songs and launch-backdrop, split into pieces under 1 MB. The game joins them back into the original files.
 public/icons/         favicon, home-screen icons and the link-preview image (made from Sprites/)
 public/manifest.webmanifest   lets phones "Add to Home Screen" as a full-screen app
 public/vendor/        three.js r128 + bloom add-ons, copied here by `npm install` (offline play; CDN is the fallback)
@@ -38,7 +38,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 **Option A: GitHub (the official route, and it keeps Claude and Gemini in sync)**
 1. Create a GitHub repo and upload the contents of this folder (not the folder itself) to its root.
 2. In AI Studio, open **Build**, click the **+** in the prompt box, choose **Import from GitHub**, and pick the repo.
-3. In the app's **Settings → GitHub**, link the repo for two-way sync. Gemini's edits get committed there, and Claude can work from the same repo.
+3. In the app's **Settings → GitHub**, link the repo for two-way sync. Gemini's edits get committed there, and Claude can work from the same repo. Every file is under 1 MB so that sync can load each difference.
 
 **Option B: Zip upload**
 1. In AI Studio **Build**, start any new app (for example, type "blank app") and let it finish.
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v31 (GitHub sync):** GitHub will not return the contents of a file that is 1 MB or larger, and Sync with GitHub stops when it cannot load a difference. The two radio songs and the launch video are the same bytes, stored as small pieces in `public/media` that the game joins before they play. The four large reference pictures are smaller PNGs with the same transparency, the controller reference is a smaller JPEG, and the unused launch song is a smaller mp3. `node tools/check-github-size.cjs` checks that every file stays under 1 MB.
 - **v30 (disk play):** Opening `play/Luna's Cozy Pets Island.html` from the desktop no longer stops at startup when Solon has a saved outfit. Shirt textures are built before his closet is applied, so `SHIRT_TEX` exists when that outfit is painted on. The twilight launch photo is also loaded from `public/images/launch-cloud.js` (a data URL of `launch-cloud.jpg`, rebuilt by `tools/launch-cloud-data.cjs`) because Chrome will not use that JPEG as a WebGL texture on a `file://` page.
 - **v29 (launch video):** Pressing Launch Rocket plays `public/video/launch-backdrop.mp4` behind the island, with the sound from that video. The clip is cued at 1:56; this file ends there, so it plays from the beginning and still covers the scene. When the rocket scene ends, or you skip it, the picture and the sound fade out over 3 seconds as the camera returns to the island.
 - **v28 (cast, pause, gather):** Luna, Lady Moon and Solon are rebuilt closer to the Sprites stills: longer torso, arms and legs, a smaller head, Lady Moon in the strawberry hat (the frog hat still comes out sometimes), and Solon in the green pom-pom beanie, glasses and controller shirt. Each person has a follow button and a Pause button in the dock and in the controller bar, so any of them can be held still. Press L to pause whoever you are following, and G or Gather to pick up a nearby shell or blossom. Slow orbit pulls in from the wide opening view, and switching people snaps the camera onto them. Seashells and blossoms on the island sell for a few coins, and the market has a shell pile, blossom crate, picnic blanket, tide pool, berry basket, plus Strawberry Day and Green Team outfits that fit all three.
