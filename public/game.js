@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v28 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v29 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -1708,7 +1708,12 @@ const SPACE_LAUNCH = (function(){
   // Starts with the big blow at about 7s, pinned so the photo's engine sits on the live engine, then
   // expands slowly and thins away. The rocket, plume and bell underneath are left exactly as they are.
   const CLOUD_UE=0.145,CLOUD_VE=0.507,CLOUD_ASPECT=2000/1342;
-  const photoTex=new T.TextureLoader().load((window.LUNA_ASSET_BASE||'')+'images/launch-cloud.jpg');
+  // Opened from disk, Chrome will not put launch-cloud.jpg on a WebGL texture: three.js
+  // asks for a CORS fetch, which file:// cannot do, and a non-CORS local image is rejected
+  // by texImage2D. The double-click page loads public/images/launch-cloud.js first, which
+  // sets LUNA_LAUNCH_CLOUD to a data URL of this same photo.
+  const photoURL=window.LUNA_LAUNCH_CLOUD||((window.LUNA_ASSET_BASE||'')+'images/launch-cloud.jpg');
+  const photoTex=new T.TextureLoader().load(photoURL);
   photoTex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
   photoTex.minFilter=T.LinearFilter;photoTex.magFilter=T.LinearFilter;photoTex.generateMipmaps=false;
   const cloudVS=`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
@@ -4228,7 +4233,9 @@ const MOON_WARDROBE=buildWardrobe(ladyMoon);
 const SOLON_WARDROBE=buildWardrobe(solon);
 for(const W of[WARDROBE,MOON_WARDROBE,SOLON_WARDROBE])W.skirt.scale.set(1.05,1.15,1.0);
 solon.wardrobe=SOLON_WARDROBE;
-applySolonCloset(false);
+// Shirt textures have to exist before Solon's closet runs. A saved outfit calls
+// shirtTexture during startup, and a const declared below that call is still in the
+// temporal dead zone (Cannot access 'SHIRT_TEX' before initialization).
 const SHIRT_TEX={};
 function shirtCanvas(o){
   const cv=document.createElement('canvas');cv.width=cv.height=512;const c=cv.getContext('2d');c.fillStyle=o.bg;c.fillRect(0,0,512,512);o.draw(c,512);return cv;
@@ -4239,6 +4246,7 @@ function shirtTexture(o){
   const t=new T.CanvasTexture(shirtCanvas(o));t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(3,1);t.anisotropy=4;return SHIRT_TEX[o.id]=t;
 }
 SHIRT_TEX.usual=caretaker.mats.shirtMat.map;
+applySolonCloset(false);
 const CLOSET={outfit:'usual',mask:'none'};
 function applyCloset(fromUser){
   const o=OUTFITS.find(x=>x.id===CLOSET.outfit)||OUTFITS[0],M=caretaker.mats,W=WARDROBE;
