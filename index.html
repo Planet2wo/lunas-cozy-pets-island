@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css?v=30">
+<link rel="stylesheet" href="/style.css?v=33">
 </head>
 <body>
 <div id="stage"></div>
@@ -45,6 +45,7 @@
     <div class="who"><button type="button" id="btnFollowMoon" aria-pressed="false">Lady Moon</button><button type="button" id="btnHoldMoon" class="hold" aria-pressed="false" title="Hold Lady Moon still">Pause</button></div>
     <div class="who"><button type="button" id="btnFollowSolon" aria-pressed="false">Solon</button><button type="button" id="btnHoldSolon" class="hold" aria-pressed="false" title="Hold Solon still">Pause</button></div>
     <button type="button" id="btnGather" title="Pick up a shell, blossom or berry beside you (G)">Gather</button>
+    <button type="button" id="btnCast" title="Luna casts at a nearby shore or the pier (K)">Cast</button>
   </div>
   <div class="row" id="dockRow">
     <button id="btnDay" class="opt" aria-pressed="true">Golden hour</button>
@@ -60,12 +61,15 @@
     <button id="btnRain" class="opt" aria-pressed="false" title="Rain and lightning (press R)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A5.5 5.5 0 0 1 18.5 8 3.5 3.5 0 0 1 18 15"/><path d="M12.5 12l-2 4h3l-2 4"/><path d="M7.5 18l-.8 2M16.5 18l-.8 2"/></svg>Rain &amp; lightning</button>
     <button id="btnSnow" class="opt" aria-pressed="false" title="Snow (press N)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M10 5l2 2 2-2M10 19l2-2 2 2"/></svg>Snow</button>
     <button id="btnCloset" aria-expanded="false" aria-controls="closet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7.2a2 2 0 1 1 2-2"/><path d="M12 7.2v1.3L3.3 15a1.4 1.4 0 0 0 .8 2.5h15.8a1.4 1.4 0 0 0 .8-2.5L12 8.5"/></svg>Clothing Closets</button>
+    <button id="btnTackle" aria-expanded="false" aria-controls="tackle" title="Tackle box: rods, reels, bait and lures">Tackle</button>
+    <button id="btnBoat" class="opt" aria-pressed="false" title="Board the skiff at the pier (press B). Press again if you are far away.">Boat</button>
+    <button id="btnSaves" title="Continue, load, save, or start a new game">Saves</button>
     <button id="btnMarket" aria-expanded="false" aria-controls="market"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 11.5V20h14v-8.5"/><path d="M10 20v-5h4v5"/></svg>Market <span class="badge"><span class="coin" aria-hidden="true"></span><span id="coinBadge">0</span></span></button>
     <button id="btnChop" class="opt" aria-pressed="false" title="Pick trees to cut down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4l6 6-3 1-4-4z"/><path d="M15.5 8.5L4 20"/></svg>Chop trees</button>
     <button id="btnClean" class="opt">Hide controls</button>
     <button id="btnMore" aria-expanded="false" aria-controls="dockRow">More</button>
   </div>
-  <p class="hint" id="camHint">Drag to orbit, scroll to zoom. Luna, Lady Moon and Solon each have a follow button and a Pause button. Keys: M cycle &#183; L pause whoever you follow &#183; G gather &#183; C auto cam &#183; F free cam &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v32</span></p>
+  <p class="hint" id="camHint">Drag to orbit, scroll to zoom. Luna, Lady Moon and Solon each have a follow button and a Pause button. Keys: M cycle &#183; L pause whoever you follow &#183; G gather &#183; K cast &#183; B boat &#183; C auto cam &#183; F free cam &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v33</span></p>
 </section>
 <button id="restore">Show controls</button>
 <section class="closet" id="closet" hidden aria-label="Clothing Closets">
@@ -75,6 +79,12 @@
   <div id="solonSec" hidden><h3>Green pom beanie</h3><div class="grid" id="solonHatGrid"></div><p class="tabnote">His own look is the green controller shirt, navy shorts, glasses and green sneakers. Every other outfit fits him too.</p></div>
   <h3 id="outfitHead">Outfits</h3><div class="grid" id="outfitGrid"></div>
   <h3 id="maskHead">Animal masks</h3><div class="grid" id="maskGrid"></div>
+</section>
+<section class="closet" id="tackle" hidden aria-label="Tackle box">
+  <header><h2>Tackle box</h2><button type="button" class="closet-close" aria-label="Close the tackle box"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+  <p class="tabnote" id="tackleNote"></p>
+  <div id="tackleGrid"></div>
+  <p class="tabnote">The Seaside Market sells the rest of the gear, on the Tackle tab.</p>
 </section>
 <section class="closet market" id="market" hidden aria-label="Seaside Market">
   <header><h2>Seaside Market</h2><button type="button" class="closet-close" aria-label="Close the market"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
@@ -92,16 +102,24 @@
 <div id="fade" aria-hidden="true"></div>
 <section id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wTitle">
   <div class="wcard">
-    <h2 id="wTitle">Welcome to Luna's Island</h2>
-    <p>Luna looks after her pups Kiko and Bruno, her cats and bunnies, a garden, and a little seaside market. Lady Moon crafts, and Solon keeps the island running. They live their own day, and you can join in.</p>
-    <ul>
-      <li><b>Watch</b> with Auto cam, or drag to look around.</li>
-      <li><b>Earn coins</b> as Luna harvests, fishes and sells at the Market.</li>
-      <li><b>Island life</b>: Luna, Lady Moon and Solon share the chores. Solon feeds the pups, herds them at dusk and sweeps when the others are busy.</li>
-      <li><b>Decorate</b> both islands, chop trees for wood, and build.</li>
-      <li><b>Play</b> with the controller. Pick Luna, Lady Moon or Solon, and press Pause if you want them to hold still.</li>
-    </ul>
-    <button type="button" id="wStart">Start playing</button>
+    <h2 id="wTitle">Luna's Island</h2>
+    <p id="wLead">Continue the day, open the island the way it is built, or start a new game. Dev Island is ready right away.</p>
+    <div id="wHome" class="wactions">
+      <button type="button" id="wContinue">Continue</button>
+      <button type="button" id="wDev" class="ghost">Dev Island</button>
+      <button type="button" id="wNew" class="ghost">New Game</button>
+      <button type="button" id="wLoad" class="ghost">Load</button>
+      <button type="button" id="wSave" class="ghost">Save</button>
+    </div>
+    <div id="wPanel" hidden>
+      <p id="wPanelLead"></p>
+      <label class="wname" id="wNameWrap" hidden>Name<input id="wName" maxlength="32" value="My island" aria-label="Save name"></label>
+      <div id="wList" class="wlist"></div>
+      <div class="wactions">
+        <button type="button" id="wPanelGo" hidden>Save new game</button>
+        <button type="button" id="wBack" class="ghost">Back</button>
+      </div>
+    </div>
   </div>
 </section>
 <section id="pad" hidden aria-label="Controller">
@@ -113,7 +131,7 @@
     <button type="button" data-act="wave" class="pb b3" aria-label="Wave (Q)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 13.2V8.4a1.2 1.2 0 0 1 2.4 0"/><path d="M10.6 12.4V6.1a1.2 1.2 0 0 1 2.4 0V12"/><path d="M13 12.5V7.3a1.2 1.2 0 0 1 2.4 0V13"/><path d="M15.4 12.8c.15-.9.85-1.4 1.5-1.1.65.28.8 1.15.45 1.85"/><path d="M16.9 14.4c.7 1.15.4 2.4-.45 3.3-1 1.1-2.4 1.7-4.3 1.7-2 0-3.35-.85-4.2-2.1L6 14.2a1.15 1.15 0 0 1 1.85-1.4l.85 1"/></svg><small>Wave</small></button>
     <button type="button" data-act="throw" class="pb b4" aria-label="Throw the ball (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg><small>Fetch</small></button>
   </div>
-  <div id="ctrlBar"><span>Steering</span><button type="button" data-who="luna">Luna</button><button type="button" data-who="moon">Moon</button><button type="button" data-who="solon">Solon</button><button type="button" id="ctrlHold">Pause</button><button type="button" id="ctrlGather">Gather</button><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
+  <div id="ctrlBar"><span>Steering</span><button type="button" data-who="luna">Luna</button><button type="button" data-who="moon">Moon</button><button type="button" data-who="solon">Solon</button><button type="button" id="ctrlHold">Pause</button><button type="button" id="ctrlGather">Gather</button><button type="button" id="ctrlCast">Cast</button><button type="button" id="ctrlBoat">Boat</button><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
 </section>
 <div class="shot" id="shot" aria-live="polite"><span class="rec" aria-hidden="true"></span><span class="lbl" id="shotLbl">Auto cam</span></div>
 <!-- three.js r128: the local copy (public/vendor, filled by `npm install`) loads first; the CDN is only a fallback -->
@@ -146,6 +164,6 @@
 <script src="/media/launch-backdrop.04.js"></script>
 <script src="/media/launch-backdrop.05.js"></script>
 <!-- github-media-end -->
-<script src="/game.js?v=32"></script>
+<script src="/game.js?v=33"></script>
 </body>
 </html>
