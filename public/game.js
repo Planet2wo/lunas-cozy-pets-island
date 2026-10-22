@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v31 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v32 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -173,6 +173,21 @@ function inIsle2(x,z,m=0){const d=Math.hypot(x-ISLE2.x,z-ISLE2.z);return d<ISLE2
 function isle2Height(x,z){const d=Math.hypot(x-ISLE2.x,z-ISLE2.z);if(d>ISLE2.R+5)return null;
   const e=isle2Edge(Math.atan2(z-ISLE2.z,x-ISLE2.x));if(d>e)return -12;
   let h=ISLE2.h+micro(x,z)*0.1-smooth(e-2.2,e,d)*0.35;const dh=Math.hypot(x-(ISLE2.x+6),z-(ISLE2.z-5.5));if(dh<8)h+=Math.pow(1-dh/8,1.6)*2.2;return h;}
+/* Two more islands the skiff can reach. Edge formulas are copied into the ocean shader. */
+const ISLE3={name:'Lantern Isle',x:-62,z:-78,R:12,h:2.55};
+const ISLE4={name:'Fishing Rock',x:122,z:42,R:11,h:2.35};
+function isle3Edge(a){return 11+1.4*Math.sin(3*a)+0.8*Math.sin(5*a+1);}
+function isle4Edge(a){return 10.2+1.2*Math.sin(4*a+0.4)+0.7*Math.sin(7*a);}
+function onDisc(I,edge,x,z,m){const d=Math.hypot(x-I.x,z-I.z);return d<I.R+5&&d<edge(Math.atan2(z-I.z,x-I.x))-m;}
+function onExtraIsle(x,z,m=0){return onDisc(ISLE3,isle3Edge,x,z,m)||onDisc(ISLE4,isle4Edge,x,z,m);}
+function extraIsleHeight(x,z){
+  for(const[I,edge]of[[ISLE3,isle3Edge],[ISLE4,isle4Edge]]){
+    const d=Math.hypot(x-I.x,z-I.z);if(d>I.R+5)continue;
+    const e=edge(Math.atan2(z-I.z,x-I.x));if(d>e)return -12;
+    return I.h+micro(x,z)*0.08-smooth(e-2.1,e,d)*0.45;
+  }
+  return null;
+}
 function micro(x,z){return Math.sin(x*0.21+Math.cos(z*0.17))*0.5+Math.sin(z*0.23+x*0.05)*0.5;}
 function waterDist(x,z){
   const dA=Math.hypot(x-PA.x,z-PA.z)-PA.r,dB=Math.hypot(x-PB.x,z-PB.z)-PB.r;
@@ -181,6 +196,7 @@ function waterDist(x,z){
 }
 function baseHeight(x,z){
   const i2=isle2Height(x,z);if(i2!==null)return i2;
+  const ix=extraIsleHeight(x,z);if(ix!==null)return ix;
   const r=Math.hypot(x,z),a=Math.atan2(z,x);
   if(r>edgeR(a))return -12;
   let h=L0;
@@ -252,9 +268,10 @@ function buildTerrain(CX,CZ,SIZE,SEG){
   m.receiveShadow=true;m.castShadow=true;scene.add(m);
 }
 buildTerrain(0,0,150,150);buildTerrain(ISLE2.x,ISLE2.z,44,66);
+buildTerrain(ISLE3.x,ISLE3.z,36,54);buildTerrain(ISLE4.x,ISLE4.z,34,48);
 /* Height of the rendered, faceted terrain (not the smooth height function), so flat pieces such as path stones
    sit exactly on the ground you see instead of hovering over the low corners of each triangle. */
-const TERR_GRIDS=[{cx:0,cz:0,size:150,seg:150},{cx:ISLE2.x,cz:ISLE2.z,size:44,seg:66}];
+const TERR_GRIDS=[{cx:0,cz:0,size:150,seg:150},{cx:ISLE2.x,cz:ISLE2.z,size:44,seg:66},{cx:ISLE3.x,cz:ISLE3.z,size:36,seg:54},{cx:ISLE4.x,cz:ISLE4.z,size:34,seg:48}];
 function meshH(x,z){let best=-1e9;
   for(const t of TERR_GRIDS){const cell=t.size/t.seg,x0=t.cx-t.size/2,z0=t.cz-t.size/2,u=(x-x0)/cell,v=(z-z0)/cell;
     if(u<0||v<0||u>=t.seg||v>=t.seg)continue;const ix=Math.floor(u),iz=Math.floor(v),fu=u-ix,fv=v-iz;
@@ -570,8 +587,9 @@ let zE=34;while(hAt(24,zE)>-1&&zE<90)zE+=0.25;
 })();
 // seaside market at the foot of the pier: Luna sells her harvest and her catch here
 const PRICES={knit:18,herbs:6,honey:15,egg:5,apple:4,berries:3,shell:4,blossom:3,wood:8,pumpkin:8,tomato:4,carrot:3,kale:4,lettuce:5,corn:4,garlic:3,
-  'Bluegill':12,'Largemouth Bass':28,'Rainbow Trout':24,'Channel Catfish':30,'Koi':0,
-  'Atlantic Mackerel':22,'Red Snapper':40,'Striped Bass':36,'Flounder':26,'Pufferfish':45};
+  'Bluegill':12,'Largemouth Bass':28,'Rainbow Trout':24,'Channel Catfish':30,'Koi':0,'Golden Koi':90,
+  'Atlantic Mackerel':22,'Red Snapper':40,'Striped Bass':36,'Flounder':26,'Pufferfish':45,
+  'Coho Salmon':70,'Halibut':110,'Blue Marlin':220};
 const MARKET=(function(){
   const mx=29,mz=39.9,y=hAt(mx,mz),F=frame(mx,y,mz,0);
   addBoxObs(26.6,31.1,37.5,42.3);
@@ -840,6 +858,18 @@ scatter(55,5000,{flat:0.6,path:2,water:1.2,space:2},(x,z)=>bush(x,z,R(0.6,1.1)))
   // a driftwood bench looking out to sea, and a little welcome sign
   bench(I.x+9.5,I.z+6.5,-2.3);
   {const sx=I.bx1+1.6,sz=I.bz-2.1,F=frame(sx,hAt(sx,sz),sz,-Math.PI/2);part(B.box,F,0,0.6,0,0.12,1.2,0.12,W.wood);part(B.box,F,0,1.25,0,1.3,0.55,0.08,W.woodL);addCircleObs(sx,sz,0.35);}
+}
+/* Lantern Isle and Fishing Rock: small landings the skiff can pull up to */
+{
+  const I=ISLE3;
+  stoneLantern(I.x-1.1,I.z+0.6,1.05);bench(I.x+3.1,I.z-1.2,0.7);
+  pine(I.x-4.2,I.z-2.4,0.82);pine(I.x+1.6,I.z-4.4,0.7);bush(I.x-1.8,I.z+3.4,0.75);
+  const sx=I.x+0.4,sz=I.z+5.6,F=frame(sx,hAt(sx,sz),sz,0.2);
+  part(B.box,F,0,0.55,0,0.12,1.1,0.12,W.wood);part(B.box,F,0,1.15,0,1.2,0.4,0.08,'#f6efe2');addCircleObs(sx,sz,0.3);
+}
+{
+  const I=ISLE4;
+  bench(I.x+1.4,I.z+2.1,-0.5);crate(I.x-2.1,I.z+0.8,0.72);stoneLantern(I.x+3.2,I.z-0.8,0.9);pine(I.x-3.6,I.z-2.2,0.7);
 }
 
 /* ---------------- holiday decor around Luna's house (chosen from the real date) ---------------- */
@@ -1194,7 +1224,7 @@ function isPointWalkable(x,z,pad=0.38){
   if(onPorch)return true;
 
   const r=Math.hypot(x,z),a=Math.atan2(z,x);
-  if(r>edgeR(a)-1.6&&!inIsle2(x,z,1.6))return false;
+  if(r>edgeR(a)-1.6&&!inIsle2(x,z,1.6)&&!onExtraIsle(x,z,1.6))return false;
   if(waterDist(x,z)<0.55+pad)return false;
   if(Math.abs(x-WF.x)<4.3&&z>-36&&z<WF.zBot+1.5)return false;
   if(Math.hypot(x-MT.x,(z-MT.z)*1.1)<MT.r-1.5&&hAt(x,z)>L_REAR+0.8)return false;
@@ -1215,7 +1245,7 @@ function isPointWalkable(x,z,pad=0.38){
 }
 
 const NAV={
-  minX:-58,maxX:110,minZ:-56,maxZ:58,step:0.5
+  minX:-80,maxX:148,minZ:-100,maxZ:58,step:0.5
 };
 NAV.cols=Math.round((NAV.maxX-NAV.minX)/NAV.step)+1;
 NAV.rows=Math.round((NAV.maxZ-NAV.minZ)/NAV.step)+1;
@@ -2601,7 +2631,7 @@ function poseSolon(dt,time){
   let hop=0;
   if(act==='cheer')hop=Math.abs(Math.sin(time*6.2))*0.28;
   if(SL.jumpT>0)hop+=Math.sin((1-SL.jumpT/0.62)*Math.PI)*0.72;
-  const gy=SL.inside?0:walkHeight(SL.x,SL.z);
+  const gy=SL.inside?0:(typeof BOAT!=='undefined'&&BOAT.helm==='solon'?BOAT.deckY():walkHeight(SL.x,SL.z));
   SL.y=lerp(SL.y,gy,Math.min(1,dt*22));
   M.root.position.set(SL.x,SL.y-SL.sitK*0.7-SL.squatK*0.28+hop,SL.z);
   M.root.rotation.y=SL.yaw+tw;
@@ -2752,7 +2782,7 @@ function poseLadyMoon(dt,time){
   if(LM.jumpT>0)hop+=Math.sin((1-LM.jumpT/0.62)*Math.PI)*0.75;
   else if(act==='dance')hop=Math.abs(Math.sin(time*5.2))*0.18;
 
-  const gy=LM.inside?0:walkHeight(LM.x,LM.z);
+  const gy=LM.inside?0:(typeof BOAT!=='undefined'&&BOAT.helm==='moon'?BOAT.deckY():walkHeight(LM.x,LM.z));
   LM.y=lerp(LM.y,gy,Math.min(1,dt*22));
   M.root.position.set(LM.x,LM.y-LM.sitK*0.7-LM.squatK*0.3+hop,LM.z);
   M.root.rotation.y=LM.yaw+tw;
@@ -2869,6 +2899,7 @@ function poseLadyMoon(dt,time){
 }
 
 function updateLadyMoon(dt,time){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='moon'){poseLadyMoon(dt,time);return;}
   LM.hatSwapT-=dt;
   // Blinking when not in happy closed-eye mode
   if(LM.faceMode!=='happy'){
@@ -2954,6 +2985,7 @@ function updateLadyMoon(dt,time){
 }
 
 function ladyMoonStatus(){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='moon')return BOAT.status();
   if(HOLD.moon)return 'Lady Moon is holding still';
   if(CTRL.on&&FOLLOW_MOON)return moonCtrlStatus();
   const hatLbl={frog:'🐸',strawberry:'🍓',coral:'🧶',none:'💙'}[MOON_STYLE.hat]||'';
@@ -3861,7 +3893,11 @@ const FISH_SPECIES=[
   {name:'Red Snapper',water:'ocean',len:0.52,deep:0.22,thick:0.09,col:'#e0503a',belly:'#f6a594',eyeRed:true},
   {name:'Striped Bass',water:'ocean',len:0.62,deep:0.17,thick:0.1,col:'#b9c2ca',belly:'#f2f4f5',stripes:'#3a3f48'},
   {name:'Flounder',water:'ocean',len:0.46,deep:0.32,thick:0.045,col:'#8a7050',belly:'#8a7050',spots:'#5a4630',flat:true},
-  {name:'Pufferfish',water:'ocean',len:0.3,deep:0.27,thick:0.25,col:'#d9c27a',belly:'#f6f0dc',spots:'#4a3a20',puffer:true}
+  {name:'Pufferfish',water:'ocean',len:0.3,deep:0.27,thick:0.25,col:'#d9c27a',belly:'#f6f0dc',spots:'#4a3a20',puffer:true},
+  {name:'Golden Koi',water:'pond',len:0.7,deep:0.18,thick:0.12,col:'#f6d35a',belly:'#fff6d2',patches:'#e9b82c',need:4},
+  {name:'Coho Salmon',water:'ocean',len:0.78,deep:0.2,thick:0.12,col:'#c45a4a',belly:'#f3e6dc',spots:'#6a3030',need:3},
+  {name:'Halibut',water:'ocean',len:0.86,deep:0.38,thick:0.06,col:'#8d7a58',belly:'#cbb892',spots:'#5a4630',flat:true,need:5},
+  {name:'Blue Marlin',water:'ocean',len:1.15,deep:0.16,thick:0.1,col:'#2458a8',belly:'#e7eef8',band:'#16356e',fork:true,need:7}
 ];
 function buildFish(sp){
   // the fish hangs from the hook at its mouth: nose points +y, back is +z, belly is -z
@@ -3904,6 +3940,52 @@ function buildFish(sp){
 }
 const FISH_MODELS=FISH_SPECIES.map(buildFish);
 
+/* Tackle: 25 pieces of gear. Better rods, line and lures reach fish the bamboo pole never sees. */
+const TACKLE_ITEMS=[
+  {id:'rod_bamboo',slot:'rod',name:'Bamboo pole',icon:'🎣',price:40,power:1,blurb:'A starter pole for bluegill.'},
+  {id:'rod_willow',slot:'rod',name:'Willow wand',icon:'🌿',price:90,power:2,blurb:'A little more backbone.'},
+  {id:'rod_caster',slot:'rod',name:'Island caster',icon:'🎣',price:160,power:3,blurb:'Reaches salmon water.'},
+  {id:'rod_surf',slot:'rod',name:'Surf rod',icon:'🌊',price:260,power:4,blurb:'For the long cast off the rocks.'},
+  {id:'rod_deep',slot:'rod',name:'Deep-sea rod',icon:'⚓',price:420,power:5,blurb:'The rod that can hold a marlin.'},
+  {id:'reel_tin',slot:'reel',name:'Tin reel',icon:'⚙️',price:50,keep:0.05,blurb:'Fewer fish slip the hook.'},
+  {id:'reel_brass',slot:'reel',name:'Brass reel',icon:'⚙️',price:120,keep:0.12,blurb:'A smooth drag.'},
+  {id:'reel_spin',slot:'reel',name:'Spinning reel',icon:'🌀',price:220,keep:0.2,blurb:'Almost nothing gets away.'},
+  {id:'line_cotton',slot:'line',name:'Cotton line',icon:'🧵',price:25,heft:0,blurb:'Fine for pond fish.'},
+  {id:'line_braid',slot:'line',name:'Braided line',icon:'🧵',price:80,heft:1,blurb:'Stronger fish stay on.'},
+  {id:'line_steel',slot:'line',name:'Steel leader',icon:'⛓️',price:140,heft:2,blurb:'For teeth and trophies.'},
+  {id:'bob_red',slot:'bobber',name:'Red bobber',icon:'🔴',price:15,bite:0,blurb:'The classic float.'},
+  {id:'bob_glow',slot:'bobber',name:'Glow bobber',icon:'💡',price:45,bite:1,blurb:'Bites come faster after dark.'},
+  {id:'bait_worm',slot:'bait',name:'Worm tin',icon:'🪱',price:20,bias:'pond',blurb:'Pond fish love these.'},
+  {id:'bait_cricket',slot:'bait',name:'Cricket box',icon:'🦗',price:30,bias:'pond',blurb:'Trout and bass come closer.'},
+  {id:'bait_dough',slot:'bait',name:'Honey dough',icon:'🍯',price:35,bias:'pond',blurb:'Koi cannot resist it.'},
+  {id:'bait_shrimp',slot:'bait',name:'Shrimp bait',icon:'🦐',price:55,bias:'ocean',blurb:'The ocean bite picks up.'},
+  {id:'lure_spinner',slot:'lure',name:'Gold spinner',icon:'✨',price:70,rare:1,blurb:'A flash that draws bigger fish.'},
+  {id:'lure_spoon',slot:'lure',name:'Silver spoon',icon:'🥄',price:75,rare:1,blurb:'Works in the surf.'},
+  {id:'lure_frog',slot:'lure',name:'Frog topwater',icon:'🐸',price:110,rare:2,blurb:'Bass and salmon strike it.'},
+  {id:'lure_crank',slot:'lure',name:'Crankbait',icon:'🐟',price:130,rare:2,blurb:'Runs deep along the rocks.'},
+  {id:'lure_jig',slot:'lure',name:'Feather jig',icon:'🪶',price:160,rare:3,blurb:'The marlin lure.'},
+  {id:'extra_hooks',slot:'extra',name:'Hook assortment',icon:'🪝',price:30,keep:0.06,blurb:'A sharper hook.'},
+  {id:'extra_net',slot:'extra',name:'Landing net',icon:'🥅',price:95,keep:0.1,heft:1,blurb:'Land the ones that thrash.'},
+  {id:'extra_creel',slot:'extra',name:'Wicker creel',icon:'🧺',price:85,stow:0.2,blurb:'More of the catch goes to market.'}
+];
+const TACKLE={owned:[],equip:{rod:null,reel:null,line:null,bobber:null,bait:null,lure:null,extra:null}};
+try{const s=JSON.parse(localStorage.getItem('lunas-tackle-v1')||'null');
+  if(s){if(Array.isArray(s.owned))TACKLE.owned=s.owned.filter(id=>TACKLE_ITEMS.some(t=>t.id===id));
+    if(s.equip)for(const k in TACKLE.equip)if(TACKLE.owned.includes(s.equip[k]))TACKLE.equip[k]=s.equip[k];}}catch(e){}
+if(!TACKLE.owned.length){for(const id of['rod_bamboo','line_cotton','bob_red','bait_worm'])TACKLE.owned.push(id);
+  TACKLE.equip.rod='rod_bamboo';TACKLE.equip.line='line_cotton';TACKLE.equip.bobber='bob_red';TACKLE.equip.bait='bait_worm';}
+function tackleSave(){try{localStorage.setItem('lunas-tackle-v1',JSON.stringify({owned:TACKLE.owned,equip:TACKLE.equip}));}catch(e){}}
+function tackleBy(id){return TACKLE_ITEMS.find(t=>t.id===id)||null;}
+function tackleGear(){
+  const e=TACKLE.equip,g=id=>tackleBy(id)||{};
+  const rod=g(e.rod),reel=g(e.reel),line=g(e.line),bob=g(e.bobber),bait=g(e.bait),lure=g(e.lure),extra=g(e.extra);
+  const power=rod.power||0,heft=(line.heft||0)+(extra.heft||0),rare=lure.rare||0;
+  return {power,heft,rare,score:power+heft+rare,keep:(reel.keep||0)+(extra.keep||0),bite:bob.bite||0,bias:bait.bias||null,stow:extra.stow||0,
+    label:[rod.name,reel.name,lure.name||bait.name].filter(Boolean).join(' · ')||'Bare hook'};
+}
+function tacklePick(pool,weights){let sum=0;for(const w of weights)sum+=w;let r=Math.random()*sum;
+  for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0)return pool[i];}return pool[pool.length-1];}
+
 // fishing spots: the shores of both ponds and the end of the pier
 const FISH_SPOTS=[];
 for(const P of[PA,PB])for(let i=0;i<14;i++){const a=i/14*Math.PI*2,ca=Math.cos(a),sa=Math.sin(a);
@@ -3911,6 +3993,8 @@ for(const P of[PA,PB])for(let i=0;i<14;i++){const a=i/14*Math.PI*2,ca=Math.cos(a
     if(!isCellOpen(sx,sz))continue;const cx=P.x+ca*(P.r-3.2),cz=P.z+sa*(P.r-3.2);
     if(hAt(cx,cz)<WATER-0.4){FISH_SPOTS.push({x:sx,z:sz,cast:[cx,cz],wy:WATER,water:'pond'});}break;}}
 {const p=POI.pier;FISH_SPOTS.push({x:p.x,z:p.z,cast:[p.x,p.z+5.4],wy:0.02,water:'ocean'});FISH_SPOTS.push({x:p.x,z:p.z,cast:[p.x+2.5,p.z+5],wy:0.02,water:'ocean'});}
+FISH_SPOTS.push({x:ISLE4.x+3.2,z:ISLE4.z-0.4,cast:[ISLE4.x+12,ISLE4.z],wy:0.02,water:'ocean'});
+FISH_SPOTS.push({x:ISLE3.x+0.6,z:ISLE3.z+4.2,cast:[ISLE3.x,ISLE3.z+13],wy:0.02,water:'ocean'});
 
 const FISH=(function(){
   const C=caretaker;
@@ -3937,6 +4021,22 @@ function fishBegin(){
   const F=FISH;F.spot=AI.target.spot;F.casts=0;F.phase='ready';F.t=0;F.cur=null;AI.timer=999;
 }
 function fishEnd(){const F=FISH;F.phase='idle';if(F.cur)F.cur.g.visible=false;F.cur=null;}
+function playerCast(){
+  if(typeof BOAT!=='undefined'&&BOAT.helm){toast('Step ashore to fish');return;}
+  if(FOLLOW_MOON||FOLLOW_SOLON){toast('Switch to Luna to cast a line');return;}
+  if(AI.inside){toast('Step outside to fish');return;}
+  if(AI.state==='act'&&AI.act==='fish'){endAct();toast('Luna reels the line in');return;}
+  let best=null,bd=3.4;
+  for(const s of FISH_SPOTS){const d=Math.hypot(s.x-AI.x,s.z-AI.z);if(d<bd){bd=d;best=s;}}
+  if(!best){toast('Walk Luna to a pond shore, the pier, or a fishing rock');return;}
+  if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();
+  AI.task={id:'fish',need:'fish',act:'fish',sat:0.15,dur:[40,40]};
+  AI.target={spot:best,x:best.x,z:best.z,look:best.cast};
+  AI.state='act';AI.act='fish';AI.timer=40;AI.actT=0;AI.actDur=40;AI.speed=0;
+  AI.yaw=Math.atan2(best.cast[0]-AI.x,best.cast[1]-AI.z);
+  fishBegin();
+  const g=tackleGear();toast('Casting with '+(g.label||'a bare hook'));
+}
 function fishUpdate(dt){
   const F=FISH,S=F.spot;F.t+=dt;
   const next=p=>{F.phase=p;F.t=0;};
@@ -3944,10 +4044,14 @@ function fishUpdate(dt){
     case 'ready':if(F.t>0.7){let c=S.cast;for(let i=0;i<8;i++){const x=S.cast[0]+rnd(-0.9,0.9),z=S.cast[1]+rnd(-0.9,0.9);if(S.water==='ocean'||hAt(x,z)<WATER-0.4){c=[x,z];break;}}
       F.bx=c[0];F.bz=c[1];F.wy=S.wy;next('windup');}break;
     case 'windup':if(F.t>0.55){F.from.copy(F.tipW);F.casts++;next('fly');}break;
-    case 'fly':if(F.t>0.9){fishSplash(F.bx,F.wy,F.bz,0.7);F.biteAt=rnd(3,8);F.nib=rnd(1.2,2.6);next('wait');}break;
+    case 'fly':if(F.t>0.9){fishSplash(F.bx,F.wy,F.bz,0.7);const g=tackleGear();F.biteAt=rnd(2.4,7)*(g.bite&&nightK>0.45?0.62:g.bias?0.82:1);F.nib=rnd(1.2,2.6);next('wait');}break;
     case 'wait':if(F.t>F.biteAt){emote(caretaker.headGroup,'!',0.85,1.3,0.55);fishSplash(F.bx,F.wy,F.bz,0.5);next('bite');}break;
     case 'bite':if(F.t>0.9){
-      if(Math.random()<0.8){const pool=FISH_MODELS.filter(m=>m.sp.water===S.water);F.cur=pick(pool);F.cur.f.scale.setScalar(1.3);next('reel');}
+      const g=tackleGear(),miss=clamp(0.2-g.keep,0.03,0.35);
+      if(Math.random()>miss){let pool=FISH_MODELS.filter(m=>m.sp.water===S.water&&(m.sp.need||0)<=g.score);
+        if(!pool.length)pool=FISH_MODELS.filter(m=>m.sp.water===S.water&&!(m.sp.need));
+        const w=pool.map(m=>{let k=1;if((m.sp.need||0)>0)k+=g.rare*0.85;else if(g.rare)k*=0.6;if(g.bias&&g.bias===m.sp.water)k+=0.45;return k;});
+        F.cur=tacklePick(pool,w);F.scale=1.3*(1+g.power*0.07+g.heft*0.1);F.cur.f.scale.setScalar(F.scale);next('reel');}
       else{emote(caretaker.headGroup,'?',0.85,1.4,0.55);next('miss');}}break;
     case 'reel':if(F.t>1.8){F.caught++;F.last=F.cur.sp.name;F.log[F.last]=(F.log[F.last]||0)+1;
       emote(caretaker.headGroup,'fish',0.85,2.4,0.62);
@@ -3955,7 +4059,7 @@ function fishUpdate(dt){
       for(const d of DOGS)if(d.state==='follow')d.happy=3;
       next('show');}break;
     case 'show':if(F.t>3.2){F.cur.g.getWorldPosition(F.from);
-      if(PRICES[F.last]&&Math.random()<0.75){addGood(F.last,1);emote(caretaker.headGroup,'coin',0.85,1.6,0.55);next('stow');}else next('release');}break;
+      if(PRICES[F.last]&&Math.random()<0.75+(tackleGear().stow||0)){addGood(F.last,1);emote(caretaker.headGroup,'coin',0.85,1.6,0.55);next('stow');}else next('release');}break;
     case 'stow':if(F.t>0.7){if(F.cur)F.cur.g.visible=false;F.cur=null;
       if(F.casts<3&&Math.random()<0.55)next('ready');else{endAct();return;}}break;
     case 'release':if(F.t>0.9){fishSplash(F.bx,F.wy,F.bz,0.8);if(F.cur)F.cur.g.visible=false;F.cur=null;emote(caretaker.headGroup,'heart',0.85);
@@ -3991,8 +4095,8 @@ function updateFishing(dt,time){
   if(F.cur){const g=F.cur.g;
     if(fishOn){g.visible=true;g.position.set(F.bob.position.x,F.bob.position.y-0.14,F.bob.position.z);
       g.rotation.set(0,AI.yaw+Math.PI/2+Math.sin(time*1.7)*0.5,Math.sin(time*(P==='show'?9:14))*0.35);
-      if(F.cur.sp.puffer){const k=P==='show'?smooth(0,0.6,t):0;F.cur.f.scale.setScalar(1.3*(1+0.4*k));}}
-    else if(P==='stow'){g.visible=true;const k=smooth(0,1,t/0.7);g.position.set(lerp(F.from.x,AI.x,k),lerp(F.from.y,AI.y+0.8,k),lerp(F.from.z,AI.z,k));F.cur.f.scale.setScalar(1.3*(1-0.85*k));}
+      const sc=F.scale||1.3;if(F.cur.sp.puffer){const k=P==='show'?smooth(0,0.6,t):0;F.cur.f.scale.setScalar(sc*(1+0.4*k));}else F.cur.f.scale.setScalar(sc);}
+    else if(P==='stow'){g.visible=true;const k=smooth(0,1,t/0.7);g.position.set(lerp(F.from.x,AI.x,k),lerp(F.from.y,AI.y+0.8,k),lerp(F.from.z,AI.z,k));F.cur.f.scale.setScalar((F.scale||1.3)*(1-0.85*k));}
     else if(fishTumble){g.visible=true;const k=Math.min(1,t/0.9);g.position.set(lerp(F.from.x,F.bx,k),lerp(F.from.y,F.wy,k)+Math.sin(k*Math.PI)*0.8,lerp(F.from.z,F.bz,k));g.rotation.x+=dt*8;}
     else g.visible=false;}
   if(F.cur&&F.cur.g.visible&&P!=='stow')F.cur.g.getWorldPosition(F.look);else F.look.copy(F.bob.position);
@@ -4098,7 +4202,27 @@ Object.assign(CL,{
   coin(c,x,y,s){CL.ell(c,x,y,s,s,0,'#e9b82c');CL.ell(c,x,y,s*0.78,s*0.78,0,'#f6d35a');CL.star(c,x,y,s*0.5,'#e9b82c');},
   anchor(c,x,y,s,col){c.strokeStyle=col;c.lineWidth=s*0.12;c.lineCap='round';c.beginPath();c.arc(x,y-s*0.5,s*0.14,0,6.2832);c.moveTo(x,y-s*0.36);c.lineTo(x,y+s*0.5);
     c.moveTo(x-s*0.28,y-s*0.15);c.lineTo(x+s*0.28,y-s*0.15);c.moveTo(x-s*0.45,y+s*0.15);c.quadraticCurveTo(x-s*0.4,y+s*0.55,x,y+s*0.52);c.quadraticCurveTo(x+s*0.4,y+s*0.55,x+s*0.45,y+s*0.15);c.stroke();},
-  moon(c,x,y,s,col,bg){CL.ell(c,x,y,s,s,0,col);CL.ell(c,x+s*0.45,y-s*0.2,s*0.85,s*0.85,0,bg);}
+  moon(c,x,y,s,col,bg){CL.ell(c,x,y,s,s,0,col);CL.ell(c,x+s*0.45,y-s*0.2,s*0.85,s*0.85,0,bg);},
+  jack(c,x,y,s){CL.pumpkin(c,x,y,s);c.fillStyle='#2a1a12';
+    c.beginPath();c.moveTo(x-s*0.16,y-s*0.02);c.lineTo(x-s*0.02,y+s*0.12);c.lineTo(x-s*0.2,y+s*0.08);c.fill();
+    c.beginPath();c.moveTo(x+s*0.16,y-s*0.02);c.lineTo(x+s*0.02,y+s*0.12);c.lineTo(x+s*0.2,y+s*0.08);c.fill();
+    c.beginPath();c.ellipse(x,y+s*0.22,s*0.09,s*0.05,0,0,6.28);c.fill();},
+  ghost(c,x,y,s){c.fillStyle='#f7f4ee';c.beginPath();c.arc(x,y-s*0.12,s*0.42,Math.PI,0);c.lineTo(x+s*0.42,y+s*0.5);
+    for(let i=0;i<4;i++)c.quadraticCurveTo(x+s*(0.32-i*0.21),y+s*0.22,x+s*(0.2-i*0.21),y+s*0.5);c.closePath();c.fill();
+    c.fillStyle='#2a1a12';c.beginPath();c.arc(x-s*0.12,y-s*0.1,s*0.055,0,6.28);c.arc(x+s*0.12,y-s*0.1,s*0.055,0,6.28);c.fill();},
+  witchHat(c,x,y,s,col){c.fillStyle=col||'#24162e';c.beginPath();c.moveTo(x-s*0.55,y);c.lineTo(x+s*0.55,y);c.lineTo(x+s*0.4,y-s*0.08);c.lineTo(x-s*0.4,y-s*0.08);c.fill();
+    c.beginPath();c.moveTo(x-s*0.2,y-s*0.08);c.lineTo(x+s*0.1,y-s*0.08);c.lineTo(x-s*0.02,y-s*0.7);c.fill();c.fillStyle='#f2c94c';c.fillRect(x-s*0.14,y-s*0.26,s*0.26,s*0.06);},
+  bat(c,x,y,s){c.fillStyle='#1b1424';c.beginPath();c.ellipse(x,y,s*0.15,s*0.11,0,0,6.28);c.fill();
+    for(const sd of[-1,1]){c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+sd*s*0.4,y-s*0.5,x+sd*s*0.68,y-s*0.02);c.quadraticCurveTo(x+sd*s*0.35,y-s*0.08,x,y);c.fill();}
+    c.fillStyle='#f2e6c0';c.beginPath();c.arc(x-s*0.05,y-s*0.02,s*0.02,0,6.28);c.arc(x+s*0.05,y-s*0.02,s*0.02,0,6.28);c.fill();},
+  kitty(c,x,y,s){c.fillStyle='#1b1424';c.beginPath();c.arc(x,y,s*0.3,0,6.28);c.fill();
+    for(const sd of[-1,1]){c.beginPath();c.moveTo(x+sd*s*0.08,y-s*0.2);c.lineTo(x+sd*s*0.26,y-s*0.46);c.lineTo(x+sd*s*0.3,y-s*0.14);c.fill();}
+    c.fillStyle='#f2c94c';c.beginPath();c.arc(x-s*0.09,y-s*0.02,s*0.035,0,6.28);c.arc(x+s*0.09,y-s*0.02,s*0.035,0,6.28);c.fill();},
+  spider(c,x,y,s){c.strokeStyle='#1b1424';c.lineWidth=Math.max(2,s*0.06);c.beginPath();
+    for(const sd of[-1,1])for(let i=0;i<4;i++){c.moveTo(x,y);c.quadraticCurveTo(x+sd*s*(0.15+i*0.04),y-s*0.32,x+sd*s*0.5,y+(i-1.5)*s*0.16);}c.stroke();
+    c.fillStyle='#1b1424';c.beginPath();c.ellipse(x,y,s*0.11,s*0.15,0,0,6.28);c.fill();},
+  candy(c,x,y,s){const cols=['#f7f4ee','#f08a2c','#f2c94c'];for(let i=0;i<3;i++){c.fillStyle=cols[i];c.beginPath();
+    c.moveTo(x-s*0.28+i*s*0.18,y-s*0.26);c.lineTo(x-s*0.12+i*s*0.18,y-s*0.26);c.lineTo(x-s*0.2+i*s*0.18,y+s*0.26);c.lineTo(x-s*0.36+i*s*0.18,y+s*0.26);c.fill();}}
 });
 BREEDS.shepherd={fur:'#d4914a',cap:'#2a2220',ear:'up',earCol:'#2a2220',inner:'#d99a80',muzzle:'#f0c48a'};
 const SHOP_OUTFITS=[
@@ -4161,6 +4285,27 @@ const OUTFITS=[
       c.fillStyle='rgba(255,220,120,0.35)';for(let i=40;i<S;i+=64){c.fillRect(i,0,4,S);c.fillRect(0,i,S,4);}
       CL.tile(c,S,3,4,(x,y,i)=>{if(i%2){c.fillStyle='#fbf6ec';c.fillRect(x-40,y-18,80,36);c.fillStyle='#b8322b';c.font='900 24px "Zen Maru Gothic", Nunito, sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('WOOF',x,y+1);}
         else CL.paw(c,x,y,16,'#fbf6ec',0.3);});}},
+  {id:'pumpkinGrin',name:'Pumpkin Grin',bg:'#f08a2c',bottom:'pants',bcol:'#3b2a20',shoe:['#3b2a20','#f08a2c'],acc:'beanie',accCol:'#5a7a2a',
+    draw:(c,S)=>{c.fillStyle='#e07a22';c.fillRect(0,0,S,S);CL.tile(c,S,3,4,(x,y)=>CL.jack(c,x,y,48));}},
+  {id:'ghostSheet',name:'Ghost Sheet',bg:'#f4f1ea',bottom:'skirt',bcol:'#e7e2d8',shoe:['#f7f7f4','#2b2d31'],acc:'bow',accCol:'#d9d4cc',
+    draw:(c,S)=>{CL.scatter(c,S,18,201,(x,y)=>CL.ghost(c,x,y,46));CL.scatter(c,S,30,202,(x,y,a,k)=>CL.ell(c,x,y,2,2,0,'#c9c3b8'));}},
+  {id:'witching',name:'Witching Hour',bg:'#2a1840',bottom:'skirt',bcol:'#1a1028',shoe:['#1a1028','#f2c94c'],acc:'beanie',accCol:'#3a2060',
+    draw:(c,S)=>{CL.scatter(c,S,28,211,(x,y,a,k)=>CL.star(c,x,y,3+k*5,'#ffe48a'));CL.tile(c,S,3,4,(x,y,i)=>{if(i%2)CL.witchHat(c,x,y,50,'#1a1028');else CL.moon(c,x,y,22,'#ffe48a','#2a1840');});}},
+  {id:'candycorn',name:'Candy Corn',bg:'#fff6e4',bottom:'shorts',bcol:'#f2c94c',shoe:['#f08a2c','#ffffff'],acc:'bow',accCol:'#f08a2c',
+    draw:(c,S)=>{const b=['#ffffff','#f08a2c','#f2c94c'];for(let i=0;i<18;i++){c.fillStyle=b[i%3];c.fillRect(0,i*S/18,S,S/18+1);}CL.tile(c,S,4,4,(x,y)=>CL.candy(c,x,y,36));}},
+  {id:'skeleton',name:'Skeleton Crew',bg:'#1c1a22',bottom:'pants',bcol:'#1c1a22',shoe:['#f4f1ea','#1c1a22'],acc:'cap',accCol:'#f4f1ea',
+    draw:(c,S)=>{CL.tile(c,S,3,4,(x,y,i)=>{CL.bone(c,x,y,i%2?40:28,'#f7f4ee',i%2?0.4:-0.5);if(i%3===0)CL.ell(c,x,y-30,10,12,0,'#f7f4ee');});}},
+  {id:'batwing',name:'Bat Wings',bg:'#3a1428',bottom:'shorts',bcol:'#241018',shoe:['#241018','#e23b45'],acc:'bow',accCol:'#e23b45',
+    draw:(c,S)=>{CL.tile(c,S,3,4,(x,y)=>CL.bat(c,x,y,42));CL.scatter(c,S,16,221,(x,y)=>CL.moon(c,x,y,14,'#f2c4d0','#3a1428'));}},
+  {id:'blackcat',name:'Black Cat',bg:'#14121a',bottom:'pants',bcol:'#14121a',shoe:['#f2c94c','#14121a'],acc:'beanie',accCol:'#f2c94c',
+    draw:(c,S)=>{CL.scatter(c,S,24,231,(x,y,a,k)=>CL.star(c,x,y,2+k*4,'#ffe9a0'));CL.tile(c,S,3,4,(x,y)=>CL.kitty(c,x,y,40));}},
+  {id:'mummy',name:'Mummy Wrap',bg:'#e7d7b4',bottom:'pants',bcol:'#cbb892',shoe:['#8a7050','#e7d7b4'],
+    draw:(c,S)=>{c.save();c.strokeStyle='#f6efe2';c.lineWidth=14;c.lineCap='round';for(let y=-40;y<S+40;y+=28){c.beginPath();c.moveTo(0,y);c.lineTo(S,y+36);c.stroke();}c.restore();
+      CL.tile(c,S,4,5,(x,y,i)=>{if(i%4===0){c.fillStyle='#2a1a12';c.beginPath();c.arc(x-8,y,4,0,6.28);c.arc(x+8,y,4,0,6.28);c.fill();}});}},
+  {id:'spidersilk',name:'Spider Silk',bg:'#24162e',bottom:'skirt',bcol:'#3a2060',shoe:['#1b1424','#c9b8e0'],acc:'bow',accCol:'#c9b8e0',
+    draw:(c,S)=>{c.strokeStyle='rgba(230,220,245,0.35)';c.lineWidth=2;for(let i=0;i<8;i++){c.beginPath();c.arc(S/2,S/2,40+i*28,0,6.28);c.stroke();}CL.tile(c,S,3,4,(x,y)=>CL.spider(c,x,y,36));}},
+  {id:'harvestmoon',name:'Harvest Moon',bg:'#1d2744',bottom:'shorts',bcol:'#e07a22',shoe:['#f2c94c','#1d2744'],acc:'cap',accCol:'#e07a22',
+    draw:(c,S)=>{CL.scatter(c,S,26,241,(x,y,a,k)=>CL.star(c,x,y,3+k*4,'#ffe9a0'));CL.tile(c,S,3,4,(x,y,i)=>i%2?CL.jack(c,x,y,40):CL.moon(c,x,y,26,'#f2c94c','#1d2744'));}},
   {id:'swimsuit',name:'Swimsuit',hidden:true,bg:'#ff7f9f',bottom:'shorts',bcol:'#ff7f9f',shoe:['#f3c6a8','#f3c6a8'],
     draw:(c,S)=>{c.fillStyle='#ffd1dc';for(let y=24;y<S;y+=96)c.fillRect(0,y,S,20);CL.scatter(c,S,70,131,(x,y,a,k)=>CL.ell(c,x,y,5+k*5,5+k*5,0,'#ffffff'));}},
   {id:'rainy',name:'Rainy Day Pups',bg:'#ffd84a',bottom:'pants',bcol:'#3a6ea5',shoe:['#ffd84a','#3a6ea5'],
@@ -4596,6 +4741,45 @@ DECOR_CATALOG.push(
     blob(g,CYL,DM('#b5864a'),0,0.14,0,0.18,0.22,0.16);for(let k=0;k<6;k++){const a=k/6*6.28;blob(g,SPH,DM(k%2?'#5b4fcf':'#3f7a3a'),Math.cos(a)*0.06,0.28,Math.sin(a)*0.05,0.045,0.04,0.045,false);}}}
 );
 Object.assign(DECOR_BY_ID,Object.fromEntries(DECOR_CATALOG.map(d=>[d.id,d])));
+// Island fixtures that were built into the world but missing from the market, so anyone can place their own.
+DECOR_CATALOG.push(
+  {id:'woodcrate',size:'small',name:'Wood crate',icon:'📦',price:30,r:0.45,build(g){blob(g,BOX,DM('#b0834f'),0,0.28,0,0.7,0.56,0.7);for(const y of[0.12,0.44])blob(g,BOX,DM('#7d5b37'),0,y,0.36,0.72,0.06,0.04,false);blob(g,BOX,DM('#7d5b37'),0.36,0.28,0,0.04,0.08,0.72,false);}},
+  {id:'lifering',size:'small',name:'Life ring',icon:'🛟',price:40,r:0.35,build(g){blob(g,CYL,DM('#e9e4da'),0,0.7,0,0.04,1.4,0.04);const ring=blob(g,new T.TorusGeometry(0.28,0.07,8,18),DM('#e23b45'),0.05,1.15,0,1,1,1);ring.rotation.y=0.4;
+    for(let k=0;k<4;k++){const a=k*1.57;blob(g,BOX,DM('#f7f4ee'),Math.cos(a)*0.28,1.15,Math.sin(a)*0.28,0.08,0.08,0.06,false);}}},
+  {id:'welcomesign',size:'small',name:'Welcome sign',icon:'🪧',price:45,r:0.3,build(g){blob(g,BOX,DM('#6e4b33'),0,0.7,0,0.1,1.4,0.1);blob(g,BOX,DM('#f6efe2'),0,1.35,0,0.9,0.48,0.06);
+    blob(g,BOX,DM('#2f5a4a'),0,1.35,0.04,0.7,0.28,0.02,false);}},
+  {id:'barrel',size:'small',name:'Wood barrel',icon:'🛢️',price:35,r:0.4,build(g){blob(g,CYL,DM('#8a6143'),0,0.38,0,0.32,0.76,0.32);for(const y of[0.16,0.58])blob(g,CYL,DM('#3b2a20'),0,y,0,0.34,0.05,0.34,false);}},
+  {id:'buoy',size:'small',name:'Channel buoy',icon:'🔴',price:50,r:0.3,build(g){blob(g,CYL,DM('#d93a3a'),0,0.45,0,0.22,0.7,0.22);blob(g,CYL,DM('#f7f4ee'),0,0.45,0,0.23,0.12,0.23,false);blob(g,SPH,DM('#d93a3a'),0,0.85,0,0.16,0.16,0.16);blob(g,CYL,DM('#2b2d31'),0,1.05,0,0.02,0.28,0.02,false);}},
+  {id:'mooringpost',size:'small',name:'Mooring post',icon:'⚓',price:25,r:0.25,build(g){blob(g,CYL,DM('#6e4b33'),0,0.45,0,0.1,0.9,0.1);blob(g,SPH,DM('#6e4b33'),0,0.95,0,0.14,0.1,0.14);const r=blob(g,new T.TorusGeometry(0.12,0.025,6,12),DM('#b9c2ca',{metalness:0.6}),0.16,0.7,0,1,1,1);r.rotation.y=Math.PI/2;}},
+  {id:'lanternpost',size:'small',name:'Paper lantern',icon:'🏮',price:55,r:0.25,build(g){blob(g,CYL,DM('#6e4b33'),0,0.8,0,0.04,1.6,0.04);blob(g,SPH,GLOW('#ff8a3d',1.3),0,1.55,0,0.16,0.2,0.16,false);blob(g,CYL,DM('#c63a2f'),0,1.78,0,0.1,0.06,0.1,false);decorPool(g,1.5);}},
+  {id:'zenstone',size:'small',name:'Zen stone',icon:'🪨',price:40,r:0.45,use:'resting by the stone',build(g){blob(g,SPH,DM('#8e887d',{flatShading:true}),0,0.22,0,0.55,0.28,0.42);blob(g,SPH,DM('#7f837f',{flatShading:true}),0.35,0.14,0.1,0.28,0.16,0.24);blob(g,ICO_G,DM('#6d8f4a',{flatShading:true}),-0.15,0.4,0.05,0.16,0.08,0.14);}},
+  {id:'mossrock',size:'small',name:'Mossy rock',icon:'🪨',price:35,r:0.5,build(g){blob(g,SPH,DM('#7f837f',{flatShading:true}),0,0.28,0,0.7,0.4,0.55);blob(g,ICO_G,DM('#6d8f4a',{flatShading:true}),0.1,0.48,-0.05,0.35,0.16,0.28);}},
+  {id:'pettoys',size:'medium',name:'Pet toys',icon:'🎾',price:40,r:0.7,use:'playing with the toys',build(g){blob(g,SPH,DM('#ff5d5d'),-0.35,0.16,0.1,0.18,0.18,0.18);blob(g,SPH,DM('#ffd23f'),0.45,0.14,-0.25,0.15,0.15,0.15);
+    const ring=blob(g,new T.TorusGeometry(0.16,0.04,8,14),DM('#4fb3ff'),0.15,0.08,0.25,1,1,1);ring.rotation.x=Math.PI/2;
+    const rope=blob(g,CYL,DM('#e9d7b1'),-0.1,0.08,-0.35,0.04,0.55,0.04);rope.rotation.z=Math.PI/2;blob(g,SPH,DM('#e9d7b1'),-0.38,0.08,-0.35,0.08,0.08,0.08);blob(g,SPH,DM('#e9d7b1'),0.18,0.08,-0.35,0.08,0.08,0.08);}},
+  {id:'petbed',size:'medium',name:'Pet bed',icon:'🛏️',price:70,r:0.7,use:'fluffing the pet bed',build(g){const ring=blob(g,new T.TorusGeometry(0.55,0.12,8,18),DM('#d9795c'),0,0.16,0,1,0.7,1);ring.rotation.x=Math.PI/2;blob(g,CYL,DM('#f2d6b8'),0,0.1,0,0.48,0.08,0.48);}},
+  {id:'picket',size:'medium',name:'Picket fence',icon:'🏡',price:60,r:0.35,build(g){for(let i=0;i<5;i++){const x=-0.8+i*0.4;blob(g,BOX,DM('#f6efe2'),x,0.45,0,0.08,0.9,0.08);blob(g,CONE,DM('#f6efe2'),x,0.95,0,0.07,0.16,0.07);}blob(g,BOX,DM('#e7dcc8'),0,0.55,0,1.7,0.06,0.04,false);blob(g,BOX,DM('#e7dcc8'),0,0.28,0,1.7,0.05,0.04,false);}},
+  {id:'compostbin',size:'medium',name:'Compost bin',icon:'🍂',price:75,r:0.7,build(g){const w=DM('#8a6143');for(let k=0;k<4;k++){blob(g,BOX,w,0,0.12+k*0.16,0.4,1.1,0.08,0.06);blob(g,BOX,w,0,0.12+k*0.16,-0.4,1.1,0.08,0.06);}blob(g,ICO_G,DM('#4a3324',{flatShading:true}),0,0.45,0,0.7,0.35,0.55);}},
+  {id:'raisedbed',size:'medium',name:'Raised bed',icon:'🥕',price:90,r:0.9,produce:{good:'carrot',every:120,n:2},use:'tending the raised bed',act:'harvest',build(g){blob(g,BOX,DM('#8a6143'),0,0.22,0,1.6,0.44,0.9);blob(g,BOX,DM('#4a3324'),0,0.42,0,1.45,0.06,0.75,false);
+    for(let k=0;k<6;k++){const x=-0.55+k*0.22;blob(g,CYL,DM('#5a8a32'),x,0.62,0,0.02,0.28,0.02,false);blob(g,SPH,DM('#f08a2c'),x,0.55,-0.05,0.06,0.1,0.06,false);}}},
+  {id:'fishingnet',size:'medium',name:'Fishing net',icon:'🪢',price:65,r:0.45,build(g){blob(g,CYL,DM('#6e4b33'),-0.15,0.7,0,0.04,1.4,0.04);blob(g,CYL,DM('#6e4b33'),0.35,0.7,0,0.04,1.4,0.04);blob(g,BOX,DM('#cbb892',{transparent:true,opacity:0.55,side:T.DoubleSide}),0.1,0.85,0,0.5,0.7,0.02,false);
+    for(let k=0;k<4;k++)blob(g,SPH,DM('#d9cbb0'),-0.15+k*0.16,0.45,0.04,0.035,0.035,0.035,false);}},
+  {id:'wildpatch',size:'medium',name:'Wildflower patch',icon:'🌼',price:55,r:0.6,build(g){for(let k=0;k<14;k++){const x=rnd(-0.45,0.45),z=rnd(-0.35,0.35);blob(g,CYL,DM('#4d8f35'),x,0.16,z,0.012,0.32,0.012,false);blob(g,SPH,DM(['#ff9ab8','#ffd24d','#ffffff','#b79cff','#ff7a5c'][k%5]),x,0.34,z,0.07,0.05,0.07,false);}}},
+  {id:'radioprop',size:'medium',name:'Deck radio',icon:'📻',price:120,r:0.4,use:'humming by the radio',build(g){blob(g,CYL,DM('#8a6143'),0,0.28,0,0.28,0.08,0.28);blob(g,BOX,DM('#2f8f8a'),0,0.48,0,0.42,0.24,0.2);blob(g,BOX,DM('#f2e6c9'),0,0.48,0.1,0.3,0.16,0.02,false);blob(g,CYL,DM('#c9ccd1',{metalness:0.6}),0.16,0.72,0,0.012,0.35,0.012,false);}},
+  {id:'clothesline',size:'medium',name:'Clothesline',icon:'👕',price:50,r:0.3,build(g){for(const s of[-1,1])blob(g,CYL,DM('#6e4b33'),s*0.7,0.7,0,0.04,1.4,0.04);blob(g,CYL,DM('#d9cbb0'),0,1.25,0,0.012,1.4,0.012).rotation.z=Math.PI/2;
+    blob(g,BOX,DM('#ff8fab'),-0.25,1.05,0,0.28,0.32,0.04,false);blob(g,BOX,DM('#4fb3ff'),0.28,1.02,0,0.26,0.3,0.04,false);}},
+  {id:'stoneset',size:'medium',name:'Stepping stones',icon:'🪨',price:40,r:0.2,build(g){for(const[x,z,s]of[[-0.45,0.1,0.9],[0,0.15,1],[0.48,-0.05,0.85]]){const st=blob(g,CYL,DM('#b9b3a6'),x,0.04,z,0.28*s,0.06,0.22*s);st.rotation.y=x;}}},
+  {id:'logpile',size:'medium',name:'Log pile',icon:'🪵',price:45,r:0.6,build(g){for(let k=0;k<4;k++){const y=0.16+Math.floor(k/2)*0.22,x=(k%2?0.18:-0.18);const lg=blob(g,CYL,DM('#6b4a36'),x,y,0,0.16,0.9,0.16);lg.rotation.z=Math.PI/2;blob(g,CYL,DM('#d9b88a'),x+(k%2?0.46:-0.46),y,0,0.13,0.02,0.13,false);}}},
+  {id:'pineplace',size:'large',name:'Pine tree',icon:'🌲',price:220,r:0.7,use:'standing under the pine',build(g){blob(g,CYL,DM('#5a3d2a'),0,0.9,0,0.18,1.8,0.18);for(let k=0;k<4;k++)blob(g,CONE,DM(['#2f6b3a','#3f7f3a','#2a5a32'][k%3],{flatShading:true}),0,1.5+k*0.55,0,1.15-k*0.18,0.7,1.15-k*0.18);}},
+  {id:'bambooplace',size:'large',name:'Bamboo grove',icon:'🎋',price:180,r:0.8,use:'listening to the bamboo',build(g){for(let k=0;k<9;k++){const a=k*0.7,r=k?0.45:0;blob(g,CYL,DM('#7f9a52'),Math.cos(a)*r,1.1,Math.sin(a)*r,0.06,2.2,0.06);blob(g,BOX,DM('#5f9a3c'),Math.cos(a)*r+0.08,1.6+(k%3)*0.3,Math.sin(a)*r,0.18,0.05,0.08,false);}}},
+  {id:'yardswing',size:'large',name:'Garden swing',icon:'🪑',price:240,r:1.1,use:'swinging for a minute',build(g){for(const s of[-1,1])blob(g,BOX,DM('#3b2a20'),s*0.9,1.15,0,0.1,2.3,0.1);blob(g,BOX,DM('#3b2a20'),0,2.25,0,2.0,0.1,0.1);
+    const seat=new T.Group();seat.position.y=2.2;g.add(seat);for(const s of[-1,1])blob(seat,CYL,DM('#d9cbb0'),s*0.45,-0.55,0,0.015,1.1,0.015,false);blob(seat,BOX,DM('#8a6143'),0,-1.1,0,1.15,0.08,0.4);
+    DECOR_ANIM.push((dt,t)=>{seat.rotation.x=Math.sin(t*1.3)*0.12;});}},
+  {id:'plankbridge',size:'large',name:'Plank bridge',icon:'🌉',price:200,r:0.25,build(g){for(let k=0;k<7;k++)blob(g,BOX,DM(k%2?'#8a6143':'#a0703f'),0,0.12,(k-3)*0.32,1.15,0.08,0.28);for(const s of[-1,1])blob(g,BOX,DM('#6e4b33'),s*0.5,0.28,0,0.08,0.28,2.3);}},
+  {id:'minishrine',size:'large',name:'Wayside shrine',icon:'⛩️',price:480,r:1.3,use:'leaving an offering',build(g){blob(g,BOX,DM('#aaa498'),0,0.2,0,2.2,0.4,1.8);blob(g,BOX,DM('#8b3a2b'),0,1.15,0,1.5,1.5,1.2);
+    for(const s of[-1,1])blob(g,CYL,DM('#c63a2f'),s*0.7,1.15,0.7,0.1,1.5,0.1);blob(g,BOX,DM('#2c2e35'),0,2.05,0,2.3,0.12,1.8);blob(g,BOX,GLOW('#ffd58a',1.1),0,1.3,0.62,0.5,0.6,0.04,false);blob(g,BOX,DM('#6b4a33'),0,0.55,1.15,0.5,0.4,0.35);}}
+);
+Object.assign(DECOR_BY_ID,Object.fromEntries(DECOR_CATALOG.map(d=>[d.id,d])));
 
 // things Luna enjoys using when you place them
 Object.assign(DECOR_BY_ID.campfire,{use:'warming up by the campfire',act:'warm'});Object.assign(DECOR_BY_ID.fountain,{use:'watching the fountain'});
@@ -4721,21 +4905,30 @@ function updateDecor(dt,time){updateBuilds(dt);if(!INSIDE_REF||!INSIDE_REF.on)fo
     const v=basketValue();sellBtn.disabled=!v;sellBtn.textContent=v?'Sell basket for '+fmt(v)+' coins':'Nothing to sell yet';
   }
   const TABS=[['small','Small','Little touches: pots, lights, gnomes and berry bushes.'],['medium','Medium','Garden pieces, pup gear and a beehive that makes honey.'],
-    ['large','Large','Big showpieces. Apple trees and the chicken coop fill Luna\'s basket.'],['build','Build','Made from wood Luna chops. Pick a spot and she builds it with her hammer.'],['clothes','Clothes','New outfits and masks go straight into Luna\'s Closet.']];
+    ['large','Large','Big showpieces. Apple trees and the chicken coop fill Luna\'s basket.'],['build','Build','Made from wood Luna chops. Pick a spot and she builds it with her hammer.'],
+    ['tackle','Tackle','Rods, reels, bait and lures. Better gear catches bigger fish.'],['clothes','Clothes','New outfits and masks go straight into Luna\'s Closet.']];
   let tab='small';try{tab=localStorage.getItem('lunas-market-tab-v2')||'small';}catch(e){}
   function renderShop(){
     tabsEl.textContent='';shopGrid.textContent='';
-    for(const[id,lab]of TABS){const n=id==='clothes'?SHOP_OUTFITS.length+SHOP_MASKS.length:DECOR_CATALOG.filter(d=>d.size===id).length;
+    for(const[id,lab]of TABS){const n=id==='clothes'?SHOP_OUTFITS.length+SHOP_MASKS.length:id==='tackle'?TACKLE_ITEMS.length:DECOR_CATALOG.filter(d=>d.size===id).length;
       const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',tab===id);b.textContent=lab+' '+n;
       b.onclick=()=>{tab=id;try{localStorage.setItem('lunas-market-tab-v2',id);}catch(e){}renderShop();};tabsEl.appendChild(b);}
     noteEl.textContent=TABS.find(t=>t[0]===tab)[2]+(tab==='build'?' You have '+ECON.wood+' wood.':'');
-    if(tab==='clothes'){
+    if(tab==='tackle'){
+      for(const it of TACKLE_ITEMS){const own=TACKLE.owned.includes(it.id),on=TACKLE.equip[it.slot]===it.id;
+        shopGrid.appendChild(card(it.name,it.icon,own?(on?'Equipped':it.blurb):it.price+' coins',own||ECON.coins>=it.price,()=>buyTackle(it),on));}
+    }else if(tab==='clothes'){
       for(const o of SHOP_OUTFITS){const own=owns(o.id);shopGrid.appendChild(card(o.name,CLOSET.thumb(o),own?'In the closet':o.price+' coins',own||ECON.coins>=o.price,()=>buyCloth(o),own));}
       for(const m of SHOP_MASKS){const own=owns(m.id);shopGrid.appendChild(card(m.name,CLOSET.maskThumb(m),own?'In the closet':m.price+' coins',own||ECON.coins>=m.price,()=>buyCloth(m,true),own));}
     }else if(tab==='build'){for(const d of DECOR_CATALOG.filter(d=>d.size==='build').sort((a,b)=>a.wood-b.wood))
       shopGrid.appendChild(card(d.name,d.icon,d.kind+' · '+d.wood+' wood'+(d.produce?' · grows '+d.produce.good:''),ECON.wood>=d.wood,()=>{setOpen(false);startPlacing(d.id);}));}
     else for(const d of DECOR_CATALOG.filter(d=>d.size===tab).sort((a,b)=>a.price-b.price))
       shopGrid.appendChild(card(d.name,d.icon,d.price+' coins'+(d.produce?' · makes '+d.produce.good:''),ECON.coins>=d.price,()=>{setOpen(false);startPlacing(d.id);}));
+  }
+  function buyTackle(it){
+    if(!TACKLE.owned.includes(it.id)){if(ECON.coins<it.price){toast('Not enough coins yet');return;}ECON.coins-=it.price;TACKLE.owned.push(it.id);econSave();}
+    TACKLE.equip[it.slot]=it.id;tackleSave();toast(it.name+' goes in the tackle box');
+    const box=document.getElementById('tackle');if(box&&!box.hidden&&TACKLE.ui)TACKLE.ui.render();render();
   }
   function buyCloth(o,mask){
     if(!owns(o.id)){if(ECON.coins<o.price){toast('Not enough coins yet');return;}ECON.coins-=o.price;ECON.owned.push(o.id);econSave();toast('Added "'+o.name+'" to Luna\'s Closet');}
@@ -4765,7 +4958,7 @@ function updateDecor(dt,time){updateBuilds(dt);if(!INSIDE_REF||!INSIDE_REF.on)fo
   sellBtn.onclick=()=>sellBasket();
   document.getElementById('mkSellWood').onclick=()=>{if(ECON.wood<5)return;ECON.wood-=5;const v=5*PRICES.wood;ECON.coins+=v;ECON.earned+=v;econSave();toast('+'+v+' coins for 5 wood');};
   const rs=document.getElementById('mkReset');let rsT=0;
-  rs.onclick=()=>{if(performance.now()-rsT<4000){try{for(const k of['lunas-market-v2','lunas-closet-v2','lunas-welcomed-v2','lunas-market-tab-v2','ladymoon-closet-v1','lunas-spacelaunch-played-v1'])localStorage.removeItem(k);}catch(e){}location.reload();}
+  rs.onclick=()=>{if(performance.now()-rsT<4000){try{for(const k of['lunas-market-v2','lunas-closet-v2','lunas-welcomed-v2','lunas-market-tab-v2','ladymoon-closet-v1','ladymoon-closet-v2','solon-closet-v1','solon-closet-v2','lunas-spacelaunch-played-v1','lunas-tackle-v1','lunas-boat-v1','lunas-tod-v1','lunas-saves-v1'])localStorage.removeItem(k);}catch(e){}location.reload();}
     else{rsT=performance.now();rs.textContent='Tap again to erase everything';setTimeout(()=>{rs.textContent='Start over (erase coins, items and clothes)';},4000);}};
   addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){setOpen(false);btn.focus();}});
   MARKET.ui={setOpen};
@@ -4885,10 +5078,10 @@ function standable(x,z){const[gx,gz]=toGrid(x,z);return NAV.walk[gIdx(gx,gz)]===
 const SKIP_STATES=new Set(['onSwing','hopOn','hopOff','inside']);
 function resolveCollisions(){
   const L=[];
-  const lunaFree=!AI.inside&&!AI.seatObj&&!(AI.state==='act'&&AI.act==='swim');
+  const lunaFree=!AI.inside&&!AI.seatObj&&!(AI.state==='act'&&AI.act==='swim')&&!(typeof BOAT!=='undefined'&&BOAT.helm==='luna');
   if(lunaFree)L.push({o:AI,r:0.3,w:0.25,luna:true});
-  if(!LM.inside)L.push({o:LM,r:0.3,w:0.5,luna:true});
-  if(!SL.inside)L.push({o:SL,r:0.3,w:0.5,luna:true});
+  if(!LM.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='moon'))L.push({o:LM,r:0.3,w:0.5,luna:true});
+  if(!SL.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='solon'))L.push({o:SL,r:0.3,w:0.5,luna:true});
   for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'?0.3:e.kind==='cat'?0.25:0.22,w:1});}
   for(const it of L){it.ox=it.o.x;it.oz=it.o.z;}
   for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];let dx=b.o.x-a.o.x,dz=b.o.z-a.o.z,d=Math.hypot(dx,dz);const m=a.r+b.r;
@@ -5162,8 +5355,9 @@ function poseLuna(dt,time){
   AI.crouchK=lerp(AI.crouchK,crouch?1:0,Math.min(1,dt*5));
   AI.startleT=Math.max(0,AI.startleT-dt);
   const hop=(AI.startleT>0?Math.sin((0.45-AI.startleT)/0.45*Math.PI)*0.22:0)+(AI.jumpT>0?Math.sin((1-AI.jumpT/0.62)*Math.PI)*0.75:0)+(AI.diveLift||0);
-  let groundY=AI.inside?INSIDE.ent.y:walkHeight(AI.x,AI.z);if(AI.swimK>0)groundY=lerp(groundY,WATER-1.12,AI.swimK);AI.y=lerp(AI.y,groundY,Math.min(1,dt*24));
-  const aheadY=AI.inside||AI.swimK>0?groundY:walkHeight(AI.x+Math.sin(AI.yaw)*0.45,AI.z+Math.cos(AI.yaw)*0.45);
+  const onBoat=typeof BOAT!=='undefined'&&BOAT.helm==='luna';
+  let groundY=AI.inside?INSIDE.ent.y:(onBoat?BOAT.deckY():walkHeight(AI.x,AI.z));if(AI.swimK>0)groundY=lerp(groundY,WATER-1.12,AI.swimK);AI.y=lerp(AI.y,groundY,Math.min(1,dt*24));
+  const aheadY=AI.inside||AI.swimK>0||onBoat?groundY:walkHeight(AI.x+Math.sin(AI.yaw)*0.45,AI.z+Math.cos(AI.yaw)*0.45);
   AI.pitch=lerp(AI.pitch,clamp((aheadY-groundY)*0.35,-0.18,0.18),Math.min(1,dt*10));
   AI.twirlT=Math.max(0,(AI.twirlT||0)-dt);const tw=AI.twirlT>0?smooth(0,1,1-AI.twirlT/0.9)*Math.PI*2:0;
   C.root.position.set(AI.x,AI.y-AI.sitK*0.72-AI.crouchK*0.18+hop+Math.sin(tw*0.5)*0.12,AI.z);C.root.rotation.y=AI.yaw+tw;
@@ -5317,6 +5511,7 @@ function updateCaretakerAI(dt,time){
     if(AI.blinkTimer<=0){if(!AI.isBlinking){AI.isBlinking=true;caretaker.faceObj.drawFace(true);AI.blinkTimer=0.13;}
       else{AI.isBlinking=false;caretaker.faceObj.drawFace(false);AI.blinkTimer=rnd(2.2,5.2);}}}
 
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='luna'){poseLuna(dt,time);return;}
   if(AI.inside){insideUpdate(dt,time);return;}
   // Pause: she stays put and faces the camera, even if the stick is on
   if(STILL.on){if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();if(AI.state==='skylook'){AI.skyObj=null;}
@@ -5360,6 +5555,7 @@ function updateCaretakerAI(dt,time){
 const ACT_WORDS={wave:'waving hello',inspect:'checking the pet bed',bow:'visiting the shrine',feed:'filling the food bowls'};
 const POI_WORDS={isle:'the view from the little island',zen:'the zen garden',waterfall:'the waterfall',torii:'the torii gate'};
 function lunaStatus(){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='luna')return BOAT.status();
   if(CTRL.on&&!FOLLOW_SOLON&&!FOLLOW_MOON)return ctrlStatus();
   if(STILL.on&&!(AI.inside&&INSIDE.ent.state==='act'))return 'Luna is holding still for you';
   if(AI.inside)return insideStatus();
@@ -5439,6 +5635,8 @@ varying vec3 vW; varying vec2 vUv;
 ${noiseGLSL}
 float edgeR(float a){return 55.0+5.0*sin(3.0*a+1.0)+3.0*sin(5.0*a+2.0)+2.0*sin(9.0*a+0.5);}
 float isle2E(float a){return 14.5+1.8*sin(3.0*a+0.7)+1.1*sin(5.0*a+2.1)+0.6*sin(8.0*a);}
+float isle3E(float a){return 11.0+1.4*sin(3.0*a)+0.8*sin(5.0*a+1.0);}
+float isle4E(float a){return 10.2+1.2*sin(4.0*a+0.4)+0.7*sin(7.0*a);}
 // layered swell: four directional waves plus two octaves of noise chop
 float waves(vec2 p,float t,float chop){
   float h=sin(dot(p,vec2(0.8,0.6))*0.9+t*1.1)*0.5;
@@ -5460,7 +5658,10 @@ void main(){
   vec2 p=vW.xz; float depth=0.0; float foam=0.0; float camD=length(cameraPosition-vW);
   vec2 q;
   if(uMode<0.5){
-    float r=length(p); float a=atan(p.y,p.x); vec2 p2=p-vec2(93.0,2.5); float d=min(max(r-edgeR(a),0.0),max(length(p2)-isle2E(atan(p2.y,p2.x)),0.0));
+    float r=length(p); float a=atan(p.y,p.x); vec2 p2=p-vec2(93.0,2.5); vec2 p3=p-vec2(-62.0,-78.0); vec2 p4=p-vec2(122.0,42.0);
+    float d=min(max(r-edgeR(a),0.0),max(length(p2)-isle2E(atan(p2.y,p2.x)),0.0));
+    d=min(d,max(length(p3)-isle3E(atan(p3.y,p3.x)),0.0));
+    d=min(d,max(length(p4)-isle4E(atan(p4.y,p4.x)),0.0));
     depth=smoothstep(0.0,48.0,d);
     float f1=noise(p*0.5+vec2(uTime*0.35,uTime*0.2));
     float shore=exp(-d*0.33);
@@ -5988,15 +6189,30 @@ function solidAt(x,y,z){
 }
 function camBlocked(ax,ay,az,bx,by,bz){let h=0;for(let i=1;i<12;i++){const t=0.04+0.84*i/12;if(solidAt(lerp(ax,bx,t),lerp(ay,by,t),lerp(az,bz,t)))h++;}return h;}
 const _cp=new T.Vector3(),_head=new T.Vector3();
-// wide coverage: the island from above, a slow orbit, a landscape over Luna's shoulder, a rising crane
+function ensemble(){
+  const folks=[{x:AI.x,y:AI.y||0,z:AI.z,in:!!AI.inside},{x:LM.x,y:LM.y||0,z:LM.z,in:!!LM.inside},{x:SL.x,y:SL.y||0,z:SL.z,in:!!SL.inside}];
+  const live=folks.filter(f=>!f.in);if(!live.length)return null;
+  let x=0,y=0,z=0;for(const f of live){x+=f.x;y+=f.y;z+=f.z;}x/=live.length;y/=live.length;z/=live.length;
+  let span=0;for(const f of live)span=Math.max(span,Math.hypot(f.x-x,f.z-z));
+  if(typeof DOGS!=='undefined')for(const d of DOGS){if(d.inside)continue;const dd=Math.hypot(d.x-x,d.z-z);if(dd<28)span=Math.max(span,dd*0.8);}
+  return {x,y,z,span,n:live.length};
+}
+// wide coverage: the whole island, the cast, the harbor, plus a slow orbit and a rising crane
 function wideShot(base,V){
   const D=DIRECTOR,S=focusBody(),e=smooth(0,1,D.wideAge/D.wideDur),cx=4,cz=4;
   switch(D.wideKind){
-    case 'island':{const px=lerp(S.x,cx,0.55),pz=lerp(S.z,cz,0.55);
-      return Object.assign(base,{id:'wide_island',label:'Island view',pivot:V(px,S.y,pz),yaw:D.wideYaw,az:0,dist:66,h:36,fov:46,look:V(px,2,pz)});}
-    case 'landscape':return Object.assign(base,{id:'wide_land',label:'The whole island',yaw:D.wideYaw,az:0,dist:32,h:8,fov:50,look:V(lerp(S.x,cx,0.4),3,lerp(S.z,cz,0.4))});
-    case 'crane':return Object.assign(base,{id:'wide_crane',label:'Crane shot',yaw:D.wideYaw,az:0,dist:lerp(7,34,e),h:lerp(2.2,24,e),fov:44,look:V(S.x,S.y+1.2,S.z)});
-    default:return Object.assign(base,{id:'wide_orbit',label:'Wide shot',yaw:D.wideYaw,az:0,dist:24,h:10,fov:42,look:V(S.x,S.y+1,S.z)});
+    case 'island':{const px=lerp(S.x,cx,0.45),pz=lerp(S.z,cz,0.45);
+      return Object.assign(base,{id:'wide_island',label:'Island view',pivot:V(px,S.y,pz),yaw:D.wideYaw,az:0,dist:78,h:42,fov:52,look:V(px,2,pz)});}
+    case 'landscape':return Object.assign(base,{id:'wide_land',label:'Across the island',yaw:D.wideYaw,az:0,dist:42,h:12,fov:54,look:V(lerp(S.x,cx,0.35),3,lerp(S.z,cz,0.35))});
+    case 'crane':return Object.assign(base,{id:'wide_crane',label:'Crane shot',yaw:D.wideYaw,az:0,dist:lerp(10,48,e),h:lerp(3,28,e),fov:50,look:V(S.x,S.y+1.2,S.z)});
+    case 'full':return Object.assign(base,{id:'wide_full',label:'The whole island',yaw:D.wideYaw,az:0,dist:108,h:58,fov:56,look:V(6,3,4)});
+    case 'harbor':{const pz=typeof zE==='number'?zE+6:42;
+      return Object.assign(base,{id:'wide_harbor',label:'The harbor',yaw:D.wideYaw,az:0,dist:40,h:16,fov:52,look:V(26,2,pz)});}
+    case 'cast':{const en=ensemble()||{x:S.x,y:S.y,z:S.z,span:14};
+      const dist=clamp(18+en.span*1.7,20,78);
+      return Object.assign(base,{id:'wide_cast',label:'Everyone on the island',pivot:V(en.x,en.y,en.z),yaw:D.wideYaw,az:0,dist,h:dist*0.46,fov:52,look:V(en.x,en.y+1.5,en.z)});
+    }
+    default:return Object.assign(base,{id:'wide_orbit',label:'Wide shot',yaw:D.wideYaw,az:0,dist:32,h:13,fov:50,look:V(S.x,S.y+1,S.z)});
   }
 }
 function moonShotFor(V){   // auto cam shots for Lady Moon (when the camera follows her)
@@ -6008,7 +6224,7 @@ function moonShotFor(V){   // auto cam shots for Lady Moon (when the camera foll
       return Object.assign(base,{id:'m_pets',label:'Playtime',pivot:V(m.x,LM.y,m.z),az:0.9,dist:6,h:2.2,fov:40,look:m});}
     return Object.assign(base,{id:'m_act',label:'Lady Moon',az:0.5,dist:5,h:1.8,fov:36,look:V(LM.x,LM.y+1.1,LM.z)});}
   if(LM.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(LM.x,LM.y+1.35,LM.z)});
-  return Object.assign(base,{id:'follow',label:'Following Lady Moon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.35,dist:10,h:4.2,fov:42,look:V(LM.x+fx*2.5,LM.y+1.1,LM.z+fz*2.5)});
+  return Object.assign(base,{id:'follow',label:'Following Lady Moon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(LM.x+fx*4,LM.y+1.2,LM.z+fz*4)});
 }
 function solonShotFor(V){
   const fx=Math.sin(SL.yaw),fz=Math.cos(SL.yaw),base={pivot:V(SL.x,SL.y,SL.z),yaw:SL.yaw};
@@ -6019,13 +6235,15 @@ function solonShotFor(V){
     if(a==='cheer'||a==='wave')return Object.assign(base,{id:'s_cheer',label:'Solon',az:0.4,dist:4.8,h:1.7,fov:36,look:V(SL.x,SL.y+1.15,SL.z)});
     return Object.assign(base,{id:'s_act',label:'Solon',az:0.5,dist:5,h:1.8,fov:36,look:V(SL.x,SL.y+1.1,SL.z)});}
   if(SL.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(SL.x,SL.y+1.35,SL.z)});
-  return Object.assign(base,{id:'follow',label:'Following Solon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.35,dist:10,h:4.2,fov:42,look:V(SL.x+fx*2.5,SL.y+1.1,SL.z+fz*2.5)});
+  return Object.assign(base,{id:'follow',label:'Following Solon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(SL.x+fx*4,SL.y+1.2,SL.z+fz*4)});
 }
 function shotFor(){
   const night=nightK>0.55,fx=Math.sin(AI.yaw),fz=Math.cos(AI.yaw);
   _head.set(AI.x,AI.y+1.5,AI.z);
   const V=(x,y,z)=>new T.Vector3(x,y,z);
   if(DIRECTOR.wideT>0){const S=focusBody();return wideShot({pivot:V(S.x,S.y,S.z),yaw:S.yaw},V);}
+  if(typeof BOAT!=='undefined'&&BOAT.helm){const S=focusBody(),fx=Math.sin(S.yaw),fz=Math.cos(S.yaw);
+    return {pivot:V(S.x,0.4,S.z),yaw:S.yaw,az:Math.PI+0.5,dist:24,h:9,fov:54,id:'boat',label:'Crossing to the islands',look:V(S.x+fx*12,1.2,S.z+fz*12)};}
   if(FOLLOW_SOLON)return solonShotFor(V);
   if(FOLLOW_MOON)return moonShotFor(V);
   const base={pivot:V(AI.x,AI.y,AI.z),yaw:AI.yaw};
@@ -6035,8 +6253,8 @@ function shotFor(){
   if(AI.state==='skylook'&&AI.skyObj){const v=AI.skyObj.position;
     return Object.assign(base,{id:'sky',label:'Look up!',yaw:Math.atan2(v.x-AI.x,v.z-AI.z),az:Math.PI+0.3,dist:5,h:0.9,fov:52,
       look:V(lerp(_head.x,v.x,0.3),Math.min(lerp(_head.y,v.y,0.3),AI.y+14),lerp(_head.z,v.z,0.3))});}
-  if((AI.state==='idle'||AI.state==='think')&&DIRECTOR.stillT>1.4)   // only after she has stood still a moment, so quick pauses don't cut back and forth
-    return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(AI.x,AI.y+1.35,AI.z)});
+  if((AI.state==='idle'||AI.state==='think')&&DIRECTOR.stillT>4.2)
+    return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:5.2,h:2.1,fov:38,look:V(AI.x,AI.y+1.35,AI.z)});
   if(AI.state==='act'){
     const tg=AI.target;
     switch(AI.act){
@@ -6070,7 +6288,7 @@ function shotFor(){
     }
   }
   return Object.assign(base,{id:'follow',label:'Following Luna'+(AI.task?' <small>'+(TASK_NAMES[AI.task.id]||'')+'</small>':''),
-    yaw:DIRECTOR.smoothYaw,az:Math.PI+0.35,dist:10,h:4.2,fov:42,look:V(AI.x+fx*2.5,AI.y+1.1,AI.z+fz*2.5)});
+    yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(AI.x+fx*4,AI.y+1.2,AI.z+fz*4)});
 }
 const TASK_NAMES={feedHouse:'to the pet corner',feedYard:'to the play yard',petBed:'to the pet bed',pet:'to say hi',garden:'to the garden',shrine:'up to the shrine',pier:'to the pier',zen:'to the zen garden',waterfall:'to the waterfall',torii:'to the torii gate',
   sweep:'to tidy up',chase:'to play with the pups',visitMoon:'to see Lady Moon',brushDog:'to groom a pup',greet:'home',rest:'home to rest',chop:'to chop down a tree',sell:'to the market',decor:'to enjoy your decorations',swim:'for a swim',swing:'to the swing',islet:'across the bridge to the little island',fetch:'to play fetch',letOut:'to let the dogs out',bedtime:'to put the dogs to bed',fish:'fishing'};
@@ -6113,22 +6331,28 @@ function directorUpdate(dt,time){
   // every half-minute or so, while she's walking somewhere, cut away to a wide shot of the island for a few seconds;
   // it starts from where the camera already is (no sudden swing) and hands back as soon as she starts doing something
   D.nextWide-=dt;
-  if(D.wideT>0){D.wideT-=dt;D.wideAge+=dt;D.wideYaw+=dt*(orbit?0.09:0.035);
-    if((S.state==='act'&&D.wideAge>3)||steering||S.inside)D.wideT=0;
-    if(D.wideT<=0)D.nextWide=rnd(30,48);}
-  else if(D.nextWide<=0&&S.state==='walk'&&!steering&&!S.inside&&SPACE_LAUNCH.view.k<0.01){
-    D.wideKind=pick(['orbit','island','landscape','crane'].filter(k=>k!==D.wideKind));
-    D.wideDur=D.wideT=rnd(8,11);D.wideAge=0;D.wideYaw=Math.atan2(camera.position.x-S.x,camera.position.z-S.z);}
+  if(D.wideT>0){D.wideT-=dt;D.wideAge+=dt;D.wideYaw+=dt*(orbit?0.07:0.03);
+    if(steering||S.inside)D.wideT=0;
+    if(D.wideT<=0)D.nextWide=rnd(14,24);}
+  else if(D.nextWide<=0&&!steering&&!S.inside&&SPACE_LAUNCH.view.k<0.01&&S.state!=='skylook'){
+    D.wideKind=pick(['full','cast','harbor','island','landscape','crane','orbit'].filter(k=>k!==D.wideKind));
+    D.wideDur=D.wideT=rnd(9,13);D.wideAge=0;D.wideYaw=Math.atan2(camera.position.x-S.x,camera.position.z-S.z);}
   // Slow orbit in auto cam: the close-up shots drift gently around her instead of holding one angle
   D.orbPh=(D.orbPh||0)+dt*(orbit?0.09:0);
 
   const s=shotFor();
   // Duo framing: when Lady Moon is close to Luna, centre the shot between them and pull back far enough to keep both in view.
   // (Previously the look point moved to the midpoint while the camera stayed at close-up distance, cutting Luna out of frame.)
-  const duo=distBetween<14&&!Fa.inside&&!Fb.inside&&!['aerial','sky','wide_island','wide_land','wide_crane','wide_orbit'].includes(s.id);
-  if(duo){_duoMid.set(midX,midY+1.1,midZ);const need=clamp(5.5+distBetween*1.15,5.5,20);
+  const ens=ensemble();
+  const wideShotId=['aerial','sky','wide_island','wide_land','wide_crane','wide_orbit','wide_full','wide_harbor','wide_cast','boat'].includes(s.id);
+  const duo=distBetween<26&&!Fa.inside&&!Fb.inside&&!wideShotId;
+  if(ens&&ens.span<46&&!wideShotId){_duoMid.set(ens.x,ens.y+1.6,ens.z);const need=clamp(18+ens.span*1.4,22,56);
+    if(s.dist<need){s.dist=need;s.h=Math.max(s.h,need*0.42);}
+    s.h=Math.max(s.h,8);
+    s.pivot=_duoPivot.set(ens.x,ens.y,ens.z);s.look=_duoMid;s.label=ens.n>2?'Luna, Lady Moon & Solon':duoLabel;s.fov=Math.max(s.fov,48);}
+  else if(duo){_duoMid.set(midX,midY+1.2,midZ);const need=clamp(8+distBetween*1.05,8,28);
     if(s.dist<need){const k=need/s.dist;s.dist=need;s.h=Math.min(s.h*k,need*0.55);}
-    s.pivot=_duoPivot.set(midX,midY,midZ);s.look=_duoMid;s.label=duoLabel;s.fov=Math.max(s.fov,40);}
+    s.pivot=_duoPivot.set(midX,midY,midZ);s.look=_duoMid;s.label=duoLabel;s.fov=Math.max(s.fov,46);}
   const changed=!D.shot||D.shot.id!==s.id,drift=(s.id==='follow'||s.id==='aerial'||s.id.startsWith('wide'))?0:Math.sin(D.orbPh)*0.5;
   D.evalT-=dt;
   if(changed||D.evalT<=0){
@@ -6150,7 +6374,7 @@ function directorUpdate(dt,time){
 
   // camera and aim ease in and out like a camera operator (critically damped, with a top speed), so even long moves to a wide shot glide
   if(!D.lookInit){D.look.copy(targetLook);D.lookInit=true;D.vel.set(0,0,0);D.lvel.set(0,0,0);}
-  smoothDamp(camera.position,_cp,D.vel,0.6,26,dt);
+  smoothDamp(camera.position,_cp,D.vel,0.55,52,dt);
   const g=Math.max(hAt(camera.position.x,camera.position.z),WATER-0.2)+0.6;if(camera.position.y<g)camera.position.y=g;
   smoothDamp(D.look,targetLook,D.lvel,0.32,40,dt);camera.lookAt(D.look);
   
@@ -6461,6 +6685,8 @@ function pollGamepad(){
 }
 const _ctrlV=new T.Vector3();
 function ctrlUpdate(dt,time){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='luna'){poseLuna(dt,time);return;}
+  if(AI.state==='act'&&AI.act==='fish'&&FISH.phase!=='idle'){AI.speed=lerp(AI.speed,0,Math.min(1,dt*8));poseLuna(dt,time);return;}
   if(!CTRL.started){if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();AI.skyObj=null;AI.state='idle';CTRL.started=true;}
   pollGamepad();
   // combine touch stick, gamepad and keyboard, then calibrate (dead zone + response curve)
@@ -6552,7 +6778,7 @@ function setFree(v){
 function setAuto(v){
   if(v&&FREE.on)setFree(false);
   DIRECTOR.on=v;btnAuto.setAttribute('aria-pressed',v);shotChip.classList.toggle('on',v);
-  if(v){DIRECTOR.shot=null;DIRECTOR.lookInit=false;DIRECTOR.smoothYaw=focusBody().yaw;DIRECTOR.wideT=0;DIRECTOR.nextWide=rnd(14,22);DIRECTOR.stillT=0;DIRECTOR.fov=camera.fov;idle=99;DIRECTOR.lastLabel='';}
+  if(v){DIRECTOR.shot=null;DIRECTOR.lookInit=false;DIRECTOR.smoothYaw=focusBody().yaw;DIRECTOR.wideT=0;DIRECTOR.nextWide=rnd(5,9);DIRECTOR.stillT=0;DIRECTOR.fov=camera.fov;idle=99;DIRECTOR.lastLabel='';}
 }
 btnAuto.onclick=()=>setAuto(!DIRECTOR.on);
 const CAST_NAME={luna:'Luna',moon:'Lady Moon',solon:'Solon'};
@@ -6794,10 +7020,11 @@ const _up=new T.Vector3(0,1,0),_cineMid=new T.Vector3();
 /* ---------------- UI ---------------- */
 const slider=document.getElementById('tod'),bDay=document.getElementById('btnDay'),bNight=document.getElementById('btnNight'),bOrbit=document.getElementById('btnOrbit');
 let dragging=false;
-slider.addEventListener('input',()=>{dragging=true;todTarget=slider.value/1000;});
-slider.addEventListener('change',()=>{dragging=false;});
+function todSave(){try{localStorage.setItem('lunas-tod-v1',JSON.stringify({v:+todTarget}));}catch(e){}}
+slider.addEventListener('input',()=>{dragging=true;todTarget=slider.value/1000;todSave();});
+slider.addEventListener('change',()=>{dragging=false;todSave();});
 function setPressed(){bDay.setAttribute('aria-pressed',todTarget<0.5);bNight.setAttribute('aria-pressed',todTarget>=0.5);}
-bDay.onclick=()=>{todTarget=0;setPressed();};bNight.onclick=()=>{todTarget=1;setPressed();};
+bDay.onclick=()=>{todTarget=0;setPressed();todSave();};bNight.onclick=()=>{todTarget=1;setPressed();todSave();};
   document.getElementById('btnLaunch').onclick=()=>{todTarget=1;setPressed();SPACE_LAUNCH.trigger(true);CINE.start();};
 bOrbit.onclick=()=>{orbit=!orbit;bOrbit.setAttribute('aria-pressed',orbit);
   if(orbit&&(tRadius>70||radius>70)){tRadius=28;tPhi=0.92;}
@@ -7492,6 +7719,7 @@ function solonStuckCheck(dt){
   SL.checkX=SL.x;SL.checkZ=SL.z;
 }
 function updateSolon(dt,time){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='solon'){poseSolon(dt,time);return;}
   for(const k in SOLON_NEEDS)SOLON_NEEDS[k]=Math.min(1,SOLON_NEEDS[k]+SOLON_RATES[k]*dt);
   SL.jumpT=Math.max(0,(SL.jumpT||0)-dt);
   if(SL.faceMode==='open'){
@@ -7556,6 +7784,7 @@ function updateSolon(dt,time){
   poseSolon(dt,time);
 }
 function solonStatus(){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='solon')return BOAT.status();
   if(HOLD.solon)return 'Solon is holding still';
   if(CTRL.on&&FOLLOW_SOLON)return solonCtrlStatus();
   const hat='';
@@ -7657,9 +7886,11 @@ moonPlan=function(){
 /* ---------------- loop ---------------- */
 const clock=new T.Clock(),M4=new T.Matrix4(),PERF={t:0,n:0,pr:PR};
 patchWeatherScene();
-applyTOD(0);updateCam();
+try{const raw=localStorage.getItem('lunas-tod-v1');if(raw){const t=JSON.parse(raw);if(t&&typeof t.v==='number')tod=todTarget=clamp(t.v,0,1);}}catch(e){}
+applyTOD(tod);updateCam();if(slider)slider.value=Math.round(tod*1000);setPressed();
 function frameLoop(){
   const raw=clock.getDelta(),dt=Math.min(raw,0.05),time=clock.elapsedTime;
+  if(typeof BOAT!=='undefined')BOAT.update(dt,time);
   CAM_DT=dt;idle+=dt;if(ptrs.size)idle=0;   // holding a finger or the mouse on the view counts as using the camera
   // Slow orbit: a second and a half after you let go, the camera eases into a gentle turn around whoever it follows.
   // It pauses while you steer with the controller (so "forward" on the stick doesn't drift), in free cam and during the launch.
@@ -7771,11 +8002,302 @@ function gatherNearby(){
   toast(CAST_NAME[who]+' picked up a '+(best.kind==='shell'?'seashell':'blossom')+' · worth '+PRICES[best.kind]+' coins');
 }
 seedForage();
-requestAnimationFrame(()=>{frameLoop();document.getElementById('loading').classList.add('gone');
-  // first visit: a short welcome card
-  let seen=false;try{seen=!!localStorage.getItem('lunas-welcomed-v2');}catch(e){}
-  if(!seen){const w=document.getElementById('welcome'),b=document.getElementById('wStart');w.hidden=false;b.focus();
-    const close=()=>{w.hidden=true;try{localStorage.setItem('lunas-welcomed-v2','1');}catch(e){}};b.onclick=close;
-    addEventListener('keydown',e=>{if(e.key==='Escape'&&!w.hidden)close();});}
+
+/* ================= motor skiff: moored beside the pier, steered to the other islands ================= */
+const BOAT=(function(){
+  function boatBlocked(x,z){
+    if(Math.abs(x-24)<5.1&&z>zE-2.2&&z<zE+19)return true;
+    if(Math.abs(z-ISLE2.bz)<2.6&&x>ISLE2.bx0-1.2&&x<ISLE2.bx1+1.2)return true;
+    return false;
+  }
+  function boatWater(x,z){
+    if(x<-150||x>190||z<-140||z>100)return false;
+    if(boatBlocked(x,z))return false;
+    if(inIsle2(x,z,-1.35)||onDisc(ISLE3,isle3Edge,x,z,-1.35)||onDisc(ISLE4,isle4Edge,x,z,-1.35))return false;
+    if(Math.hypot(x,z)<edgeR(Math.atan2(z,x))+1.35)return false;
+    return hAt(x,z)<0.25;
+  }
+  function findHome(){
+    for(const dx of[7.2,8.6,6.2,10])for(const dz of[12,15,9,18,21]){
+      const x=24+dx,z=zE+dz;if(boatWater(x,z))return {x,z};
+    }
+    return {x:24+8.6,z:zE+20};
+  }
+  const home=findHome();
+  let saved=null;try{saved=JSON.parse(localStorage.getItem('lunas-boat-v1')||'null');}catch(e){}
+  const g=new T.Group();
+  const hull=mStd('#f3ead7',{roughness:0.55}),stripe=mStd('#2f6f8a',{roughness:0.45}),deck=mStd('#c4a46a',{roughness:0.72});
+  const dark=mStd('#243044',{roughness:0.4}),motorC=mStd('#1f6b4a',{roughness:0.45});
+  const body=new T.Mesh(new T.BoxGeometry(1.42,0.38,3.15),hull);body.position.y=0.22;g.add(body);
+  const bow=new T.Mesh(new T.ConeGeometry(0.5,1.05,4),hull);bow.rotation.x=Math.PI/2;bow.rotation.y=Math.PI/4;bow.position.set(0,0.24,1.95);g.add(bow);
+  const band=new T.Mesh(new T.BoxGeometry(1.46,0.08,3.2),stripe);band.position.y=0.34;g.add(band);
+  const floor=new T.Mesh(new T.BoxGeometry(1.15,0.06,2.3),deck);floor.position.set(0,0.4,-0.15);g.add(floor);
+  for(const s of[-1,1]){const rail=new T.Mesh(new T.BoxGeometry(0.06,0.16,2.5),dark);rail.position.set(s*0.68,0.5,-0.1);g.add(rail);}
+  const glass=new T.Mesh(new T.BoxGeometry(1.05,0.42,0.06),mStd('#b7e0f2',{roughness:0.15,transparent:true,opacity:0.55}));
+  glass.position.set(0,0.78,0.72);g.add(glass);
+  const motor=new T.Mesh(new T.BoxGeometry(0.32,0.48,0.42),motorC);motor.position.set(0,0.42,-1.72);g.add(motor);
+  const prop=new T.Group();prop.position.set(0,0.16,-1.98);g.add(prop);
+  for(const a of[0,Math.PI/2]){const blade=new T.Mesh(new T.BoxGeometry(0.46,0.04,0.1),mStd('#d7dde4',{metalness:0.6,roughness:0.3}));blade.rotation.z=a;prop.add(blade);}
+  const ring=new T.Mesh(new T.TorusGeometry(0.16,0.045,8,14),mStd('#d94a3a',{roughness:0.45}));
+  ring.position.set(0.74,0.48,0.2);ring.rotation.y=Math.PI/2;g.add(ring);
+  g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+  scene.add(g);
+  const bx=21.15,bz=zE+8.4,box=new T.Group();box.position.set(bx,1.77,bz);
+  const crate=new T.Mesh(new T.BoxGeometry(0.7,0.36,0.48),mStd('#8d5a32',{roughness:0.82}));crate.position.y=0.2;box.add(crate);
+  const lid=new T.Mesh(new T.BoxGeometry(0.76,0.08,0.54),mStd('#e0b15a',{roughness:0.6}));lid.position.y=0.42;box.add(lid);
+  const handle=new T.Mesh(new T.BoxGeometry(0.26,0.05,0.08),mStd('#5c3a22'));handle.position.y=0.5;box.add(handle);
+  box.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});scene.add(box);
+  const landings=[
+    {name:'the pier',water:{x:home.x,z:home.z},shore:{x:24,z:zE+11.5}},
+    {name:'the little island',water:{x:ISLE2.x-18.5,z:ISLE2.z+6.5},shore:{x:ISLE2.x-7.2,z:ISLE2.z+4.2}},
+    {name:'Lantern Isle',water:{x:ISLE3.x,z:ISLE3.z+14.2},shore:{x:ISLE3.x,z:ISLE3.z+5.2}},
+    {name:'Fishing Rock',water:{x:ISLE4.x+13.4,z:ISLE4.z},shore:{x:ISLE4.x+4.6,z:ISLE4.z}}
+  ];
+  const B={g,prop,home,x:home.x,z:home.z,yaw:0,speed:0,helm:null,keys:new Set(),bob:0,saveT:0,box:{x:bx,z:bz},landings};
+  if(saved&&typeof saved.x==='number'&&boatWater(saved.x,saved.z)){B.x=saved.x;B.z=saved.z;B.yaw=+saved.yaw||0;}
+  function place(){B.g.position.set(B.x,0.1+Math.sin(B.bob)*0.04,B.z);B.g.rotation.y=B.yaw;B.g.rotation.z=Math.sin(B.bob*0.7)*0.02;}
+  place();
+  B.deckY=function(){return 0.1+Math.sin(B.bob)*0.04+0.4;};
+  B.status=function(){const n=B.helm==='moon'?'Lady Moon':B.helm==='solon'?'Solon':'Luna';return n+' is at the helm of the skiff';};
+  B.save=function(){try{localStorage.setItem('lunas-boat-v1',JSON.stringify({x:+B.x.toFixed(2),z:+B.z.toFixed(2),yaw:+B.yaw.toFixed(3)}));}catch(e){}};
+  B.who=function(){return B.helm==='solon'?SL:B.helm==='moon'?LM:AI;};
+  B.pin=function(){if(!B.helm)return;const p=B.who(),back=0.25;p.x=B.x-Math.sin(B.yaw)*back;p.z=B.z-Math.cos(B.yaw)*back;p.yaw=B.yaw;p.speed=0;};
+  B.nearLanding=function(){
+    if(Math.abs(B.x-24)<14&&B.z>zE+2&&B.z<zE+26)return landings[0];
+    let best=null,bd=9;for(const L of landings){if(L===landings[0])continue;const d=Math.hypot(B.x-L.water.x,B.z-L.water.z);if(d<bd){bd=d;best=L;}}
+    return best;};
+  B.board=function(who,ferry){
+    if(INSIDE.on){toast('Step outside to take the skiff');return;}
+    const body=who==='solon'?SL:who==='moon'?LM:AI;
+    if(body.inside){toast('Step outside to take the skiff');return;}
+    if(who==='luna'){if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();AI.seatObj=null;AI.mAct=null;AI.speed=0;}
+    else if(who==='moon'){LM.mAct=null;LM.speed=0;LM.state='idle';}
+    else{SL.mAct=null;SL.speed=0;SL.state='idle';}
+    B.helm=who;B.pin();
+    const n=who==='moon'?'Lady Moon':who==='solon'?'Solon':'Luna';
+    toast((ferry?n+' climbs aboard. ':n+' takes the skiff. ')+'WASD or the stick steers. Pull up to a shore to step off.');
+    B.save();
+  };
+  B.disembark=function(){
+    const L=B.nearLanding();
+    if(!L){toast('Pull alongside the pier, the little island, Lantern Isle, or Fishing Rock');return;}
+    const body=B.who();let x=L.shore.x,z=L.shore.z,ok=isPointWalkable(x,z,0.15);
+    if(!ok){for(let i=0;i<20&&!ok;i++){const a=i/20*6.2832,nx=L.shore.x+Math.cos(a)*1.4,nz=L.shore.z+Math.sin(a)*1.4;if(isPointWalkable(nx,nz,0.15)){x=nx;z=nz;ok=true;}}}
+    if(!ok){toast('That shore is too steep. Nudge a little closer.');return;}
+    body.x=x;body.z=z;body.speed=0;body.state='idle';body.y=walkHeight(x,z);
+    const who=B.helm;B.helm=null;B.speed=0;B.save();
+    toast((who==='moon'?'Lady Moon':who==='solon'?'Solon':'Luna')+' steps ashore on '+L.name);
+  };
+  B.update=function(dt,time){
+    B.bob=time;
+    if(B.helm){
+      let ix=0,iy=0,got=false;
+      if(CTRL.on&&Math.hypot(CTRL.touch.x,CTRL.touch.y)>0.14){ix=CTRL.touch.x;iy=CTRL.touch.y;got=true;}
+      if(!got){pollGamepad();if(Math.hypot(CTRL.pad.x,CTRL.pad.y)>0.2){ix=CTRL.pad.x;iy=CTRL.pad.y;got=true;}}
+      if(!got){const K=B.keys;if(K.has('a')||K.has('arrowleft'))ix-=1;if(K.has('d')||K.has('arrowright'))ix+=1;if(K.has('w')||K.has('arrowup'))iy+=1;if(K.has('s')||K.has('arrowdown'))iy-=1;}
+      const turn=clamp(ix,-1,1),gas=clamp(iy,-1,1);
+      B.yaw+=turn*dt*(1.15+Math.min(1.2,Math.abs(B.speed)*0.12));
+      const want=gas*(gas<0?3.2:8.6);
+      B.speed=lerp(B.speed,Math.abs(gas)>0.08?want:0,Math.min(1,dt*(Math.abs(gas)>0.08?1.6:2.4)));
+      if(Math.abs(B.speed)>0.15){
+        const st=B.speed*dt,nx=B.x+Math.sin(B.yaw)*st,nz=B.z+Math.cos(B.yaw)*st;
+        if(boatWater(nx,nz)){B.x=nx;B.z=nz;}
+        else{let slid=false;for(const o of[0.7,-0.7,1.2,-1.2]){const yy=B.yaw+o*Math.sign(B.speed||1),sx=B.x+Math.sin(yy)*Math.abs(st)*0.8,sz=B.z+Math.cos(yy)*Math.abs(st)*0.8;if(boatWater(sx,sz)){B.x=sx;B.z=sz;B.yaw=yy;slid=true;break;}}
+          if(!slid)B.speed*=0.15;}
+        if(Math.abs(B.speed)>1.4&&(time%0.28)<dt){const sx=B.x-Math.sin(B.yaw)*1.9,sz=B.z-Math.cos(B.yaw)*1.9;fishSplash(sx,0.02,sz,0.55+Math.min(0.6,Math.abs(B.speed)*0.05));}
+      }
+      B.pin();
+      B.saveT-=dt;if(B.saveT<=0){B.saveT=2.5;B.save();}
+    }else B.speed=lerp(B.speed,0,Math.min(1,dt*2));
+    B.prop.rotation.z+=dt*Math.max(2,Math.abs(B.speed)*7);
+    place();
+  };
+  return B;
+})();
+let boatTapAt=0;
+function boatButton(){
+  if(BOAT.helm){if(BOAT.helm!==followWho()){toast('Switch to '+(BOAT.helm==='moon'?'Lady Moon':BOAT.helm==='solon'?'Solon':'Luna')+' to leave the skiff');return;}BOAT.disembark();return;}
+  const who=followWho(),body=who==='solon'?SL:who==='moon'?LM:AI;
+  if(body.inside||INSIDE.on){toast('Step outside to take the skiff');return;}
+  if(Math.hypot(body.x-BOAT.x,body.z-BOAT.z)<6){BOAT.board(who,false);return;}
+  const now=performance.now();
+  if(now-boatTapAt<2200){boatTapAt=0;BOAT.board(who,true);}
+  else{boatTapAt=now;toast('The skiff is on the water. Press Boat again to climb aboard.');}
+}
+addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey||e.target instanceof HTMLInputElement||e.target instanceof HTMLTextAreaElement)return;
+  const k=e.key.toLowerCase();
+  if(BOAT.helm&&['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(k)){BOAT.keys.add(k);e.preventDefault();}
+  else if(k==='k'){playerCast();e.preventDefault();}
+  else if(k==='b'){boatButton();e.preventDefault();}
 });
+addEventListener('keyup',e=>BOAT.keys.delete(e.key.toLowerCase()));
+
+/* ================= tackle box: gear Luna already owns, bought at the market ================= */
+(function tackleUI(){
+  const panel=document.getElementById('tackle'),btn=document.getElementById('btnTackle');
+  if(!panel||!btn)return;
+  const grid=document.getElementById('tackleGrid'),note=document.getElementById('tackleNote');
+  const SLOTS=[['rod','Rod'],['reel','Reel'],['line','Line'],['bobber','Bobber'],['bait','Bait'],['lure','Lure'],['extra','Extra']];
+  function render(){
+    const g=tackleGear();
+    note.textContent='Catch score '+g.score+' · '+g.label+'. Bigger fish need a higher score.';
+    grid.textContent='';
+    for(const[slot,lab]of SLOTS){
+      const owned=TACKLE_ITEMS.filter(it=>it.slot===slot&&TACKLE.owned.includes(it.id));
+      const h=document.createElement('h3');h.textContent=lab;grid.appendChild(h);
+      if(!owned.length){const p=document.createElement('p');p.className='tabnote';p.textContent='None yet. The market sells '+lab.toLowerCase()+'s.';grid.appendChild(p);continue;}
+      const row=document.createElement('div');row.className='grid';
+      for(const it of owned){
+        const on=TACKLE.equip[slot]===it.id,b=document.createElement('button');b.type='button';b.className='card'+(on?' owned':'');
+        b.setAttribute('aria-pressed',on?'true':'false');
+        const ic=document.createElement('span');ic.className='emoji';ic.textContent=it.icon;b.appendChild(ic);
+        const n=document.createElement('span');n.textContent=it.name;b.appendChild(n);
+        const p=document.createElement('span');p.className='price';p.textContent=on?'Equipped':it.blurb;b.appendChild(p);
+        b.onclick=()=>{TACKLE.equip[slot]=it.id;tackleSave();toast(it.name+' is on the line');render();
+          const mk=document.getElementById('market');if(mk&&!mk.hidden&&MARKET.ui)MARKET.ui.setOpen(true);};
+        row.appendChild(b);
+      }
+      grid.appendChild(row);
+    }
+  }
+  function setOpen(v){
+    if(v){for(const id of['closet','market']){const el=document.getElementById(id);if(el&&!el.hidden){el.hidden=true;const b=document.getElementById(id==='closet'?'btnCloset':'btnMarket');if(b)b.setAttribute('aria-expanded','false');}}render();}
+    panel.hidden=!v;btn.setAttribute('aria-expanded',v?'true':'false');
+  }
+  TACKLE.ui={render,setOpen};
+  btn.onclick=()=>setOpen(panel.hidden);
+  panel.querySelector('.closet-close').onclick=()=>{setOpen(false);btn.focus();};
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){setOpen(false);btn.focus();}});
+  const cast=document.getElementById('btnCast'),c2=document.getElementById('ctrlCast'),bb=document.getElementById('btnBoat'),b2=document.getElementById('ctrlBoat');
+  if(cast)cast.onclick=()=>playerCast();
+  if(c2)c2.onclick=()=>playerCast();
+  if(bb)bb.onclick=()=>boatButton();
+  if(b2)b2.onclick=()=>boatButton();
+})();
+
+/* ================= save menu: continue, dev island, load, save, new game ================= */
+(function saveMenu(){
+  const w=document.getElementById('welcome');if(!w)return;
+  const home=document.getElementById('wHome'),panel=document.getElementById('wPanel'),list=document.getElementById('wList');
+  const lead=document.getElementById('wLead'),panelLead=document.getElementById('wPanelLead'),nameWrap=document.getElementById('wNameWrap');
+  const nameIn=document.getElementById('wName'),go=document.getElementById('wPanelGo');
+  const KEY='lunas-saves-v1';
+  function loadBag(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.slots))return s;}catch(e){}return {slots:[]};}
+  function storeBag(b){try{localStorage.setItem(KEY,JSON.stringify(b));}catch(e){}}
+  function chi(ms){try{return new Date(ms).toLocaleString('en-US',{timeZone:'America/Chicago',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' CT';}catch(e){return '';}}
+  function captureLive(){
+    const away=Math.hypot(BOAT.x-BOAT.home.x,BOAT.z-BOAT.home.z)>1.2||Math.abs(BOAT.yaw)>0.05;
+    return {
+      econ:{coins:ECON.coins,wood:ECON.wood,inv:JSON.parse(JSON.stringify(ECON.inv||{})),owned:ECON.owned.slice(),
+        placed:ECON.placed.map(p=>({uid:p.uid,id:p.id,x:+p.x,z:+p.z,ry:+(p.ry||0)})),chopped:ECON.chopped.slice(),earned:ECON.earned||0},
+      closet:{outfit:CLOSET.outfit,mask:CLOSET.mask},
+      moon:{hat:MOON_STYLE.hat,outfit:MOON_STYLE.outfit,mask:MOON_STYLE.mask,userLockedHat:!!MOON_STYLE.userLockedHat},
+      solon:{hat:SOLON_STYLE.hat!==false,outfit:SOLON_STYLE.outfit,mask:SOLON_STYLE.mask},
+      tackle:{owned:TACKLE.owned.slice(),equip:Object.assign({},TACKLE.equip)},
+      boat:away?{x:+BOAT.x.toFixed(2),z:+BOAT.z.toFixed(2),yaw:+BOAT.yaw.toFixed(3)}:null,
+      tod:+todTarget||0
+    };
+  }
+  function looksLikeDev(s){const e=s&&s.econ;if(!e)return false;
+    return e.coins>=20000&&e.wood>=100&&(e.owned||[]).length>=SHOP_OUTFITS.length&&!(e.placed||[]).length;}
+  function hasProgress(s){const e=s&&s.econ;if(!e||looksLikeDev(s))return false;
+    if(e.coins>80||e.wood>0)return true;
+    if((e.placed||[]).length||(e.owned||[]).length||(e.chopped||[]).length)return true;
+    return !!(e.inv&&Object.keys(e.inv).some(k=>e.inv[k]>0));}
+  function devState(){
+    return {econ:{coins:20000,wood:100,inv:{apple:12,berries:24,shell:8,'Largemouth Bass':2,Bluegill:4},
+      owned:SHOP_OUTFITS.map(o=>o.id).concat(SHOP_MASKS.map(m=>m.id)),placed:[],chopped:[],earned:20000},
+      closet:{outfit:'usual',mask:'none'},
+      moon:{hat:'strawberry',outfit:'rainbow',mask:'none',userLockedHat:false},
+      solon:{hat:true,outfit:'solon',mask:'none'},
+      tackle:{owned:TACKLE_ITEMS.map(t=>t.id),equip:{rod:'rod_deep',reel:'reel_spin',line:'line_steel',bobber:'bob_glow',bait:'bait_shrimp',lure:'lure_jig',extra:'extra_net'}},
+      boat:null,tod:0};
+  }
+  function freshState(){
+    return {econ:{coins:75,wood:0,inv:{},owned:[],placed:[],chopped:[],earned:0},
+      closet:{outfit:'usual',mask:'none'},
+      moon:{hat:'strawberry',outfit:'rainbow',mask:'none',userLockedHat:false},
+      solon:{hat:true,outfit:'solon',mask:'none'},
+      tackle:null,boat:null,tod:0};
+  }
+  function writeLive(st){
+    try{
+      localStorage.setItem('lunas-market-v2',JSON.stringify(st.econ));
+      localStorage.setItem('lunas-closet-v2',JSON.stringify(st.closet));
+      localStorage.setItem('ladymoon-closet-v2',JSON.stringify(st.moon));
+      localStorage.setItem('solon-closet-v2',JSON.stringify(st.solon));
+      if(st.tackle)localStorage.setItem('lunas-tackle-v1',JSON.stringify(st.tackle));else localStorage.removeItem('lunas-tackle-v1');
+      if(st.boat)localStorage.setItem('lunas-boat-v1',JSON.stringify(st.boat));else localStorage.removeItem('lunas-boat-v1');
+      localStorage.setItem('lunas-tod-v1',JSON.stringify({v:st.tod||0}));
+      localStorage.setItem('lunas-welcomed-v2','1');
+    }catch(e){}
+    location.reload();
+  }
+  function ensurePlayed(){
+    const bag=loadBag();if(bag.slots.some(s=>s.id==='played'))return;
+    const live=captureLive();if(!hasProgress(live))return;
+    bag.slots.push({id:'played',name:'Your island',at:Date.now(),data:live});storeBag(bag);
+  }
+  function archiveCurrent(){
+    const live=captureLive();if(!hasProgress(live)&&!looksLikeDev(live))return;
+    const bag=loadBag();
+    const slot={id:'autosave',name:looksLikeDev(live)?'Autosave · Dev Island':'Autosave',at:Date.now(),data:live};
+    const i=bag.slots.findIndex(s=>s.id==='autosave');if(i>=0)bag.slots[i]=slot;else bag.slots.unshift(slot);storeBag(bag);
+  }
+  function closeMenu(){confirmNew=false;w.hidden=true;try{localStorage.setItem('lunas-welcomed-v2','1');}catch(e){}}
+  function showHome(){home.hidden=false;panel.hidden=true;lead.hidden=false;document.getElementById('wTitle').textContent="Luna's Island";
+    const c=document.getElementById('wContinue');if(c)c.focus();}
+  function slotRow(title,sub,onPick,onDel){
+    const row=document.createElement('div');row.className='srow';
+    const b=document.createElement('button');b.type='button';b.className='slot';
+    b.innerHTML='';const strong=document.createElement('span');strong.textContent=title;b.appendChild(strong);
+    if(sub){const sm=document.createElement('small');sm.textContent=sub;b.appendChild(sm);}
+    b.onclick=onPick;row.appendChild(b);
+    if(onDel){const d=document.createElement('button');d.type='button';d.className='danger';d.textContent='Delete';d.onclick=onDel;row.appendChild(d);}
+    return row;
+  }
+  let mode='home',confirmNew=false;
+  function renderSlots(which){
+    mode=which;confirmNew=false;home.hidden=true;lead.hidden=true;panel.hidden=false;list.textContent='';
+    nameWrap.hidden=which!=='save';go.hidden=which!=='save';
+    if(which==='load'){panelLead.textContent='Dev Island is the island as it is built, ready to keep working. Your other saves are listed under it.';
+      list.appendChild(slotRow('Dev Island','The built island, a full tackle box, and coins to build with',()=>{archiveCurrent();writeLive(devState());}));
+      const bag=loadBag();
+      if(!bag.slots.length){const p=document.createElement('p');p.className='tabnote';p.textContent='No saved games yet. Continue, then choose Save.';list.appendChild(p);}
+      for(const s of bag.slots)list.appendChild(slotRow(s.name,chi(s.at),()=>{archiveCurrent();writeLive(s.data);}));
+    }else{panelLead.textContent='Save the island the way it is right now. Dev Island always stays as it is built.';
+      go.textContent='Save new game';
+      const bag=loadBag();
+      for(const s of bag.slots)list.appendChild(slotRow(s.name,'Overwrite · '+chi(s.at),()=>{
+        s.data=captureLive();s.at=Date.now();storeBag(bag);toast('Saved over '+s.name);renderSlots('save');
+      },()=>{bag.slots=bag.slots.filter(x=>x.id!==s.id);storeBag(bag);renderSlots('save');}));
+    }
+    document.getElementById('wBack').focus();
+  }
+  document.getElementById('wContinue').onclick=closeMenu;
+  document.getElementById('wDev').onclick=()=>{archiveCurrent();writeLive(devState());};
+  document.getElementById('wNew').onclick=()=>{
+    if(!confirmNew){confirmNew=true;toast('Press New Game again to start fresh. Your other saves stay.');return;}
+    archiveCurrent();writeLive(freshState());
+  };
+  document.getElementById('wLoad').onclick=()=>renderSlots('load');
+  document.getElementById('wSave').onclick=()=>renderSlots('save');
+  document.getElementById('wBack').onclick=showHome;
+  go.onclick=()=>{
+    const bag=loadBag();
+    if(bag.slots.filter(s=>s.id!=='autosave').length>=12){toast('Twelve saves already. Overwrite or delete one.');return;}
+    const name=(nameIn.value||'My island').trim().slice(0,32)||'My island';
+    bag.slots.unshift({id:'s'+Date.now(),name,at:Date.now(),data:captureLive()});
+    storeBag(bag);toast('Saved “'+name+'”');nameIn.value='My island';renderSlots('save');
+  };
+  addEventListener('keydown',e=>{
+    if(w.hidden||e.key!=='Escape')return;
+    e.preventDefault();e.stopPropagation();
+    if(!panel.hidden)showHome();else closeMenu();
+  },true);
+  function openMenu(){ensurePlayed();showHome();w.hidden=false;}
+  const savesBtn=document.getElementById('btnSaves');if(savesBtn)savesBtn.onclick=()=>{if(w.hidden)openMenu();else closeMenu();};
+  requestAnimationFrame(()=>{frameLoop();document.getElementById('loading').classList.add('gone');openMenu();});
+})();
 })();

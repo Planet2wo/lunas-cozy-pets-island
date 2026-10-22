@@ -201,7 +201,17 @@ body.ctrl .shot .lbl small{color:rgba(255,255,255,.72)}
 #welcome h2{margin:0 0 6px;font-size:1.2rem}#welcome p{margin:0 0 10px;font-size:.86rem;line-height:1.45;color:var(--muted)}
 #welcome ul{margin:0 0 14px;padding-left:18px;font-size:.84rem;line-height:1.55}
 #welcome button{font:inherit;width:100%;padding:11px;border:none;border-radius:14px;background:var(--lacquer);color:#fff;font-weight:700;font-size:.92rem;cursor:pointer}
+#welcome button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+#welcome .wactions{display:flex;flex-direction:column;gap:8px}
+#welcome .wlist{display:flex;flex-direction:column;gap:6px;max-height:min(280px,46vh);overflow:auto;margin:8px 0}
+#welcome .srow{display:flex;gap:6px;align-items:stretch}
+#welcome button.slot{flex:1;text-align:left;background:var(--chip);color:var(--ink);border:1px solid var(--line);padding:8px 10px}
+#welcome button.slot small{display:block;font-weight:500;color:var(--muted);font-size:.75rem;margin-top:2px}
+#welcome button.danger{width:auto;padding:8px;background:transparent;color:var(--ink);border:1px solid var(--line);font-size:.75rem}
+#welcome .wname{display:block;font-size:.8rem;font-weight:700;margin:4px 0 8px}
+#welcome .wname input{font:inherit;font-weight:500;width:100%;margin-top:4px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--ink);box-sizing:border-box}
 #welcome button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#tackle h3{margin:12px 0 6px}
 #fade{position:fixed;inset:0;background:#120e18;opacity:0;pointer-events:none;transition:opacity .35s;z-index:20}#fade.on{opacity:1}
 @media (max-width:600px){body:has(.closet:not([hidden])) .dock{display:none}.closet{max-height:calc(100vh - 120px)!important}}
 #toast{position:fixed;left:50%;top:calc(max(14px,env(safe-area-inset-top)) + 64px);transform:translate(-50%,-8px);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:7;
