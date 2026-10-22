@@ -218,8 +218,8 @@ body.ctrl .shot .lbl small{color:rgba(255,255,255,.72)}
   background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:700;font-size:.82rem;max-width:calc(100vw - 28px);text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media (max-width:600px){#toast{top:calc(max(14px,env(safe-area-inset-top)) + 130px)}}
-#loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);color:#f1ead9;font-size:.95rem;transition:opacity .6s}
-#loading.gone{opacity:0;pointer-events:none}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);color:#f1ead9;font-size:.95rem;transition:opacity .6s,visibility 0s linear 0s;z-index:50}
+#loading.gone{opacity:0;pointer-events:none;visibility:hidden;transition:opacity .6s,visibility 0s linear .6s}
 #err{position:fixed;inset:auto 14px 50% 14px;display:none;text-align:center;color:#f1ead9}
 
 /* Draggable Window Extensions */

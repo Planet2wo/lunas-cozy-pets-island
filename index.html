@@ -13,16 +13,16 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
 <title>Luna's Cozy Pets &#8212; The Island</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css?v=33">
+<link rel="stylesheet" href="./style.css?v=33">
 </head>
 <body>
 <div id="stage"></div>
@@ -134,36 +134,37 @@
   <div id="ctrlBar"><span>Steering</span><button type="button" data-who="luna">Luna</button><button type="button" data-who="moon">Moon</button><button type="button" data-who="solon">Solon</button><button type="button" id="ctrlHold">Pause</button><button type="button" id="ctrlGather">Gather</button><button type="button" id="ctrlCast">Cast</button><button type="button" id="ctrlBoat">Boat</button><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
 </section>
 <div class="shot" id="shot" aria-live="polite"><span class="rec" aria-hidden="true"></span><span class="lbl" id="shotLbl">Auto cam</span></div>
-<!-- three.js r128: the local copy (public/vendor, filled by `npm install`) loads first; the CDN is only a fallback -->
-<script src="/vendor/three.min.js"></script>
+<!-- three.js r128: the local copy (public/vendor, filled by `npm install`) loads first; the CDN is only a fallback.
+     Paths are relative (./) so Vite's base './' works on itch.io, GitHub Pages project URLs, and nested previews. -->
+<script src="./vendor/three.min.js"></script>
 <script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
 <script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>')</script>
-<script src="/vendor/three-postfx.js"></script>
+<script src="./vendor/three-postfx.js"></script>
 <script>if(window.THREE&&!THREE.UnrealBloomPass){['shaders/CopyShader','shaders/LuminosityHighPassShader','postprocessing/EffectComposer','postprocessing/RenderPass','postprocessing/ShaderPass','postprocessing/UnrealBloomPass'].forEach(function(f){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/'+f+'.js"><\/script>')})}</script>
 <!-- github-media-start -->
-<script src="/media/radio-golden-brown.01.js"></script>
-<script src="/media/radio-golden-brown.02.js"></script>
-<script src="/media/radio-golden-brown.03.js"></script>
-<script src="/media/radio-golden-brown.04.js"></script>
-<script src="/media/radio-golden-brown.05.js"></script>
-<script src="/media/radio-golden-brown.06.js"></script>
-<script src="/media/radio-pain.01.js"></script>
-<script src="/media/radio-pain.02.js"></script>
-<script src="/media/radio-pain.03.js"></script>
-<script src="/media/radio-pain.04.js"></script>
-<script src="/media/radio-pain.05.js"></script>
-<script src="/media/radio-pain.06.js"></script>
-<script src="/media/radio-pain.07.js"></script>
-<script src="/media/radio-pain.08.js"></script>
-<script src="/media/radio-pain.09.js"></script>
-<script src="/media/radio-pain.10.js"></script>
-<script src="/media/radio-pain.11.js"></script>
-<script src="/media/launch-backdrop.01.js"></script>
-<script src="/media/launch-backdrop.02.js"></script>
-<script src="/media/launch-backdrop.03.js"></script>
-<script src="/media/launch-backdrop.04.js"></script>
-<script src="/media/launch-backdrop.05.js"></script>
+<script src="./media/radio-golden-brown.01.js"></script>
+<script src="./media/radio-golden-brown.02.js"></script>
+<script src="./media/radio-golden-brown.03.js"></script>
+<script src="./media/radio-golden-brown.04.js"></script>
+<script src="./media/radio-golden-brown.05.js"></script>
+<script src="./media/radio-golden-brown.06.js"></script>
+<script src="./media/radio-pain.01.js"></script>
+<script src="./media/radio-pain.02.js"></script>
+<script src="./media/radio-pain.03.js"></script>
+<script src="./media/radio-pain.04.js"></script>
+<script src="./media/radio-pain.05.js"></script>
+<script src="./media/radio-pain.06.js"></script>
+<script src="./media/radio-pain.07.js"></script>
+<script src="./media/radio-pain.08.js"></script>
+<script src="./media/radio-pain.09.js"></script>
+<script src="./media/radio-pain.10.js"></script>
+<script src="./media/radio-pain.11.js"></script>
+<script src="./media/launch-backdrop.01.js"></script>
+<script src="./media/launch-backdrop.02.js"></script>
+<script src="./media/launch-backdrop.03.js"></script>
+<script src="./media/launch-backdrop.04.js"></script>
+<script src="./media/launch-backdrop.05.js"></script>
 <!-- github-media-end -->
-<script src="/game.js?v=33"></script>
+<script src="./game.js?v=33"></script>
 </body>
 </html>

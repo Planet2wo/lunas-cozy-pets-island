@@ -1,7 +1,25 @@
 /* Luna's Cozy Pets – The Island · v34 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
-if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
+function failScene(msg){
+  const loading=document.getElementById('loading');
+  if(loading)loading.classList.add('gone');
+  const er=document.getElementById('err');
+  if(!er)return;
+  er.textContent=msg||'The island could not start.';
+  if(!er.querySelector('.err-reload')){
+    const b=document.createElement('button');b.type='button';b.textContent='Reload';b.className='err-reload';b.onclick=()=>location.reload();
+    er.appendChild(b);
+  }
+  er.style.display='block';
+}
+if(!window.THREE){failScene('The 3D library could not load. Check your connection and reload.');return;}
 const T=THREE;
+/* Clear the dark loading overlay if a script error throws during sync init (before the final rAF). */
+addEventListener('error',function onIslandInitErr(ev){
+  if(!(ev instanceof ErrorEvent))return;
+  const loading=document.getElementById('loading');
+  if(loading&&!loading.classList.contains('gone'))failScene('Something went wrong while raising the island. Your coins and items are saved.');
+},{once:true});
 /* ---------------- utilities ---------------- */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const rand=mulberry32(20260916);
@@ -74,7 +92,7 @@ try{
 }catch(e){renderer=null;GL2_MSAA_POST=false;}
 if(!renderer){
   try{renderer=new T.WebGLRenderer({antialias:!MOBILE,powerPreference:'high-performance'});}
-  catch(e){document.getElementById('loading').classList.add('gone');document.getElementById('err').style.display='block';return;}
+  catch(e){failScene('This scene needs WebGL. Try a recent version of Chrome, Safari or Firefox.');return;}
 }
 const PR=Math.min(window.devicePixelRatio||1,MOBILE?1.5:2);
 renderer.setPixelRatio(PR);
@@ -6094,20 +6112,36 @@ sun.shadow.bias=-0.0006;sun.shadow.normalBias=0.04;
 scene.add(sun);scene.add(sun.target);
 const points=LIGHTS.slice(0,6).map(([x,y,z])=>{const l=new T.PointLight(0xffa24a,0,26,2);l.position.set(x,y,z);scene.add(l);return l;});
 
-/* ---------------- post (bloom) ---------------- */
+/* ---------------- post (bloom) ----------------
+   Custom MSAA RTs must be sized in CSS pixels; EffectComposer stores _pixelRatio=1 when given a
+   custom target, so we call setPixelRatio/setSize afterward. Passing innerWidth*PR left resize
+   (setSize CSS px with _pixelRatio still 1) shrinking buffers and risking a black FBO. */
 let composer=null,bloom=null,RPASS=null;
+function buildComposer(useMsaa){
+  let rt;
+  if(useMsaa&&GL2_MSAA_POST&&renderer.capabilities.isWebGL2&&T.WebGLMultisampleRenderTarget){
+    rt=new T.WebGLMultisampleRenderTarget(innerWidth,innerHeight,{format:T.RGBAFormat});
+  }
+  const c=rt?new T.EffectComposer(renderer,rt):new T.EffectComposer(renderer);
+  c.setPixelRatio(renderer.getPixelRatio());
+  c.setSize(innerWidth,innerHeight);
+  c.addPass(RPASS=new T.RenderPass(scene,camera));
+  bloom=new T.UnrealBloomPass(new T.Vector2(innerWidth*(MOBILE?0.5:1),innerHeight*(MOBILE?0.5:1)),0.3,0.5,0.88);
+  c.addPass(bloom);
+  return c;
+}
 if(T.EffectComposer&&T.RenderPass&&T.UnrealBloomPass){
-  try{
-    let rt;
-    if(GL2_MSAA_POST&&renderer.capabilities.isWebGL2){rt=new T.WebGLMultisampleRenderTarget(innerWidth*PR,innerHeight*PR,{format:T.RGBAFormat});}
-    composer=rt?new T.EffectComposer(renderer,rt):new T.EffectComposer(renderer);
-    composer.addPass(RPASS=new T.RenderPass(scene,camera));
-    bloom=new T.UnrealBloomPass(new T.Vector2(innerWidth*(MOBILE?0.5:1),innerHeight*(MOBILE?0.5:1)),0.3,0.5,0.88);
-    composer.addPass(bloom);
-  }catch(e){composer=null;bloom=null;}
+  try{composer=buildComposer(true);}
+  catch(e){
+    composer=null;bloom=null;RPASS=null;
+    try{composer=buildComposer(false);GL2_MSAA_POST=false;}
+    catch(e2){composer=null;bloom=null;RPASS=null;}
+  }
 }
 if(!composer&&GL2_MSAA_POST){
-  // post-processing failed after we skipped canvas MSAA: rebuilding the renderer isn't worth it, so just keep a crisp pixel ratio
+  /* Post failed after we skipped canvas MSAA. Do not rebuild the renderer here: pointer handlers
+     already bound renderer.domElement earlier in init. Keep the context and a crisp pixel ratio. */
+  GL2_MSAA_POST=false;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 }
 
@@ -7159,7 +7193,7 @@ dockHandle.querySelector('.min-btn').onclick=()=>dockEl.classList.toggle('panel-
 });
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);
-  if(composer)composer.setSize(innerWidth,innerHeight);});
+  if(composer){if(composer.setPixelRatio)composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(innerWidth,innerHeight);}});
 
 
 /* =====================================================================================================
@@ -8036,9 +8070,7 @@ document.addEventListener('visibilitychange',()=>{
   if(AUDIO.ctx){try{document.hidden?AUDIO.ctx.suspend():AUDIO.ctx.resume();}catch(e){}}
   FILM_MUSIC.pauseForTab(document.hidden);
   if(!document.hidden)clock.getDelta();});
-renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();const er=document.getElementById('err');
-  er.textContent='The graphics were paused by your device. Your coins and items are saved. ';
-  const b=document.createElement('button');b.type='button';b.textContent='Reload';b.className='err-reload';b.onclick=()=>location.reload();er.appendChild(b);er.style.display='block';});
+renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();failScene('The graphics were paused by your device. Your coins and items are saved.');});
 const FORAGE=[];
 function seedForage(){
   const spots=[],Ru=(a,b)=>a+(b-a)*Math.random();
