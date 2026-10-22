@@ -44,6 +44,7 @@
     <div class="who"><button type="button" id="btnFollowLuna" aria-pressed="true">Luna</button><button type="button" id="btnHoldLuna" class="hold" aria-pressed="false" title="Hold Luna still">Pause</button></div>
     <div class="who"><button type="button" id="btnFollowMoon" aria-pressed="false">Lady Moon</button><button type="button" id="btnHoldMoon" class="hold" aria-pressed="false" title="Hold Lady Moon still">Pause</button></div>
     <div class="who"><button type="button" id="btnFollowSolon" aria-pressed="false">Solon</button><button type="button" id="btnHoldSolon" class="hold" aria-pressed="false" title="Hold Solon still">Pause</button></div>
+    <div class="who"><button type="button" id="btnFollowCharlie" aria-pressed="false">Charlie</button><button type="button" id="btnHoldCharlie" class="hold" aria-pressed="false" title="Hold Charlie still">Pause</button></div>
     <button type="button" id="btnGather" title="Pick up a shell, blossom or berry beside you (G)">Gather</button>
     <button type="button" id="btnCast" title="Luna casts at a nearby shore or the pier (K)">Cast</button>
   </div>
@@ -69,14 +70,15 @@
     <button id="btnClean" class="opt">Hide controls</button>
     <button id="btnMore" aria-expanded="false" aria-controls="dockRow">More</button>
   </div>
-  <p class="hint" id="camHint">Drag to orbit, scroll to zoom. Luna, Lady Moon and Solon each have a follow button and a Pause button. Keys: M cycle &#183; L pause whoever you follow &#183; G gather &#183; K cast &#183; B boat &#183; C auto cam &#183; F free cam &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v33</span></p>
+  <p class="hint" id="camHint">Drag to orbit, scroll to zoom. Luna, Lady Moon, Solon and Charlie each have a follow button and a Pause button. Keys: M cycle &#183; L pause whoever you follow &#183; G gather &#183; K cast &#183; B boat &#183; C auto cam &#183; F free cam &#183; J jam &#183; H house &#183; R rain &#183; N snow <span class="ver">v33</span></p>
 </section>
 <button id="restore">Show controls</button>
 <section class="closet" id="closet" hidden aria-label="Clothing Closets">
   <header><h2>Clothing Closets</h2><button type="button" class="closet-close" aria-label="Close the closet"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
-  <div class="who-tabs" id="closetWho" role="tablist" aria-label="Choose character"><button type="button" id="whoLuna" class="who-btn" aria-selected="true">Luna</button><button type="button" id="whoMoon" class="who-btn" aria-selected="false">Lady Moon</button><button type="button" id="whoSolon" class="who-btn" aria-selected="false">Solon</button></div>
+  <div class="who-tabs" id="closetWho" role="tablist" aria-label="Choose character"><button type="button" id="whoLuna" class="who-btn" aria-selected="true">Luna</button><button type="button" id="whoMoon" class="who-btn" aria-selected="false">Lady Moon</button><button type="button" id="whoSolon" class="who-btn" aria-selected="false">Solon</button><button type="button" id="whoCharlie" class="who-btn" aria-selected="false">Charlie</button></div>
   <div id="moonHatSec" hidden><h3>Crocheted bucket hats</h3><div class="grid" id="moonHatGrid"></div></div>
   <div id="solonSec" hidden><h3>Green pom beanie</h3><div class="grid" id="solonHatGrid"></div><p class="tabnote">His own look is the green controller shirt, navy shorts, glasses and green sneakers. Every other outfit fits him too.</p></div>
+  <div id="charlieSec" hidden><h3>Charlie</h3><p class="tabnote">Charlie joins the island from his full-body still (<code>images/charlie-full.jpg</code>). Follow him with the Charlie button or press M.</p><div class="grid" id="charlieGrid"></div></div>
   <h3 id="outfitHead">Outfits</h3><div class="grid" id="outfitGrid"></div>
   <h3 id="maskHead">Animal masks</h3><div class="grid" id="maskGrid"></div>
 </section>
@@ -131,7 +133,7 @@
     <button type="button" data-act="wave" class="pb b3" aria-label="Wave (Q)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 13.2V8.4a1.2 1.2 0 0 1 2.4 0"/><path d="M10.6 12.4V6.1a1.2 1.2 0 0 1 2.4 0V12"/><path d="M13 12.5V7.3a1.2 1.2 0 0 1 2.4 0V13"/><path d="M15.4 12.8c.15-.9.85-1.4 1.5-1.1.65.28.8 1.15.45 1.85"/><path d="M16.9 14.4c.7 1.15.4 2.4-.45 3.3-1 1.1-2.4 1.7-4.3 1.7-2 0-3.35-.85-4.2-2.1L6 14.2a1.15 1.15 0 0 1 1.85-1.4l.85 1"/></svg><small>Wave</small></button>
     <button type="button" data-act="throw" class="pb b4" aria-label="Throw the ball (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg><small>Fetch</small></button>
   </div>
-  <div id="ctrlBar"><span>Steering</span><button type="button" data-who="luna">Luna</button><button type="button" data-who="moon">Moon</button><button type="button" data-who="solon">Solon</button><button type="button" id="ctrlHold">Pause</button><button type="button" id="ctrlGather">Gather</button><button type="button" id="ctrlCast">Cast</button><button type="button" id="ctrlBoat">Boat</button><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
+  <div id="ctrlBar"><span>Steering</span><button type="button" data-who="luna">Luna</button><button type="button" data-who="moon">Moon</button><button type="button" data-who="solon">Solon</button><button type="button" data-who="charlie">Charlie</button><button type="button" id="ctrlHold">Pause</button><button type="button" id="ctrlGather">Gather</button><button type="button" id="ctrlCast">Cast</button><button type="button" id="ctrlBoat">Boat</button><small class="rot">Turn your phone sideways for the best controls</small><button type="button" id="ctrlExit">Exit</button></div>
 </section>
 <div class="shot" id="shot" aria-live="polite"><span class="rec" aria-hidden="true"></span><span class="lbl" id="shotLbl">Auto cam</span></div>
 <!-- three.js r128: the local copy (public/vendor, filled by `npm install`) loads first; the CDN is only a fallback.
@@ -165,6 +167,6 @@
 <script src="./media/launch-backdrop.04.js"></script>
 <script src="./media/launch-backdrop.05.js"></script>
 <!-- github-media-end -->
-<script src="./game.js?v=33"></script>
+<script src="./game.js?v=35"></script>
 </body>
 </html>
