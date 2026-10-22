@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v33 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v34 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 if(!window.THREE){document.getElementById('loading').textContent='The 3D library could not load. Check your connection and reload.';return;}
 const T=THREE;
@@ -3266,8 +3266,48 @@ function makeShepherd(o){
   root.scale.setScalar(1.08);
   return {root,body,head,legs,tail:[],wag,wagAxis:'y',tongue,mouth};
 }
+function makeCapybara(o){
+  // Barney: Solon's plush capybara (round barrel body, darker back, big blunt brown snout, no tail)
+  const root=new T.Group(),body=new T.Group();root.add(body);
+  const FUR={main:'#d8935a',light:'#e6a670',back:'#b8743f',snout:'#a5653c',ear:'#8e5232',dark:'#3b2418'};
+  const fm={},fur=c=>fm[c]||(fm[c]=mStd(c,{roughness:0.95}));
+  // barrel body with a warm darker back and a lighter chest
+  blob(body,SPH,fur(FUR.main),0,0.36,-0.02,0.27,0.25,0.4);
+  blob(body,SPH,fur(FUR.back),0,0.42,-0.08,0.25,0.2,0.36);
+  blob(body,SPH,fur(FUR.main),0,0.35,-0.28,0.25,0.24,0.2);
+  blob(body,SPH,fur(FUR.light),0,0.33,0.16,0.21,0.21,0.2);
+  blob(body,SPH,fur(FUR.light),0,0.22,0.0,0.18,0.08,0.3,false);
+  // head: rounded block with a big darker snout
+  const head=new T.Group();head.position.set(0,0.6,0.3);head.scale.setScalar(1.1);body.add(head);
+  blob(head,SPH,fur(FUR.main),0,0.01,0,0.17,0.16,0.19);
+  blob(head,SPH,fur(FUR.light),0,0.08,0.02,0.14,0.08,0.15,false);
+  blob(head,SPH,fur(FUR.snout),0,-0.02,0.15,0.13,0.14,0.15);
+  blob(head,SPH,fur(FUR.snout),0,0.03,0.2,0.11,0.1,0.1,false);
+  for(const s of[-1,1]){
+    const nos=blob(head,SPH,mStd(FUR.dark,{roughness:0.4}),s*0.035,0.09,0.262,0.01,0.016,0.008,false);nos.rotation.set(-0.8,0,s*0.5);
+    blob(head,SPH,mStd('#2a1a14',{roughness:0.2}),s*0.1,0.07,0.115,0.026,0.03,0.018,false);
+    blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.45}),s*0.1+0.008,0.083,0.127,0.009,0.009,0.006,false);
+    blob(head,SPH,mStd('#e09078',{roughness:0.9,transparent:true,opacity:0.5}),s*0.13,0.0,0.12,0.03,0.018,0.012,false);
+    // small round ears set back on the head
+    blob(head,SPH,fur(FUR.main),s*0.12,0.14,-0.07,0.055,0.06,0.035);
+    blob(head,SPH,fur(FUR.ear),s*0.122,0.135,-0.045,0.035,0.04,0.012,false);
+    // whiskers fanning out from the snout
+    for(const k of[-1,1]){const w=blob(head,CYL,mStd(FUR.dark),s*0.15,-0.03+k*0.018,0.17,0.003,0.09,0.003,false);w.rotation.set(0,0,s*(Math.PI/2-0.25*k));}
+  }
+  blob(head,BOX,mStd(FUR.dark),0,-0.07,0.288,0.05,0.008,0.01,false);
+  const mouth=new T.Object3D();mouth.position.set(0,-0.08,0.28);head.add(mouth);
+  // short stubby legs with dark toes
+  const legs=[[-1,1],[1,1],[-1,-1],[1,-1]].map(([sx,sz])=>{
+    const g=new T.Group();g.position.set(sx*0.14,0.22,sz*0.2);body.add(g);
+    blob(g,CYL,fur(FUR.main),0,-0.08,0,0.065,0.17,0.065);
+    blob(g,SPH,fur(FUR.back),0,-0.19,0.02,0.07,0.04,0.085,false);
+    for(const t of[-1,0,1])blob(g,SPH,mStd(FUR.dark),t*0.03,-0.2,0.095,0.013,0.011,0.013,false);
+    return g;});
+  root.scale.setScalar(1.1);
+  return {root,body,head,legs,tail:[],mouth};
+}
 function makeAnimal(kind,o,home){
-  const b=kind==='cat'?makeCat(o):kind==='dog'?(o.breed==='shepherd'?makeShepherd(o):makeDog(o)):makeBunny(o);
+  const b=kind==='cat'?makeCat(o):kind==='dog'?(o.breed==='shepherd'?makeShepherd(o):makeDog(o)):kind==='capybara'?makeCapybara(o):makeBunny(o);
   const[hx,hz]=snapWalkable(home[0],home[1]);
   const e=Object.assign(b,{kind,name:o.name,x:hx,z:hz,yaw:Math.random()*6.28,home:[hx,hz],state:'idle',timer:rnd(1,4),path:null,wp:0,moving:0,phase:0,
     idlePose:'stand',sitK:0,loafK:0,lastPet:-99,lastGreet:-99,repath:0,happy:0});
@@ -3284,14 +3324,17 @@ const PETS=[
 const KIKO=makeAnimal('dog',{name:'Kiko'},[-30.4,32.2]),BRUNO=makeAnimal('dog',{name:'Bruno',breed:'shepherd'},[-33.2,34.2]);
 const DOGS=[KIKO,BRUNO];let DOG=KIKO;   // DOG = whichever dog is playing fetch
 DOGS.forEach((d,i)=>{d.state='kennel';d.side=i?-1:1;d.lastGreet=-99;d.root.rotation.order='YXZ';});
-const ALL_ANIMALS=[...PETS,...DOGS];
+// Barney the capybara tags along with Solon the way the dogs tag along with Luna
+const BARNEY=makeAnimal('capybara',{name:'Barney'},[SL.x+1.2,SL.z-1.2]);
+Object.assign(BARNEY,{state:'follow',follows:'solon',side:1,yaw:SL.yaw,idlePose:'sit'});BARNEY.root.rotation.order='YXZ';
+const ALL_ANIMALS=[...PETS,...DOGS,BARNEY];
 for(const e of ALL_ANIMALS)e.root.userData.noWx=true;
 
 function animatePet(e,dt,time){
   const mv=clamp(e.moving/1.4,0,1);
   e.phase+=dt*e.moving*(e.kind==='bunny'?5:7.5);
   const s=Math.sin(e.phase),still=mv<0.1;
-  const resting=e.state==='idle'||e.state==='onSwing'||e.state==='inside'||e.state==='petted'||e.state==='await'||e.state==='sitWait'||(e.kind==='dog'&&(e.state==='follow'||e.state==='kennel')&&still);
+  const resting=e.state==='idle'||e.state==='onSwing'||e.state==='inside'||e.state==='petted'||e.state==='await'||e.state==='sitWait'||((e.kind==='dog'||e.follows)&&(e.state==='follow'||e.state==='kennel')&&still);
   const pose=e.state==='petted'?(e.kind==='cat'?'loaf':'sit'):(resting?e.idlePose:'stand');
   e.sitK=lerp(e.sitK,still&&pose==='sit'?1:0,Math.min(1,dt*5));
   e.loafK=lerp(e.loafK,still&&pose==='loaf'?1:0,Math.min(1,dt*4));
@@ -3315,14 +3358,14 @@ function animatePet(e,dt,time){
     const groom=e.kind==='cat'&&pose==='groom'&&still;
     e.head.rotation.x=lerp(e.head.rotation.x,groom?0.5+Math.sin(time*7)*0.12:0,Math.min(1,dt*6));
   }
-  // look toward Luna when she is close
-  const dL=Math.hypot(AI.x-e.x,AI.z-e.z);
-  let hy=0;if(dL<4.5)hy=clamp(normalizeAngle(Math.atan2(AI.x-e.x,AI.z-e.z)-e.yaw),-0.9,0.9);
+  // look toward Luna (or their own human) when she is close
+  const LK=e.follows==='solon'&&!SL.inside?SL:AI,dL=Math.hypot(LK.x-e.x,LK.z-e.z);
+  let hy=0;if(dL<4.5)hy=clamp(normalizeAngle(Math.atan2(LK.x-e.x,LK.z-e.z)-e.yaw),-0.9,0.9);
   e.head.rotation.y=lerp(e.head.rotation.y,hy,Math.min(1,dt*5));
   e.root.position.set(e.x,walkHeight(e.x,e.z),e.z);e.root.rotation.y=e.yaw;
 }
 function faceLuna(e,dt){e.yaw+=normalizeAngle(Math.atan2(AI.x-e.x,AI.z-e.z)-e.yaw)*Math.min(1,dt*4);}
-const IDLE_POSES={cat:['sit','loaf','groom','stand','sit'],bunny:['nibble','sit','groom','nibble'],dog:['sit','stand']};
+const IDLE_POSES={cat:['sit','loaf','groom','stand','sit'],bunny:['nibble','sit','groom','nibble'],dog:['sit','stand'],capybara:['sit','loaf','sit','stand']};
 
 function updatePet(e,dt,time){
   const dL=Math.hypot(AI.x-e.x,AI.z-e.z);e.timer-=dt;
@@ -3470,6 +3513,42 @@ function updateDog(d,dt,time){
     if(dL>45){const[sx,sz]=randomSpotNear(AI.x,AI.z,4,2);d.x=sx;d.z=sz;d.path=null;}
   }
   animatePet(d,dt,time);
+}
+function faceSolon(e,dt){e.yaw+=normalizeAngle(Math.atan2(SL.x-e.x,SL.z-e.z)-e.yaw)*Math.min(1,dt*4);}
+function updateBarney(b,dt,time){
+  // Solon went indoors: come in with him and settle at his feet
+  if(SL.inside){
+    if(!b.inside){b.inside=true;b.state='inside';scene.remove(b.root);INSIDE.scene.add(b.root);b.path=null;b.moving=0;}
+    b.idlePose=nightK>0.55?'loaf':'sit';
+    animatePet(b,dt,time);
+    const ix=SL.ix-0.9,iz=SL.iz+0.4;b.yaw+=normalizeAngle(Math.atan2(SL.ix-ix,SL.iz-iz)-b.yaw)*Math.min(1,dt*3);
+    b.root.position.set(ix,0,iz);b.root.rotation.y=b.yaw;return;
+  }
+  if(b.inside){b.inside=false;INSIDE.scene.remove(b.root);scene.add(b.root);const s=snapWalkable(SL.x-1.2,SL.z+1.2);b.x=s[0];b.z=s[1];b.state='follow';b.path=null;}
+  const dS=Math.hypot(SL.x-b.x,SL.z-b.z);
+  b.happy=Math.max(0,b.happy-dt);b.timer-=dt;
+  if(b.state==='petted'||b.state==='await'){
+    b.moving=Math.max(0,b.moving-dt*5);b.idlePose='sit';
+    if(b.petBy==='solon')faceSolon(b,dt);else if(b.petBy==='moon')b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);else faceLuna(b,dt);
+    if(b.state==='petted')b.happy=1;
+    if(b.state==='await'&&b.timer<=0)b.state='follow';
+  }else{ // follow Solon around at his shoulder
+    if(b.state!=='follow'){b.state='follow';b.path=null;}
+    const onBoat=typeof BOAT!=='undefined'&&BOAT.helm==='solon',busy=SL.state!=='walk'&&SL.speed<0.5;
+    const tx=SL.x-Math.sin(SL.yaw)*1.6+Math.cos(SL.yaw)*b.side*1.2,tz=SL.z-Math.cos(SL.yaw)*1.6-Math.sin(SL.yaw)*b.side*1.2;
+    const dT=Math.hypot(tx-b.x,tz-b.z);
+    if((busy||onBoat)&&dS<3.6){
+      b.moving=Math.max(0,b.moving-dt*5);faceSolon(b,dt);
+      if(nightK>0.6){b.idlePose='loaf';if(time-b.lastGreet>9){b.lastGreet=time;emote(b.root,'zzz',0.85,1.6,0.45);}}
+      else{if(b.timer<=0){b.timer=rnd(4,9);b.idlePose=pick(IDLE_POSES.capybara);}
+        if(time-b.lastGreet>24&&Math.random()<dt*0.2){b.lastGreet=time;emote(b.root,'heart',0.85,1.6,0.5);}}
+    }else if(dT>1.0){
+      b.repath-=dt;if(b.repath<=0||!b.path){b.path=planPath(b.x,b.z,tx,tz);b.wp=0;b.repath=0.9;}
+      followPath(b,dt,clamp(dS*1.1,2.0,5.4),9);
+    }else{b.moving=Math.max(0,b.moving-dt*4);}
+    if(dS>45){const[sx,sz]=randomSpotNear(SL.x,SL.z,4,2);b.x=sx;b.z=sz;b.path=null;}
+  }
+  animatePet(b,dt,time);
 }
 
 /* ---------------- koi in the ponds ---------------- */
@@ -5086,7 +5165,7 @@ function resolveCollisions(){
   if(lunaFree)L.push({o:AI,r:0.3,w:0.25,luna:true});
   if(!LM.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='moon'))L.push({o:LM,r:0.3,w:0.5,luna:true});
   if(!SL.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='solon'))L.push({o:SL,r:0.3,w:0.5,luna:true});
-  for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'?0.3:e.kind==='cat'?0.25:0.22,w:1});}
+  for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'||e.kind==='capybara'?0.3:e.kind==='cat'?0.25:0.22,w:1});}
   for(const it of L){it.ox=it.o.x;it.oz=it.o.z;}
   for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];let dx=b.o.x-a.o.x,dz=b.o.z-a.o.z,d=Math.hypot(dx,dz);const m=a.r+b.r;
     if(d>=m)continue;if(d<1e-4){const r=Math.random()*6.28;dx=Math.cos(r);dz=Math.sin(r);d=1;}else{dx/=d;dz/=d;}
@@ -5604,6 +5683,7 @@ function updateWildlifeAndVehicles(dt,time){
   updateSolon(dt,time);
   for(const e of PETS)updatePet(e,dt,time);
   for(const d of DOGS)if(!d.inside)updateDog(d,dt,time);
+  updateBarney(BARNEY,dt,time);
   SWING.update(dt);updateChops(dt);resolveCollisions();
   MARKET.update(dt,time);updateDecor(dt,time);
   GATE.update(dt);
