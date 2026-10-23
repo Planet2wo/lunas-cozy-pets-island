@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v37 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v38 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 function failScene(msg){
   const loading=document.getElementById('loading');
@@ -1314,38 +1314,61 @@ function gIdx(gx,gz){return gz*NAV.cols+gx;}
   }
 })();
 
-function findNearestWalkableCell(gx,gz){
-  if(NAV.walk[gIdx(gx,gz)])return [gx,gz];
+function navOpen(id,swim){return NAV.walk[id]===1||!!(swim&&NAV.swim&&NAV.swim[id]);}
+// Ponds and the stream are closed to everyone else. Axoloto's grid includes that water,
+// overlapping the shore so a path can step off the bank and into the pond.
+(function markSwimGrid(){
+  NAV.swim=new Uint8Array(NAV.cols*NAV.rows);
+  const pad=0.22;
+  for(let gz=0;gz<NAV.rows;gz++){
+    for(let gx=0;gx<NAV.cols;gx++){
+      const[x,z]=toWorld(gx,gz),wd=waterDist(x,z);
+      if(wd>1.05)continue;
+      const r=Math.hypot(x,z),a=Math.atan2(z,x);
+      if(r>edgeR(a)-1.3)continue;
+      if(Math.abs(x-WF.x)<4.6&&z>-36&&z<WF.zBot+1.6)continue;
+      if(hAt(x,z)<-0.4)continue;
+      let blocked=false;
+      for(const b of BOX_OBS){if(x>b.x0-pad&&x<b.x1+pad&&z>b.z0-pad&&z<b.z1+pad){blocked=true;break;}}
+      if(blocked)continue;
+      for(const c of CIRCLE_OBS){if(Math.hypot(x-c.x,z-c.z)<c.r+pad*0.4){blocked=true;break;}}
+      if(!blocked)NAV.swim[gIdx(gx,gz)]=1;
+    }
+  }
+})();
+function findNearestWalkableCell(gx,gz,swim){
+  if(navOpen(gIdx(gx,gz),swim))return [gx,gz];
   for(let r=1;r<25;r++){
     for(let dz=-r;dz<=r;dz++){
       for(let dx=-r;dx<=r;dx++){
         if(Math.abs(dx)!==r&&Math.abs(dz)!==r)continue;
         const nx=gx+dx,nz=gz+dz;
-        if(nx>=0&&nx<NAV.cols&&nz>=0&&nz<NAV.rows&&NAV.walk[gIdx(nx,nz)])return [nx,nz];
+        if(nx>=0&&nx<NAV.cols&&nz>=0&&nz<NAV.rows&&navOpen(gIdx(nx,nz),swim))return [nx,nz];
       }
     }
   }
   return [gx,gz];
 }
 
-function hasGridLineOfSight(ax,az,bx,bz){
+function hasGridLineOfSight(ax,az,bx,bz,swim){
   const dist=Math.hypot(bx-ax,bz-az);
   const steps=Math.max(2,Math.ceil(dist/0.22));
   for(let i=1;i<steps;i++){
     const t=i/steps;
     const x=lerp(ax,bx,t),z=lerp(az,bz,t);
     const [gx,gz]=toGrid(x,z),id=gIdx(gx,gz);
-    if(!NAV.walk[id]||NAV.cost[id]>2.2)return false;
+    if(!navOpen(id,swim))return false;
+    if(NAV.walk[id]&&NAV.cost[id]>2.2)return false;
   }
   return true;
 }
 
 const PF={id:0};
-function findPathWorld(sx,sz,tx,tz){
+function findPathWorld(sx,sz,tx,tz,swim){
   let [sgx,sgz]=toGrid(sx,sz);
   let [tgx,tgz]=toGrid(tx,tz);
-  [sgx,sgz]=findNearestWalkableCell(sgx,sgz);
-  [tgx,tgz]=findNearestWalkableCell(tgx,tgz);
+  [sgx,sgz]=findNearestWalkableCell(sgx,sgz,swim);
+  [tgx,tgz]=findNearestWalkableCell(tgx,tgz,swim);
   const startId=gIdx(sgx,sgz),goalId=gIdx(tgx,tgz);
   if(startId===goalId)return [[tx,tz]];
 
@@ -1402,11 +1425,12 @@ function findPathWorld(sx,sz,tx,tz){
       const nx=cx+dx,nz=cz+dz;
       if(nx<0||nx>=NAV.cols||nz<0||nz>=NAV.rows)continue;
       const nid=gIdx(nx,nz);
-      if(!NAV.walk[nid]||done[nid]===stamp)continue;
+      if(!navOpen(nid,swim)||done[nid]===stamp)continue;
       if(dx!==0&&dz!==0){
-        if(!NAV.walk[gIdx(cx+dx,cz)]||!NAV.walk[gIdx(cx,cz+dz)])continue;
+        if(!navOpen(gIdx(cx+dx,cz),swim)||!navOpen(gIdx(cx,cz+dz),swim))continue;
       }
-      const tentativeG=gScore[curr]+len*NAV.cost[nid];
+      const stepCost=NAV.walk[nid]?NAV.cost[nid]:0.92;
+      const tentativeG=gScore[curr]+len*stepCost;
       if(tentativeG<G(nid)){
         seen[nid]=stamp;cameFrom[nid]=curr;
         gScore[nid]=tentativeG;
@@ -1435,7 +1459,7 @@ function findPathWorld(sx,sz,tx,tz){
   while(anchor<pts.length-1){
     let furthest=anchor+1;
     for(let test=Math.min(pts.length-1,anchor+18);test>anchor+1;test--){
-      if(hasGridLineOfSight(pts[anchor][0],pts[anchor][1],pts[test][0],pts[test][1])){
+      if(hasGridLineOfSight(pts[anchor][0],pts[anchor][1],pts[test][0],pts[test][1],swim)){
         furthest=test;
         break;
       }
@@ -3299,7 +3323,7 @@ function randomSpotNear(x,z,r,minR=0){
     if(isCellOpen(px,pz))return[px,pz];}
   return snapWalkable(x,z);
 }
-function planPath(sx,sz,tx,tz){if(hasGridLineOfSight(sx,sz,tx,tz))return[[tx,tz]];return findPathWorld(sx,sz,tx,tz);}
+function planPath(sx,sz,tx,tz,swim){if(hasGridLineOfSight(sx,sz,tx,tz,swim))return[[tx,tz]];return findPathWorld(sx,sz,tx,tz,swim);}
 function followPath(e,dt,speed,turn=7){
   if(!e.path||e.wp>=e.path.length){e.moving=Math.max(0,e.moving-dt*5);return true;}
   const[tx,tz]=e.path[e.wp],dx=tx-e.x,dz=tz-e.z,d=Math.hypot(dx,dz),last=e.wp===e.path.length-1;
@@ -3307,7 +3331,7 @@ function followPath(e,dt,speed,turn=7){
   const diff=normalizeAngle(Math.atan2(dx,dz)-e.yaw);e.yaw+=diff*Math.min(1,dt*turn);
   let sp=speed*clamp(1-Math.abs(diff)/2.4,0.25,1);if(last)sp*=clamp(d/1.2,0.35,1);
   const nx=e.x+Math.sin(e.yaw)*sp*dt,nz=e.z+Math.cos(e.yaw)*sp*dt;
-  const[ngx,ngz]=toGrid(nx,nz);if(NAV.walk[gIdx(ngx,ngz)]){e.x=nx;e.z=nz;}else{e.x+=dx/d*sp*dt;e.z+=dz/d*sp*dt;}
+  const[ngx,ngz]=toGrid(nx,nz);if(navOpen(gIdx(ngx,ngz),e.swims)){e.x=nx;e.z=nz;}else{e.x+=dx/d*sp*dt;e.z+=dz/d*sp*dt;}
   e.moving=sp;return false;
 }
 function addEyes(head,dx,y,z,r){
@@ -3578,8 +3602,84 @@ function makeCapybara(o){
   root.scale.setScalar(1.1);
   return {root,body,head,legs,tail:[],mouth};
 }
+function makeAxolotl(o){
+  // Axoloto: Charlie's plush axolotl, built to Sprites/Axloto.png
+  // cream body, coral spots, three feathery gill fans a side, big blue eyes, a long finned tail
+  const root=new T.Group(),body=new T.Group();root.add(body);
+  const FUR={main:'#f3dcc8',belly:'#fff4ea',spot:'#e85d56',gill:'#f27870',gill2:'#ffb0a4',fin:'#f59288',dark:'#5c3a34',eye:'#31468f',pupil:'#14162a'};
+  const fm={},fur=c=>fm[c]||(fm[c]=mStd(c,{roughness:0.72}));
+  const gillMat=c=>fm['g'+c]||(fm['g'+c]=mStd(c,{roughness:0.42,side:T.DoubleSide,emissive:c,emissiveIntensity:0.08}));
+  blob(body,SPH,fur(FUR.main),0,0.24,0.02,0.17,0.13,0.34);
+  blob(body,SPH,fur(FUR.main),0,0.23,-0.24,0.14,0.11,0.2);
+  blob(body,SPH,fur(FUR.belly),0,0.16,0.04,0.13,0.06,0.26,false);
+  const spotAt=(p,x,y,z,s)=>blob(p,SPH,fur(FUR.spot),x,y,z,s,s*0.62,s*0.85,false);
+  for(const[x,y,z,s]of[[0.06,0.34,0.12,0.032],[-0.07,0.33,0.02,0.028],[0.08,0.32,-0.1,0.026],[-0.04,0.34,-0.18,0.03],[0.05,0.32,-0.28,0.022],[-0.08,0.3,0.14,0.024],[0.01,0.36,-0.02,0.02],[0.09,0.3,0.02,0.02],[-0.02,0.31,0.22,0.018]])spotAt(body,x,y,z,s);
+  const frill=new T.Group();body.add(frill);
+  for(let i=0;i<6;i++){
+    const fin=blob(frill,CONE,gillMat(i%2?FUR.gill2:FUR.fin),(i-2.5)*0.006,0.38,0.18-i*0.08,0.055,0.16,0.02,false);
+    fin.rotation.x=-0.85;
+  }
+  const head=new T.Group();head.position.set(0,0.3,0.34);body.add(head);
+  blob(head,SPH,fur(FUR.main),0,0.02,0.02,0.17,0.14,0.17);
+  blob(head,SPH,fur(FUR.belly),0,-0.04,0.1,0.12,0.06,0.11,false);
+  blob(head,SPH,fur(FUR.main),0,-0.02,0.12,0.1,0.08,0.09,false);
+  for(const[x,y,z,s]of[[0.08,0.06,0.1,0.024],[-0.07,0.04,0.09,0.022],[0.02,0.09,0.06,0.018],[-0.09,-0.01,0.12,0.02],[0.1,0.0,0.08,0.018],[0.0,0.08,0.13,0.016]])spotAt(head,x,y,z,s);
+  for(const s of[-1,1]){
+    blob(head,SPH,mStd(FUR.eye,{roughness:0.12}),s*0.075,0.04,0.145,0.046,0.05,0.038,false);
+    blob(head,SPH,mStd(FUR.pupil,{roughness:0.2}),s*0.078,0.034,0.172,0.024,0.028,0.016,false);
+    blob(head,SPH,mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.8,roughness:0.1}),s*0.092,0.058,0.188,0.012,0.014,0.007,false);
+    blob(head,SPH,mStd('#c9d6ff',{emissive:'#c9d6ff',emissiveIntensity:0.25,roughness:0.2}),s*0.058,0.016,0.175,0.007,0.007,0.005,false);
+    blob(head,SPH,mStd('#f0a098',{transparent:true,opacity:0.55,roughness:0.85}),s*0.12,-0.015,0.11,0.032,0.016,0.012,false);
+    blob(head,SPH,mStd(FUR.dark,{roughness:0.45}),s*0.028,0.01,0.2,0.008,0.006,0.006,false);
+  }
+  const smile=new T.Mesh(new T.TorusGeometry(0.055,0.007,6,16,Math.PI*0.95),mStd('#6a453c',{roughness:0.5}));
+  smile.position.set(0,-0.045,0.2);smile.rotation.x=0.15;smile.rotation.z=Math.PI;head.add(smile);
+  const gills=[];
+  for(const s of[-1,1]){
+    for(let i=0;i<3;i++){
+      const g=new T.Group();
+      g.position.set(s*0.13,0.05+i*0.01,-0.03+i*0.03);
+      g.rotation.z=s*(0.7+i*0.42);
+      g.rotation.x=-0.25-i*0.28;
+      g.userData.baseZ=g.rotation.z;g.userData.baseX=g.rotation.x;
+      head.add(g);gills.push(g);
+      const col=i===1?FUR.gill2:FUR.gill;
+      blob(g,CONE,gillMat(col),0,0.12,0,0.03,0.22,0.022,false);
+      for(let f=0;f<6;f++){
+        const fr=blob(g,CONE,gillMat(col),0,0.18,0,0.05,0.12,0.014,false);
+        fr.rotation.z=(f-2.5)*0.42;fr.rotation.x=-0.4;
+      }
+    }
+  }
+  const mouth=new T.Object3D();mouth.position.set(0,-0.04,0.2);head.add(mouth);
+  const legs=[[-1,1],[1,1],[-1,-1],[1,-1]].map(([sx,sz])=>{
+    const g=new T.Group();g.position.set(sx*0.13,0.18,sz*0.16+0.02);g.rotation.z=sx*0.55;body.add(g);
+    blob(g,CYL,fur(FUR.main),0,-0.06,0,0.032,0.11,0.032);
+    blob(g,SPH,fur(FUR.main),0,-0.12,0.025,0.048,0.022,0.055,false);
+    for(const t of[-1.5,-0.5,0.5,1.5]){
+      const toe=blob(g,SPH,fur(FUR.main),t*0.016,-0.125,0.07,0.013,0.009,0.026,false);
+      toe.rotation.x=-0.4;
+    }
+    return g;});
+  const tailSegs=[];
+  let anchor=body;
+  const lengths=[0.2,0.17,0.14,0.12],radii=[[0.11,0.06],[0.08,0.042],[0.052,0.028],[0.03,0.016]];
+  lengths.forEach((len,i)=>{
+    const g=new T.Group();
+    g.position.set(0,i===0?0.24:0,i===0?-0.42:-lengths[i-1]);
+    anchor.add(g);tailSegs.push(g);anchor=g;
+    blob(g,SPH,fur(FUR.main),0,0,-len*0.45,radii[i][0],radii[i][1],len*0.55);
+    const fin=blob(g,CONE,gillMat(i%2?FUR.gill2:FUR.fin),0,radii[i][1]*0.7,-len*0.35,radii[i][0]*1.15,0.18,0.018,false);
+    fin.rotation.x=-1.05;
+    if(i<3)spotAt(g,radii[i][0]*0.35,radii[i][1]*0.4,-len*0.3,0.016);
+  });
+  const ripple=new T.Mesh(new T.RingGeometry(0.22,0.78,28),new T.MeshBasicMaterial({color:'#d8fff4',transparent:true,opacity:0,side:T.DoubleSide,depthWrite:false}));
+  ripple.rotation.x=-Math.PI/2;ripple.visible=false;ripple.renderOrder=3;root.add(ripple);
+  root.scale.setScalar(1.48);
+  return {root,body,head,legs,tail:[],mouth,gills,tailSegs,frill,ripple};
+}
 function makeAnimal(kind,o,home){
-  const b=kind==='cat'?makeCat(o):kind==='dog'?(o.breed==='shepherd'?makeShepherd(o):makeDog(o)):kind==='capybara'?makeCapybara(o):makeBunny(o);
+  const b=kind==='cat'?makeCat(o):kind==='dog'?(o.breed==='shepherd'?makeShepherd(o):makeDog(o)):kind==='capybara'?makeCapybara(o):kind==='axolotl'?makeAxolotl(o):makeBunny(o);
   const[hx,hz]=snapWalkable(home[0],home[1]);
   const e=Object.assign(b,{kind,name:o.name,x:hx,z:hz,yaw:Math.random()*6.28,home:[hx,hz],state:'idle',timer:rnd(1,4),path:null,wp:0,moving:0,phase:0,
     idlePose:'stand',sitK:0,loafK:0,lastPet:-99,lastGreet:-99,repath:0,happy:0});
@@ -3599,15 +3699,24 @@ DOGS.forEach((d,i)=>{d.state='kennel';d.side=i?-1:1;d.lastGreet=-99;d.root.rotat
 // Barney the capybara tags along with Solon the way the dogs tag along with Luna
 const BARNEY=makeAnimal('capybara',{name:'Barney'},[SL.x+1.2,SL.z-1.2]);
 Object.assign(BARNEY,{state:'follow',follows:'solon',side:1,yaw:SL.yaw,idlePose:'sit'});BARNEY.root.rotation.order='YXZ';
-const ALL_ANIMALS=[...PETS,...DOGS,BARNEY];
+// Axoloto follows Charlie the way Barney follows Solon, and can swim where the others cannot
+const AXOLOTO=makeAnimal('axolotl',{name:'Axoloto'},[CH.x+1.05,CH.z-0.85]);
+Object.assign(AXOLOTO,{state:'follow',follows:'charlie',side:-1,yaw:CH.yaw,idlePose:'sit',swims:true,swimK:0,sea:false,preferWater:false,paddleT:0});
+AXOLOTO.root.rotation.order='YXZ';
+const ALL_ANIMALS=[...PETS,...DOGS,BARNEY,AXOLOTO];
 for(const e of ALL_ANIMALS)e.root.userData.noWx=true;
 
 function animatePet(e,dt,time){
   const mv=clamp(e.moving/1.4,0,1);
   e.phase+=dt*e.moving*(e.kind==='bunny'?5:7.5);
   const s=Math.sin(e.phase),still=mv<0.1;
+  if(e.swims){
+    const want=!e.inside&&(!!e.sea||waterDist(e.x,e.z)<0.42);
+    e.swimK=want?Math.min(1,(e.swimK||0)+dt*5):Math.max(0,(e.swimK||0)-dt*3.2);
+  }
+  const swimming=e.kind==='axolotl'&&(e.swimK||0)>0.45;
   const resting=e.state==='idle'||e.state==='onSwing'||e.state==='inside'||e.state==='petted'||e.state==='await'||e.state==='sitWait'||((e.kind==='dog'||e.follows)&&(e.state==='follow'||e.state==='kennel')&&still);
-  const pose=e.state==='petted'?(e.kind==='cat'?'loaf':'sit'):(resting?e.idlePose:'stand');
+  const pose=swimming?'stand':e.state==='petted'?(e.kind==='cat'?'loaf':'sit'):(resting?e.idlePose:'stand');
   e.sitK=lerp(e.sitK,still&&pose==='sit'?1:0,Math.min(1,dt*5));
   e.loafK=lerp(e.loafK,still&&pose==='loaf'?1:0,Math.min(1,dt*4));
   if(e.kind==='bunny'){
@@ -3630,14 +3739,54 @@ function animatePet(e,dt,time){
     const groom=e.kind==='cat'&&pose==='groom'&&still;
     e.head.rotation.x=lerp(e.head.rotation.x,groom?0.5+Math.sin(time*7)*0.12:0,Math.min(1,dt*6));
   }
+  if(e.kind==='axolotl'){
+    const sw=e.swimK||0,happy=e.state==='petted'||e.happy>0;
+    if(e.gills)e.gills.forEach((g,i)=>{
+      const f=Math.sin(time*(sw>0.4?6.5:2.6)+i*0.8)*(0.1+sw*0.22);
+      g.rotation.z=(g.userData.baseZ||0)+f;
+      g.rotation.x=(g.userData.baseX||0)+Math.sin(time*3.1+i)*0.06;
+    });
+    if(e.tailSegs)e.tailSegs.forEach((g,i)=>{
+      const amp=sw>0.35?0.42:(happy?0.3:e.moving>0.3?0.18:0.08);
+      const spd=sw>0.35?7.5:(e.moving>0.3?4.5:2);
+      g.rotation.y=Math.sin(time*spd-i*0.75)*amp;
+      g.rotation.x=sw*0.12;
+    });
+    if(e.frill)e.frill.rotation.z=Math.sin(time*(sw>0.35?6:2))*0.06*(0.4+sw);
+    if(sw>0.45){
+      const p=Math.sin(time*7.2);
+      e.legs.forEach((g,i)=>{g.rotation.x=p*(i<2?0.55:-0.4);});
+      e.body.rotation.x=-0.06;
+      e.body.position.y=Math.sin(time*3)*0.015;
+    }else{
+      // a low rest, still showing the gills and the long back instead of rolling onto his side
+      e.body.rotation.x=-0.08*e.sitK-0.16*e.loafK;
+      e.body.position.y=-0.02*e.sitK-0.05*e.loafK;
+      e.legs.forEach(g=>{g.rotation.x*=0.35;});
+    }
+  }
   // look toward Luna (or their own human) when she is close
-  const LK=e.follows==='solon'&&!SL.inside?SL:AI,dL=Math.hypot(LK.x-e.x,LK.z-e.z);
+  const LK=e.follows==='charlie'&&!CH.inside?CH:e.follows==='solon'&&!SL.inside?SL:AI,dL=Math.hypot(LK.x-e.x,LK.z-e.z);
   let hy=0;if(dL<4.5)hy=clamp(normalizeAngle(Math.atan2(LK.x-e.x,LK.z-e.z)-e.yaw),-0.9,0.9);
   e.head.rotation.y=lerp(e.head.rotation.y,hy,Math.min(1,dt*5));
-  e.root.position.set(e.x,walkHeight(e.x,e.z),e.z);e.root.rotation.y=e.yaw;
+  let gy=e.inside?0:walkHeight(e.x,e.z);
+  if(e.swims&&!e.inside&&(e.swimK||0)>0.001){
+    const surf=(e.sea?0.05:(WATER-0.02))+Math.sin(time*2.15+(e.phase||0))*0.03*(e.swimK||0);
+    gy=(e.sea||waterDist(e.x,e.z)<0.42)?surf:lerp(gy,surf,e.swimK);
+  }
+  e.root.position.set(e.x,gy,e.z);e.root.rotation.y=e.yaw;
+  if(e.ripple){
+    const on=(e.swimK||0)>0.35&&!e.inside;
+    e.ripple.visible=on;
+    if(on){
+      e.ripple.scale.setScalar(1+Math.sin(time*3.2)*0.1);
+      e.ripple.material.opacity=0.34*(e.swimK||0);
+      e.ripple.position.y=(e.sea?0:WATER)-gy+0.03;
+    }
+  }
 }
 function faceLuna(e,dt){e.yaw+=normalizeAngle(Math.atan2(AI.x-e.x,AI.z-e.z)-e.yaw)*Math.min(1,dt*4);}
-const IDLE_POSES={cat:['sit','loaf','groom','stand','sit'],bunny:['nibble','sit','groom','nibble'],dog:['sit','stand'],capybara:['sit','loaf','sit','stand']};
+const IDLE_POSES={cat:['sit','loaf','groom','stand','sit'],bunny:['nibble','sit','groom','nibble'],dog:['sit','stand'],capybara:['sit','loaf','sit','stand'],axolotl:['sit','loaf','sit','stand']};
 
 function updatePet(e,dt,time){
   const dL=Math.hypot(AI.x-e.x,AI.z-e.z);e.timer-=dt;
@@ -3821,6 +3970,90 @@ function updateBarney(b,dt,time){
     }else{b.moving=Math.max(0,b.moving-dt*4);}
     if(dS>45){const[sx,sz]=randomSpotNear(SL.x,SL.z,4,2);b.x=sx;b.z=sz;b.path=null;}
   }
+  animatePet(b,dt,time);
+}
+function freshNear(x,z){
+  // deepest pond or stream water within a short paddle of this spot
+  let best=null,bd=0.05;
+  for(let i=0;i<16;i++){
+    const a=i/16*6.2832;
+    for(const dist of[1.8,3.2,4.6,6]){
+      const px=x+Math.sin(a)*dist,pz=z+Math.cos(a)*dist,wd=waterDist(px,pz);
+      if(wd<bd&&wd>-6){
+        const id=gIdx(...toGrid(px,pz));
+        if(NAV.swim&&NAV.swim[id]){bd=wd;best=[px,pz];}
+      }
+    }
+  }
+  return best;
+}
+function updateAxoloto(b,dt,time){
+  // Charlie went indoors: come in with him and settle at his feet
+  if(CH.inside){
+    if(!b.inside){b.inside=true;b.state='inside';b.sea=false;b.swimK=0;scene.remove(b.root);INSIDE.scene.add(b.root);b.path=null;b.moving=0;}
+    b.idlePose='sit';
+    animatePet(b,dt,time);
+    const ix=CH.ix+0.75,iz=CH.iz+0.35;b.yaw+=normalizeAngle(Math.atan2(CH.ix-ix,CH.iz-iz)-b.yaw)*Math.min(1,dt*3);
+    b.root.position.set(ix,0,iz);b.root.rotation.y=b.yaw;
+    if(b.ripple)b.ripple.visible=false;
+    return;
+  }
+  if(b.inside){b.inside=false;INSIDE.scene.remove(b.root);scene.add(b.root);const s=snapWalkable(CH.x+0.9,CH.z+0.6);b.x=s[0];b.z=s[1];b.state='follow';b.path=null;}
+  // the skiff is ocean water the nav grid never enters, so Axoloto paddles beside it directly
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'){
+    b.sea=true;b.state='follow';b.path=null;
+    const side=b.side||1;
+    const tx=BOAT.x+Math.cos(BOAT.yaw)*side*2.15-Math.sin(BOAT.yaw)*0.35;
+    const tz=BOAT.z-Math.sin(BOAT.yaw)*side*2.15-Math.cos(BOAT.yaw)*0.35;
+    const dx=tx-b.x,dz=tz-b.z,d=Math.hypot(dx,dz);
+    if(d>16){b.x=tx;b.z=tz;}
+    else if(d>0.3){
+      const sp=clamp(d*1.6,2.4,8);
+      b.yaw+=normalizeAngle(Math.atan2(dx,dz)-b.yaw)*Math.min(1,dt*7);
+      b.x+=Math.sin(b.yaw)*sp*dt;b.z+=Math.cos(b.yaw)*sp*dt;b.moving=sp;
+    }else{b.moving=Math.max(0.4,BOAT.speed||0);b.yaw+=normalizeAngle(BOAT.yaw-b.yaw)*Math.min(1,dt*4);}
+    b.happy=0.4;
+    animatePet(b,dt,time);
+    return;
+  }
+  b.sea=false;
+  const dS=Math.hypot(CH.x-b.x,CH.z-b.z);
+  b.happy=Math.max(0,b.happy-dt);b.timer-=dt;
+  if(b.state==='petted'||b.state==='await'){
+    b.moving=Math.max(0,b.moving-dt*5);b.idlePose='sit';
+    if(b.petBy==='solon')faceSolon(b,dt);else if(b.petBy==='moon')b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);else if(b.petBy==='charlie')faceCharlie(b,dt);else faceLuna(b,dt);
+    if(b.state==='petted')b.happy=1;
+    if(b.state==='await'&&b.timer<=0)b.state='follow';
+  }else{
+    if(b.state!=='follow'){b.state='follow';b.path=null;}
+    const busy=CH.state!=='walk'&&CH.speed<0.5,wdC=waterDist(CH.x,CH.z);
+    if(wdC<3.5)b.preferWater=true;else if(wdC>6.2)b.preferWater=false;
+    let tx=CH.x-Math.sin(CH.yaw)*1.45+Math.cos(CH.yaw)*b.side*1.05;
+    let tz=CH.z-Math.cos(CH.yaw)*1.45-Math.sin(CH.yaw)*b.side*1.05;
+    if(b.preferWater){
+      b.paddleT=(b.paddleT||0)+dt;
+      const dip=freshNear(CH.x,CH.z);
+      if(dip){
+        const ang=b.paddleT*0.55,ox=dip[0]+Math.sin(ang)*0.9,oz=dip[1]+Math.cos(ang)*0.9;
+        const id=gIdx(...toGrid(ox,oz));
+        const inPond=NAV.swim[id]&&waterDist(ox,oz)<0.05;
+        tx=inPond?ox:dip[0];tz=inPond?oz:dip[1];
+      }
+    }
+    const dT=Math.hypot(tx-b.x,tz-b.z),paddling=b.preferWater&&waterDist(b.x,b.z)<0.3;
+    // on a bank he leaves Charlie's shoulder and gets in the water, even while Charlie stands still
+    if(busy&&dS<3.6&&!b.preferWater){
+      b.moving=Math.max(0,b.moving-dt*5);faceCharlie(b,dt);
+      if(nightK>0.6){b.idlePose='loaf';if(time-b.lastGreet>9){b.lastGreet=time;emote(b.root,'zzz',0.8,1.6,0.45);}}
+      else{if(b.timer<=0){b.timer=rnd(4,9);b.idlePose=pick(IDLE_POSES.axolotl);}
+        if(time-b.lastGreet>22&&Math.random()<dt*0.25){b.lastGreet=time;emote(b.root,'heart',0.8,1.6,0.5);}}
+    }else if(dT>0.85){
+      b.repath-=dt;if(b.repath<=0||!b.path){b.path=planPath(b.x,b.z,tx,tz,true);b.wp=0;b.repath=paddling?0.55:0.9;}
+      followPath(b,dt,clamp(dS*1.15,paddling?1.3:2.0,5.6),9);
+    }else{b.moving=Math.max(0,b.moving-dt*4);if(paddling)b.yaw+=normalizeAngle(Math.atan2(CH.x-b.x,CH.z-b.z)-b.yaw)*Math.min(1,dt*3);}
+    if(dS>45){const[sx,sz]=randomSpotNear(CH.x,CH.z,4,2);b.x=sx;b.z=sz;b.path=null;}
+  }
+  if(dS<2.8&&CH.state==='walk'&&time-b.lastGreet>16&&b.state!=='petted'){b.lastGreet=time;if(Math.random()<0.4)emote(b.root,'heart',0.8,1.6,0.5);}
   animatePet(b,dt,time);
 }
 
@@ -5453,6 +5686,7 @@ function pushOut(e,rad,allowInsideBox){
       if(mn===l)e.x=b.x0-rad;else if(mn===r)e.x=b.x1+rad;else if(mn===t)e.z=b.z0-rad;else e.z=b.z1+rad;}}
 }
 function standable(x,z){const[gx,gz]=toGrid(x,z);return NAV.walk[gIdx(gx,gz)]===1||!!getBridgeInfo(x,z)||isOnDock(x,z)||isOnHouseStepsOrPorch(x,z);}
+function footOk(o,x,z){if(standable(x,z))return true;if(o&&o.swims&&NAV.swim){const[gx,gz]=toGrid(x,z);return !!NAV.swim[gIdx(gx,gz)];}return false;}
 const SKIP_STATES=new Set(['onSwing','hopOn','hopOff','inside']);
 function resolveCollisions(){
   const L=[];
@@ -5461,14 +5695,14 @@ function resolveCollisions(){
   if(!LM.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='moon'))L.push({o:LM,r:0.3,w:0.5,luna:true});
   if(!SL.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='solon'))L.push({o:SL,r:0.3,w:0.5,luna:true});
   if(!CH.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'))L.push({o:CH,r:0.3,w:0.5,luna:true});
-  for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'||e.kind==='capybara'?0.3:e.kind==='cat'?0.25:0.22,w:1});}
+  for(const e of ALL_ANIMALS){if(e.inside||e.sea||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'||e.kind==='capybara'?0.3:e.kind==='axolotl'?0.26:e.kind==='cat'?0.25:0.22,w:1});}
   for(const it of L){it.ox=it.o.x;it.oz=it.o.z;}
   for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];let dx=b.o.x-a.o.x,dz=b.o.z-a.o.z,d=Math.hypot(dx,dz);const m=a.r+b.r;
     if(d>=m)continue;if(d<1e-4){const r=Math.random()*6.28;dx=Math.cos(r);dz=Math.sin(r);d=1;}else{dx/=d;dz/=d;}
     const ov=m-Math.min(d,m),wa=a.w/(a.w+b.w),wb=1-wa;a.o.x-=dx*ov*wa;a.o.z-=dz*ov*wa;b.o.x+=dx*ov*wb;b.o.z+=dz*ov*wb;}
   for(const it of L){const o=it.o;
     if(!(it.luna&&(isOnHouseStepsOrPorch(o.x,o.z)||isOnDock(o.x,o.z)||getBridgeInfo(o.x,o.z))))pushOut(o,it.r*0.8,!it.luna);
-    if((o.x!==it.ox||o.z!==it.oz)&&!standable(o.x,o.z)&&standable(it.ox,it.oz)){o.x=it.ox;o.z=it.oz;}}
+    if((o.x!==it.ox||o.z!==it.oz)&&!footOk(o,o.x,o.z)&&footOk(o,it.ox,it.oz)){o.x=it.ox;o.z=it.oz;}}
 }
 
 function lunaStartle(){if(simTime-AI.lastStartle<6||AI.eyesClosed)return;AI.lastStartle=simTime;AI.startleT=0.45;emote(caretaker.headGroup,Math.random()<0.5?'!':'note',0.85,1.4,0.55);}
@@ -5981,6 +6215,7 @@ function updateWildlifeAndVehicles(dt,time){
   for(const e of PETS)updatePet(e,dt,time);
   for(const d of DOGS)if(!d.inside)updateDog(d,dt,time);
   updateBarney(BARNEY,dt,time);
+  updateAxoloto(AXOLOTO,dt,time);
   SWING.update(dt);updateChops(dt);resolveCollisions();
   MARKET.update(dt,time);updateDecor(dt,time);
   GATE.update(dt);
@@ -8335,12 +8570,15 @@ function updateCharlie(dt,time){
   poseCharlie(dt,time);
 }
 function charlieStatus(){
-  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie')return BOAT.status();
-  if(HOLD.charlie)return 'Charlie is holding still';
-  if(CTRL.on&&FOLLOW_CHARLIE)return charlieCtrlStatus();
-  if(CH.state==='walk')return CH.speed>3.1?'Charlie is running over':'Charlie is walking over';
-  const words={wave:'waving hello',cheer:'hopping with a grin',chat:'chatting',look:'looking around the island',sit:'sitting in the sun'};
-  return 'Charlie is '+(words[CH.act]||'hanging out');
+  let line;
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie')line=BOAT.status();
+  else if(HOLD.charlie)line='Charlie is holding still';
+  else if(CTRL.on&&FOLLOW_CHARLIE)line=charlieCtrlStatus();
+  else if(CH.state==='walk')line=CH.speed>3.1?'Charlie is running over':'Charlie is walking over';
+  else{const words={wave:'waving hello',cheer:'hopping with a grin',chat:'chatting',look:'looking around the island',sit:'sitting in the sun'};
+    line='Charlie is '+(words[CH.act]||'hanging out');}
+  if(typeof AXOLOTO!=='undefined'&&AXOLOTO.swimK>0.72&&!AXOLOTO.inside)line+=AXOLOTO.sea?' · Axoloto paddles beside the skiff':' · Axoloto is swimming';
+  return line;
 }
 function charlieCtrlAction(kind){
   if(CH.mAct)return;
