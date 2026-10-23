@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v35 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v36 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 function failScene(msg){
   const loading=document.getElementById('loading');
@@ -2643,213 +2643,207 @@ const SL={
 };
 SL.y=walkHeight(SL.x,SL.z);solon.root.position.set(SL.x,SL.y,SL.z);
 
-/* ================= Charlie: fourth cast member, built from Sprites/CharlieFull.jpg =================
-   Same playable wiring as Solon (follow, Pause, controller, boat, closet tab). His island look is the
-   full-body still loaded from public/images/charlie-full.jpg (Vite base './', LUNA_ASSET_BASE on disk play). */
-function charlieAssetURL(){
-  return (window.LUNA_ASSET_BASE||'')+'images/charlie-full.jpg';
+/* ================= Charlie: fourth chibi, built to Sprites/CharlieFull.jpg =================
+   Curly dark-brown hair, freckles, a black short-sleeve shirt with gold scrolls and red roses,
+   dark jeans, and chunky white sneakers. Same body as the rest of the cast. */
+function makeCurlHairTexture(){
+  const S=256,cv=document.createElement('canvas');cv.width=cv.height=S;const c=cv.getContext('2d'),r=mulberry32(904);
+  c.fillStyle='#3a2418';c.fillRect(0,0,S,S);
+  const cols=['#2a1810','#4a2e20','#5c3a28','#6a4630','#321c12','#7a5340'];
+  for(let i=0;i<700;i++){c.fillStyle=cols[Math.floor(r()*cols.length)];c.globalAlpha=0.35+r()*0.55;
+    c.beginPath();c.arc(r()*S,r()*S,1.2+r()*3.4,0,6.2832);c.fill();}
+  c.globalAlpha=0.35;c.strokeStyle='#c4a07a';c.lineWidth=1;
+  for(let i=0;i<80;i++){c.beginPath();c.arc(r()*S,r()*S,2+r()*5,r()*3,r()*5);c.stroke();}
+  c.globalAlpha=1;
+  const t=new T.CanvasTexture(cv);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=4;return t;
 }
-function loadCharliePhotoTexture(){
-  const url=charlieAssetURL();
-  const tex=new T.TextureLoader().load(url,t=>{
-    try{
-      const img=t.image;if(!img||!img.width)return;
-      const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;
-      const c=cv.getContext('2d');c.drawImage(img,0,0);
-      const data=c.getImageData(0,0,cv.width,cv.height),d=data.data;
-      // soft cut-out of the pale blue studio backdrop so Charlie stands on the island without a box
-      for(let i=0;i<d.length;i+=4){
-        const r=d[i],g=d[i+1],b=d[i+2];
-        const pale=b>175&&r>140&&g>155&&b>=r-8&&b>=g-8&&(b-Math.min(r,g))>8;
-        if(!pale)continue;
-        const edge=clamp(((b-Math.min(r,g))-8)/70+(b-185)/55,0,1);
-        d[i+3]=Math.round(d[i+3]*(1-edge));
+function buildCurlyHair(mat){
+  const g=new T.Group();
+  const cap=new T.Mesh(new T.SphereGeometry(0.52,28,12,0,Math.PI*2,0,Math.PI*0.58),mat);
+  cap.scale.set(1.08,1.02,1.05);cap.position.set(0,0.08,-0.1);cap.castShadow=true;g.add(cap);
+  const rng=mulberry32(441);
+  for(let i=0;i<62;i++){
+    const theta=rng()*Math.PI*2,phi=Math.pow(rng(),0.55)*1.15;
+    const x=Math.sin(phi)*Math.cos(theta)*0.5,y=Math.cos(phi)*0.48+0.12,z=Math.sin(phi)*Math.sin(theta)*0.5-0.04;
+    if(z>0.08&&y<0.28)continue;
+    const s=0.068+rng()*0.042;
+    const curl=new T.Mesh(new T.SphereGeometry(s,8,6),mat);curl.position.set(x,y,z);curl.scale.set(1,0.86,0.94);curl.castShadow=true;g.add(curl);
+  }
+  return g;
+}
+function createCharlieShirtTexture(){
+  const S=512,cv=document.createElement('canvas');cv.width=cv.height=S;const c=cv.getContext('2d');
+  c.fillStyle='#14110e';c.fillRect(0,0,S,S);
+  function scroll(x,y,s,rot){
+    c.save();c.translate(x,y);c.rotate(rot);
+    c.strokeStyle='#c9962a';c.lineWidth=16*s;c.lineCap='round';
+    c.beginPath();c.arc(-6*s,0,34*s,0.35,Math.PI*1.65);c.stroke();
+    c.beginPath();c.arc(22*s,12*s,22*s,Math.PI*0.85,Math.PI*2.35);c.stroke();
+    c.strokeStyle='#f3d56a';c.lineWidth=6*s;
+    c.beginPath();c.arc(-6*s,0,22*s,0.55,Math.PI*1.45);c.stroke();
+    c.beginPath();c.arc(22*s,12*s,12*s,Math.PI,Math.PI*2.15);c.stroke();
+    c.restore();
+  }
+  function rose(x,y,r){
+    c.fillStyle='#7a1524';
+    for(let i=0;i<6;i++){const a=i/6*6.2832;c.beginPath();c.ellipse(x+Math.cos(a)*r*0.46,y+Math.sin(a)*r*0.46,r*0.58,r*0.4,a,0,6.2832);c.fill();}
+    c.fillStyle='#d23b4e';c.beginPath();c.arc(x,y,r*0.4,0,6.2832);c.fill();
+    c.fillStyle='#f2d56a';c.beginPath();c.arc(x,y,r*0.14,0,6.2832);c.fill();
+  }
+  for(const[x,y,s,rot]of[[80,80,1.05,0.4],[210,70,0.95,1.2],[340,90,1.1,-0.3],[470,75,0.9,0.9],[60,200,0.9,2.1],[190,190,1.15,0.2],[330,210,1,1.7],[460,200,0.95,-0.6],[90,330,1.05,0.8],[230,320,0.9,2.4],[360,340,1.1,0.5],[490,310,0.85,1.4],[140,450,1,1.1],[300,460,1.05,-0.4],[450,440,0.9,0.7]])scroll(x,y,s,rot);
+  for(const[x,y,r]of[[150,130,34],[290,150,38],[430,120,30],[100,250,32],[250,270,36],[400,250,32],[70,400,28],[200,390,34],[340,410,30],[470,380,26],[160,480,24]])rose(x,y,r);
+  c.fillStyle='#0e0c0a';c.fillRect(0,40,18,440);
+  c.fillStyle='#f4f1ea';
+  for(let y=88;y<440;y+=56){c.beginPath();c.arc(9,y,6.5,0,6.2832);c.fill();c.strokeStyle='#c9a24a';c.lineWidth=1.6;c.stroke();}
+  const t=new T.CanvasTexture(cv);t.anisotropy=4;t.wrapS=T.ClampToEdgeWrapping;t.wrapT=T.ClampToEdgeWrapping;return t;
+}
+function createCharlieFaceTexture(){
+  const cv=document.createElement('canvas');cv.width=512;cv.height=512;const ctx=cv.getContext('2d');const tex=new T.CanvasTexture(cv);
+  const SKIN='#e7b08a';
+  const ell=(x,y,rx,ry)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();};
+  function drawFace(mode){
+    const blink=(mode===true||mode==='blink'),happy=(mode==='happy'),wink=(mode==='wink');
+    ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=SKIN;ctx.fillRect(0,0,512,512);
+    ctx.setTransform(1,0,0,2,0,-256);
+    for(const sx of[-1,1]){const cx=256+sx*70,cy=278,grd=ctx.createRadialGradient(cx,cy,2,cx,cy,30);
+      grd.addColorStop(0,'rgba(214,96,78,0.42)');grd.addColorStop(1,'rgba(214,96,78,0)');ctx.fillStyle=grd;ell(cx,cy,30,26);}
+    ctx.fillStyle='#c47852';
+    for(const sx of[-1,1])for(const[fx,fy,r]of[[28,258,2.2],[38,254,2.4],[48,260,2.1],[34,266,2.2],[44,268,2],[54,262,2.1],[22,262,1.8]])ell(256+sx*fx,fy,r,r);
+    for(const[nx,ny]of[[-6,256],[0,254],[7,257],[-3,260],[4,261]])ell(256+nx,ny,1.7,1.7);
+    ctx.strokeStyle='#4a2c1c';ctx.lineWidth=5;ctx.lineCap='round';
+    for(const sx of[-1,1]){const ex=256+sx*58;ctx.beginPath();ctx.moveTo(ex-sx*22,208);ctx.quadraticCurveTo(ex,200,ex+sx*22,210);ctx.stroke();}
+    for(const sx of[-1,1]){
+      const ex=256+sx*56,ey=242,shut=blink||(wink&&sx>0);
+      if(shut){
+        ctx.strokeStyle='#241c18';ctx.lineWidth=4.4;
+        ctx.beginPath();ctx.ellipse(ex,ey+(happy?-2:4),22,happy?13:11,0,happy?1.1*Math.PI:0.12*Math.PI,happy?1.9*Math.PI:0.88*Math.PI);ctx.stroke();
+      }else{
+        ctx.fillStyle='#fffaf6';ell(ex,ey,28,32);
+        ctx.fillStyle='#8a5a2a';ell(ex,ey+2,20,24);
+        ctx.fillStyle='#4a2a12';ell(ex,ey+3,13,16);
+        ctx.fillStyle='#1a100c';ell(ex,ey+4,7.5,9);
+        ctx.fillStyle='#ffffff';ell(ex-sx*8,ey-10,6,6.4);ell(ex+sx*4,ey+12,2.4,2.4);
+        ctx.strokeStyle='#3a2418';ctx.lineWidth=3.6;ctx.beginPath();ctx.ellipse(ex,ey,28.5,32.5,0,Math.PI*1.05,Math.PI*1.95);ctx.stroke();
       }
-      c.putImageData(data,0,0);
-      t.image=cv;t.format=T.RGBAFormat;t.needsUpdate=true;
-    }catch(e){}
-  });
-  tex.minFilter=T.LinearFilter;tex.magFilter=T.LinearFilter;tex.generateMipmaps=true;
-  tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
-  return tex;
+    }
+    const mY=happy?268:274,mW=happy?34:26,mH=happy?22:16;
+    ctx.beginPath();ctx.moveTo(256-mW,mY);ctx.quadraticCurveTo(256,mY+4,256+mW,mY);ctx.quadraticCurveTo(256+mW*0.62,mY+mH+4,256,mY+mH);ctx.quadraticCurveTo(256-mW*0.62,mY+mH+4,256-mW,mY);ctx.closePath();
+    ctx.fillStyle='#6a241e';ctx.fill();ctx.save();ctx.clip();
+    ctx.fillStyle='#fff8f4';ctx.fillRect(256-mW*0.72,mY,mW*1.44,6);
+    ctx.fillStyle='#e07068';ell(256,mY+mH-1,mW*0.28,5);
+    ctx.restore();
+    ctx.setTransform(1,0,0,1,0,0);tex.needsUpdate=true;
+  }
+  drawFace('open');return {tex,drawFace};
 }
 function buildCharlie(){
+  const HIP=CHIBI.HIP,HEAD_S=CHIBI.HEAD_S;
   const root=new T.Group(),bodyPivot=new T.Group();root.add(bodyPivot);
+  const skinMat=new T.MeshStandardMaterial({color:'#e7b08a',roughness:0.58});
+  const hairTex=makeCurlHairTexture();
+  const hairMat=new T.MeshStandardMaterial({color:'#ffffff',map:hairTex,bumpMap:hairTex,bumpScale:0.02,roughness:0.72});
+  const noseMat=new T.MeshStandardMaterial({color:'#d99268',roughness:0.55});
+  const shirtTex=createCharlieShirtTexture();
+  const shirtMat=new T.MeshStandardMaterial({map:shirtTex,roughness:0.72});
+  const collarMat=new T.MeshStandardMaterial({color:'#1a1612',roughness:0.7});
+  const jeanMat=new T.MeshStandardMaterial({color:'#243e66',roughness:0.86,map:TEX.fabric});
+  const jeanDark=new T.MeshStandardMaterial({color:'#1a3054',roughness:0.88,map:TEX.fabric});
+  const shoeWhite=new T.MeshStandardMaterial({color:'#f4f4f2',roughness:0.42});
+  const shoeBlack=new T.MeshStandardMaterial({color:'#1c1c1e',roughness:0.5});
+  const shoeGold=new T.MeshStandardMaterial({color:'#e2b23a',roughness:0.35,metalness:0.45});
+  const faceObj=createCharlieFaceTexture();
+  const headMat=new T.MeshStandardMaterial({map:faceObj.tex,roughness:0.6});
+  cacheFaceSwaps(faceObj,headMat,m=>(m===true||m==='blink')?'blink':(m==='happy'||m==='wink')?m:'open');
   const shCv=document.createElement('canvas');shCv.width=shCv.height=128;const sh=shCv.getContext('2d'),sg=sh.createRadialGradient(64,64,6,64,64,58);
   sg.addColorStop(0,'rgba(15,20,35,0.48)');sg.addColorStop(1,'rgba(15,20,35,0)');sh.fillStyle=sg;sh.fillRect(0,0,128,128);
-  const shadowDisc=new T.Mesh(new T.PlaneGeometry(1.45,1.45),new T.MeshBasicMaterial({map:new T.CanvasTexture(shCv),transparent:true,depthWrite:false}));
+  const shadowDisc=new T.Mesh(new T.PlaneGeometry(1.55,1.55),new T.MeshBasicMaterial({map:new T.CanvasTexture(shCv),transparent:true,depthWrite:false}));
   shadowDisc.rotation.x=-Math.PI/2;shadowDisc.position.y=0.03;root.add(shadowDisc);
-  const photoTex=loadCharliePhotoTexture();
-  // still is 1328x1904; keep island height near the other chibis (~1.75)
-  const H=1.78,W=H*(1328/1904);
-  const mat=new T.MeshStandardMaterial({map:photoTex,transparent:true,alphaTest:0.12,roughness:0.72,metalness:0.02,side:T.DoubleSide,depthWrite:true});
-  const plane=new T.Mesh(new T.PlaneGeometry(W,H),mat);plane.position.y=H*0.5;plane.castShadow=true;plane.receiveShadow=false;bodyPivot.add(plane);
-  const headGroup=new T.Group();headGroup.position.set(0,H*0.82,0.02);bodyPivot.add(headGroup);
-  root.rotation.order='YXZ';root.userData.noWx=true;scene.add(root);
-  return {root,bodyPivot,headGroup,shadowDisc,plane,photoTex,H,mats:{mat}};
+  const headGroup=new T.Group();headGroup.position.set(0,HIP+CHIBI.HEAD_LIFT,0);headGroup.scale.setScalar(HEAD_S);bodyPivot.add(headGroup);
+  const headGeo=new T.SphereGeometry(0.5,36,28);headGeo.scale(1.02,0.98,1.06);headGeo.rotateY(-Math.PI/2);
+  const headMesh=new T.Mesh(headGeo,headMat);headMesh.castShadow=true;headGroup.add(headMesh);
+  const nose=new T.Mesh(new T.SphereGeometry(0.038,12,10),noseMat);nose.scale.set(1.2,0.72,0.85);nose.position.set(0,-0.02,0.5);headGroup.add(nose);
+  const hair=buildCurlyHair(hairMat);hair.position.set(0,0.02,0);headGroup.add(hair);
+  const neck=new T.Mesh(new T.CylinderGeometry(0.1,0.12,0.12,12),skinMat);neck.position.set(0,HIP+0.48,0);bodyPivot.add(neck);
+  const shirtMesh=new T.Mesh(new T.CylinderGeometry(0.26,0.32,0.4,24),shirtMat);shirtMesh.scale.set(1.16,1,0.92);shirtMesh.position.set(0,HIP+0.26,0);shirtMesh.castShadow=true;bodyPivot.add(shirtMesh);
+  const collar=new T.Mesh(new T.TorusGeometry(0.145,0.02,8,20),collarMat);collar.rotation.x=Math.PI/2;collar.position.set(0,HIP+0.45,0.01);bodyPivot.add(collar);
+  const placket=new T.Mesh(new T.BoxGeometry(0.04,0.34,0.02),collarMat);placket.position.set(0,HIP+0.26,0.3);bodyPivot.add(placket);
+  const btnMat=mStd('#f4f1ea',{roughness:0.4});
+  for(let i=0;i<4;i++){const b=new T.Mesh(new T.SphereGeometry(0.016,8,6),btnMat);b.position.set(0,HIP+0.38-i*0.08,0.318);bodyPivot.add(b);}
+  function makeArm(side){
+    const g=new T.Group();g.position.set(side*0.38,HIP+0.4,0);
+    const sleeve=new T.Mesh(new T.CylinderGeometry(0.105,0.11,0.14,14),shirtMat);sleeve.position.set(side*0.04,-0.06,0);sleeve.rotation.z=side*0.28;sleeve.castShadow=true;g.add(sleeve);
+    const cuff=new T.Mesh(new T.CylinderGeometry(0.09,0.09,0.03,12),collarMat);cuff.position.set(side*0.07,-0.13,0);g.add(cuff);
+    const arm=new T.Mesh(new T.CylinderGeometry(0.064,0.056,0.26,12),skinMat);arm.position.set(side*0.1,-0.28,0);arm.rotation.z=side*0.06;arm.castShadow=true;g.add(arm);
+    const hand=new T.Mesh(new T.SphereGeometry(0.092,14,12),skinMat);hand.position.set(side*0.12,-0.44,0.02);g.add(hand);
+    bodyPivot.add(g);return g;
+  }
+  const leftArm=makeArm(-1),rightArm=makeArm(1);
+  const pelvis=new T.Mesh(new T.CylinderGeometry(0.3,0.31,0.12,18),jeanMat);pelvis.scale.set(1.08,1,0.86);pelvis.position.set(0,HIP+0.02,0);bodyPivot.add(pelvis);
+  function makeLeg(side){
+    const g=new T.Group();g.position.set(side*0.14,HIP,0);
+    const shortLeg=new T.Mesh(new T.CylinderGeometry(0.14,0.145,0.22,16),jeanMat);shortLeg.position.set(0,-0.1,0);shortLeg.visible=false;g.add(shortLeg);
+    const cuff=new T.Mesh(new T.CylinderGeometry(0.15,0.15,0.04,16),jeanDark);cuff.position.set(0,-0.21,0);cuff.visible=false;g.add(cuff);
+    const pant=new T.Mesh(new T.CylinderGeometry(0.135,0.078,0.48,16),jeanMat);pant.position.set(0,-0.26,0);pant.castShadow=true;g.add(pant);
+    const hem=new T.Mesh(new T.CylinderGeometry(0.082,0.086,0.04,14),jeanDark);hem.position.set(0,-0.48,0.01);g.add(hem);
+    const shoe=new T.Group();shoe.position.set(0,-0.52,0.05);
+    const sole=new T.Mesh(new T.BoxGeometry(0.22,0.055,0.36),shoeBlack);sole.position.set(0,-0.03,0.02);shoe.add(sole);
+    const mid=new T.Mesh(new T.BoxGeometry(0.2,0.035,0.3),shoeWhite);mid.position.set(0,0.012,0.01);shoe.add(mid);
+    const upper=new T.Mesh(new T.BoxGeometry(0.17,0.07,0.16),shoeWhite);upper.position.set(0,0.045,-0.02);shoe.add(upper);
+    const toe=new T.Mesh(new T.SphereGeometry(0.09,14,10),shoeWhite);toe.scale.set(1.08,0.5,0.78);toe.position.set(0,0.02,0.12);shoe.add(toe);
+    const heel=new T.Mesh(new T.BoxGeometry(0.16,0.04,0.05),shoeBlack);heel.position.set(0,0.04,-0.12);shoe.add(heel);
+    for(let k=0;k<3;k++){const eye=new T.Mesh(new T.SphereGeometry(0.012,6,5),shoeGold);eye.position.set(0,0.07,-0.01+k*0.028);shoe.add(eye);}
+    g.add(shoe);bodyPivot.add(g);return {leg:g,shoe,shortLeg,cuff,pant,hem};
+  }
+  const leftLeg=makeLeg(-1),rightLeg=makeLeg(1);
+  bodyPivot.scale.setScalar(1);root.rotation.order='YXZ';root.userData.noWx=true;scene.add(root);
+  return {root,bodyPivot,headGroup,leftArm,rightArm,leftLeg,rightLeg,shadowDisc,faceObj,HIP,hair,nose,
+    signatureShirt:shirtMat.map,
+    mats:{shirtMat,shortsMat:jeanMat,shortsCuffMat:jeanDark,skinMat,shoeGreen:shoeWhite,shoeWhite,shoeBlack,shoeGold,collarMat}};
 }
 const charlie=buildCharlie();
-const _chSpawn=snapWalkable(-14.6,22.4);
+const CHARLIE_STYLE={outfit:'charlie',mask:'none'};
+try{const cs=JSON.parse(localStorage.getItem('charlie-closet-v1')||'null');if(cs){if(cs.outfit)CHARLIE_STYLE.outfit=cs.outfit;if(cs.mask)CHARLIE_STYLE.mask=cs.mask;}}catch(e){}
+function applyCharlieCloset(fromUser){
+  const M=charlie.mats,W=charlie.wardrobe;
+  const known=typeof OUTFITS!=='undefined'&&OUTFITS.some(o=>o.id===CHARLIE_STYLE.outfit&&!o.hidden&&(!o.price||owns(o.id)));
+  if(CHARLIE_STYLE.outfit!=='charlie'&&!known)CHARLIE_STYLE.outfit='charlie';
+  const sig=CHARLIE_STYLE.outfit==='charlie';
+  const o=sig?null:OUTFITS.find(x=>x.id===CHARLIE_STYLE.outfit);
+  const masked=CHARLIE_STYLE.mask!=='none'&&!!W;
+  const legs=[charlie.leftLeg,charlie.rightLeg];
+  if(sig||!W){
+    M.shirtMat.map=charlie.signatureShirt;M.shirtMat.color.set('#ffffff');M.shirtMat.needsUpdate=true;
+    M.shortsMat.map=TEX.fabric;M.shortsMat.color.set('#243e66');M.shortsMat.needsUpdate=true;
+    M.shortsCuffMat.color.set('#1a3054');
+    M.shoeGreen.color.set('#f4f4f2');M.shoeWhite.color.set('#f7f7f4');M.shoeBlack.color.set('#1c1c1e');
+    for(const L of legs){L.shortLeg.visible=false;L.cuff.visible=false;L.pant.visible=true;if(L.hem)L.hem.visible=true;L.pant.material=M.shortsMat;}
+    if(W){W.skirt.visible=false;for(const k in W.ACC)W.ACC[k].visible=false;for(const k in W.maskGroups)W.maskGroups[k].visible=masked&&k===CHARLIE_STYLE.mask;}
+    charlie.nose.visible=!masked;
+  }else{
+    M.shirtMat.map=shirtTexture(o);M.shirtMat.color.set('#ffffff');M.shirtMat.needsUpdate=true;
+    M.shortsMat.map=null;M.shortsMat.color.set(o.bcol||'#243e66');M.shortsMat.needsUpdate=true;
+    M.shortsCuffMat.color.set(o.bcol||'#1a3054');
+    M.shoeGreen.color.set(o.shoe[0]);M.shoeWhite.color.set(o.shoe[1]);M.shoeBlack.color.set(o.shoe[0]);
+    for(const L of legs){L.shortLeg.visible=o.bottom!=='skirt';L.cuff.visible=o.bottom==='shorts';L.pant.visible=o.bottom==='pants';if(L.hem)L.hem.visible=o.bottom==='pants';L.pant.material=M.shortsMat;L.shortLeg.material=o.bottom==='skirt'?M.skinMat:M.shortsMat;}
+    W.skirt.visible=o.bottom==='skirt';
+    for(const k in W.ACC)W.ACC[k].visible=o.acc===k&&!(masked&&k!=='bandana');
+    if(o.accCol)W.accMat.color.set(o.accCol);
+    for(const k in W.maskGroups)W.maskGroups[k].visible=k===CHARLIE_STYLE.mask;
+    charlie.nose.visible=!masked;
+  }
+  charlie.hair.visible=true;
+  if(fromUser){CH.twirlT=0.7;emote(charlie.headGroup,'sparkle',0.9);try{localStorage.setItem('charlie-closet-v1',JSON.stringify(CHARLIE_STYLE));}catch(e){}}
+}
+const _chSpawn=snapWalkable(23.4,9.6);
 const CH={
-  x:_chSpawn[0],z:_chSpawn[1],y:0,yaw:0.55,pitch:0,speed:0,walkSpeed:3.0,
-  state:'idle',act:null,timer:1.8,actT:0,actDur:3,
+  x:_chSpawn[0],z:_chSpawn[1],y:0,yaw:0.35,pitch:0,speed:0,walkSpeed:2.75,
+  state:'act',act:'wave',timer:3.2,actT:0,actDur:3.2,
   path:[],wp:0,walkPhase:0,blinkTimer:2.4,isBlinking:false,faceMode:'open',
-  sitK:0,squatK:0,jumpT:0,twirlT:0,emoteT:0,spot:null,inside:false,ix:1.2,iz:1.8,
+  sitK:0,squatK:0,jumpT:0,twirlT:0,emoteT:0,spot:null,inside:false,ix:-0.2,iz:2.6,
   stuckT:0,stuckN:0,checkX:_chSpawn[0],checkZ:_chSpawn[1],mAct:null
 };
 CH.y=walkHeight(CH.x,CH.z);charlie.root.position.set(CH.x,CH.y,CH.z);
-
-function poseCharlie(dt,time){
-  const M=charlie,acting=CH.state==='act',act=acting?CH.act:null;
-  const sitting=act==='sit';
-  CH.sitK=lerp(CH.sitK,sitting?1:0,Math.min(1,dt*5));
-  CH.twirlT=Math.max(0,CH.twirlT-dt);
-  const tw=CH.twirlT>0?smooth(0,1,1-CH.twirlT/0.7)*Math.PI*2:0;
-  let hop=0;
-  if(act==='cheer'||act==='wave')hop=Math.abs(Math.sin(time*6.0))*0.12;
-  if(CH.jumpT>0)hop+=Math.sin((1-CH.jumpT/0.62)*Math.PI)*0.55;
-  const gy=CH.inside?0:(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'?BOAT.deckY():walkHeight(CH.x,CH.z));
-  CH.y=lerp(CH.y,gy,Math.min(1,dt*22));
-  const bob=CH.speed>0.15?Math.abs(Math.sin(CH.walkPhase))*0.04:0;
-  M.root.position.set(CH.x,CH.y-CH.sitK*0.22+hop+bob,CH.z);
-  M.root.rotation.y=CH.yaw+tw;
-  const mv=clamp(CH.speed/3.2,0,1);
-  if(mv>0.03)CH.walkPhase+=dt*CH.speed*3.7;
-  M.bodyPivot.scale.set(1,1-CH.sitK*0.12,1);
-  M.shadowDisc.scale.setScalar(1-CH.sitK*0.15);
-}
-
-function beginCharlieAct(act){
-  CH.state='act';CH.act=act;CH.actT=0;CH.actDur=act==='wave'?2.2:act==='cheer'?2.4:act==='sit'?5:act==='chat'?4.5:3.2;
-  CH.timer=CH.actDur;
-  if(act==='wave'||act==='cheer')emote(charlie.headGroup,act==='cheer'?'sparkle':'note',0.9);
-  if(act==='chat')emote(charlie.headGroup,'heart',0.85);
-}
-function charlieFinish(){CH.state='idle';CH.act=null;CH.spot=null;CH.path=[];CH.timer=rnd(0.6,1.8);CH.speed=0;}
-function chooseCharliePlan(){
-  if(HOLD.charlie||(CTRL.on&&FOLLOW_CHARLIE))return;
-  const pals=[];
-  if(!AI.inside)pals.push({o:AI,who:'luna'});
-  if(!LM.inside)pals.push({o:LM,who:'moon'});
-  if(!SL.inside)pals.push({o:SL,who:'solon'});
-  pals.sort((a,b)=>Math.hypot(a.o.x-CH.x,a.o.z-CH.z)-Math.hypot(b.o.x-CH.x,b.o.z-CH.z));
-  let spot=null;
-  if(pals[0]&&Math.hypot(pals[0].o.x-CH.x,pals[0].o.z-CH.z)<28&&Math.random()<0.45){
-    const p=pals[0],s=snapWalkable(p.o.x+rnd(-1.6,1.6),p.o.z+rnd(-1.6,1.6));
-    spot={x:s[0],z:s[1],look:[p.o.x,p.o.z],act:Math.random()<0.5?'chat':'wave',who:p.who};
-  }
-  if(!spot){
-    const poi=pick([POI.yard,POI.pier,POI.market,POI.shrine,POI.houseSteps,POI.veranda]);
-    const s=snapWalkable(poi.x+rnd(-1.2,1.2),poi.z+rnd(-1.2,1.2));
-    spot={x:s[0],z:s[1],look:poi.look,act:pick(['sit','wave','cheer','hips'])};
-  }
-  CH.spot=spot;CH.walkSpeed=2.95;
-  CH.path=planPath(CH.x,CH.z,spot.x,spot.z);CH.wp=0;CH.state='walk';CH.timer=28;
-  CH.stuckT=0;CH.stuckN=0;CH.checkX=CH.x;CH.checkZ=CH.z;
-}
-function charlieStuckCheck(dt){
-  CH.stuckT=(CH.stuckT||0)+dt;if(CH.stuckT<1.6)return;CH.stuckT=0;
-  if(Math.hypot(CH.x-(CH.checkX||0),CH.z-(CH.checkZ||0))<0.3){CH.stuckN=(CH.stuckN||0)+1;
-    if(CH.stuckN<=2&&CH.spot){CH.path=planPath(CH.x,CH.z,CH.spot.x,CH.spot.z);CH.wp=0;}
-    else{const s=snapWalkable(CH.x,CH.z);CH.x=s[0];CH.z=s[1];charlieFinish();emote(charlie.headGroup,'?',0.9,1.3,0.55);}}
-  else CH.stuckN=0;
-  CH.checkX=CH.x;CH.checkZ=CH.z;
-}
-function updateCharlie(dt,time){
-  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'){poseCharlie(dt,time);return;}
-  CH.jumpT=Math.max(0,(CH.jumpT||0)-dt);
-  if(INSIDE.on){
-    if(!CH.inside){CH.inside=true;scene.remove(charlie.root);INSIDE.scene.add(charlie.root);CH.ix=0.9;CH.iz=1.6;CH.yaw=0.2;CH.speed=0;charlieFinish();CH.spot={x:CH.ix,z:CH.iz,act:'sit'};beginCharlieAct('sit');}
-    if(HOLD.charlie){CH.speed=0;poseCharlie(dt,time);return;}
-    CH.timer-=dt;if(CH.timer<=0)beginCharlieAct(pick(['sit','wave','cheer']));
-    const svX=CH.x,svZ=CH.z;CH.x=CH.ix;CH.z=CH.iz;poseCharlie(dt,time);CH.x=svX;CH.z=svZ;return;
-  }else if(CH.inside){
-    CH.inside=false;INSIDE.scene.remove(charlie.root);scene.add(charlie.root);
-    const s=snapWalkable(POI.houseSteps.x-1.4,POI.houseSteps.z+1.4);CH.x=s[0];CH.z=s[1];CH.state='idle';CH.timer=0.8;CH.spot=null;
-  }
-  if(HOLD.charlie){
-    CH.speed=lerp(CH.speed,0,Math.min(1,dt*12));
-    if(CH.state==='walk'){CH.state='idle';CH.path=[];}
-    poseCharlie(dt,time);return;
-  }
-  if(CTRL.on&&FOLLOW_CHARLIE){charlieCtrlUpdate(dt,time);return;}
-  if(CTRL.charlieStarted){CTRL.charlieStarted=false;CH.mAct=null;CH.state='idle';CH.timer=0.5;}
-  CH.timer-=dt;
-  if(CH.state==='idle'){
-    CH.speed=lerp(CH.speed,0,Math.min(1,dt*10));
-    if(CH.timer<=0)chooseCharliePlan();
-  }else if(CH.state==='walk'){
-    if(!CH.path||CH.wp>=CH.path.length||CH.timer<=0){
-      if(CH.spot&&CH.spot.look)CH.yaw=Math.atan2(CH.spot.look[0]-CH.x,CH.spot.look[1]-CH.z);
-      beginCharlieAct(CH.spot?CH.spot.act:'wave');
-    }else{
-      const[wx,wz]=CH.path[CH.wp],dx=wx-CH.x,dz=wz-CH.z,d=Math.hypot(dx,dz),last=CH.wp===CH.path.length-1;
-      if(d<(last?0.35:0.65))CH.wp++;
-      else{
-        charlieStuckCheck(dt);
-        const diff=normalizeAngle(Math.atan2(dx,dz)-CH.yaw);
-        CH.yaw+=diff*Math.min(1,dt*8);
-        const sp=CH.walkSpeed*clamp(1-Math.abs(diff)/2.4,0.35,1);
-        CH.speed=lerp(CH.speed,sp,Math.min(1,dt*7));
-        const nx=CH.x+Math.sin(CH.yaw)*CH.speed*dt,nz=CH.z+Math.cos(CH.yaw)*CH.speed*dt;
-        if(isPointWalkable(nx,nz,0.22)){CH.x=nx;CH.z=nz;}else{CH.x+=dx/d*CH.speed*dt;CH.z+=dz/d*CH.speed*dt;}
-      }
-    }
-  }else if(CH.state==='act'){
-    CH.speed=lerp(CH.speed,0,Math.min(1,dt*10));
-    CH.actT+=dt;
-    const sp=CH.spot;
-    if(CH.act==='chat'&&sp&&sp.look)CH.yaw+=normalizeAngle(Math.atan2(sp.look[0]-CH.x,sp.look[1]-CH.z)-CH.yaw)*Math.min(1,dt*5);
-    if(CH.timer<=0){charlieFinish();}
-  }
-  poseCharlie(dt,time);
-}
-function charlieStatus(){
-  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie')return BOAT.status();
-  if(HOLD.charlie)return 'Charlie is holding still';
-  if(CTRL.on&&FOLLOW_CHARLIE)return charlieCtrlStatus();
-  const sp=CH.spot;
-  if(CH.state==='walk')return 'Charlie is strolling around the island';
-  if(CH.state==='act'){
-    if(CH.act==='chat')return 'Charlie is chatting with '+(sp&&sp.who==='moon'?'Lady Moon':sp&&sp.who==='solon'?'Solon':'Luna');
-    if(CH.act==='wave')return 'Charlie waves hello';
-    if(CH.act==='cheer')return 'Charlie hops with a big smile';
-    if(CH.act==='sit')return 'Charlie is taking a breather';
-    if(CH.act==='hips')return 'Charlie looks out over the yard';
-  }
-  return 'Charlie is deciding where to wander next';
-}
-function charlieCtrlAction(kind){
-  if(CH.mAct)return;
-  if(kind==='jump'){if(!(CH.jumpT>0))CH.jumpT=0.62;return;}
-  if(kind==='wave'){CH.mAct={act:'wave',t:2};emote(charlie.headGroup,'note',0.9);return;}
-  if(kind==='pet'){let best=null,bd=2.8;for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;const d=Math.hypot(e.x-CH.x,e.z-CH.z);if(d<bd){bd=d;best=e;}}
-    if(!best){toast('Walk Charlie up to a pet to give them a cuddle');return;}
-    best.prevState=best.state;best.state='petted';best.petBy='charlie';best.lastPet=simTime;best.lonely=0;CH.mAct={act:'pet',t:2.6,ent:best,em:0};return;}
-  if(kind==='throw'){let dog=null,dd=12;for(const d of DOGS){const k=Math.hypot(d.x-CH.x,d.z-CH.z);if(d.state==='follow'&&k<dd){dd=k;dog=d;}}
-    if(!dog){toast('Bring a pup over so Charlie can start zoomies');return;}CH.mAct={act:'cheer',t:5};startZoomies(dog,CH.x,CH.z,5);}
-}
-function charlieCtrlUpdate(dt,time){
-  if(!CTRL.charlieStarted){charlieFinish();CH.spot=null;CH.state='idle';CTRL.charlieStarted=true;}
-  const[x,y,m]=ctrlInput();
-  if(CH.mAct){const a=CH.mAct;a.t-=dt;CH.speed=lerp(CH.speed,0,Math.min(1,dt*10));CH.state='act';CH.act=a.act;CH.actT=(CH.actT||0)+dt;
-    if(a.act==='pet'&&a.ent){const e=a.ent;CH.yaw+=normalizeAngle(Math.atan2(e.x-CH.x,e.z-CH.z)-CH.yaw)*Math.min(1,dt*8);a.em-=dt;if(a.em<=0){a.em=0.8;emote(e.root,'heart',e.kind==='bunny'?0.65:e.kind==='dog'?0.95:0.8);}}
-    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):'idle';e.timer=rnd(3,6);e.petBy=null;}
-      CH.mAct=null;CH.state='idle';CH.act=null;}}
-  else{CH.actT=0;let target=0;
-    if(m>0){const th=STEER.th,fx=-Math.sin(th),fz=-Math.cos(th),rx=Math.cos(th),rz=-Math.sin(th),dx=fx*y+rx*x,dz=fz*y+rz*x;
-      CH.yaw+=normalizeAngle(Math.atan2(dx,dz)-CH.yaw)*Math.min(1,dt*10);target=(m>0.92?4.5:2.85)*Math.min(1,m/0.92);
-      if(!FREE.on&&!DIRECTOR.on&&Math.abs(x)<0.45&&y>0.3)tTheta+=normalizeAngle(CH.yaw+Math.PI-tTheta)*dt*0.7;}
-    CH.speed=lerp(CH.speed,target,Math.min(1,dt*(target>CH.speed?6:10)));
-    if(CH.speed>0.02){const st=CH.speed*dt,nx=CH.x+Math.sin(CH.yaw)*st,nz=CH.z+Math.cos(CH.yaw)*st;
-      if(standable(nx,nz)){CH.x=nx;CH.z=nz;}else{let ok=false;
-        for(const o of[0.5,-0.5,1,-1,1.4,-1.4]){const yy=CH.yaw+o,sx=CH.x+Math.sin(yy)*st*0.8,sz=CH.z+Math.cos(yy)*st*0.8;if(standable(sx,sz)){CH.x=sx;CH.z=sz;ok=true;break;}}
-        if(!ok)CH.speed=Math.min(CH.speed,0.2);}}
-    CH.state=CH.speed>0.15?'walk':'idle';CH.act=null;CH.path=[];CH.spot=null;}
-  poseCharlie(dt,time);
-}
-function charlieCtrlStatus(){const a=CH.mAct;if(a&&a.act==='pet')return 'Charlie is cuddling '+a.ent.name;if(a&&a.act==='wave')return 'Charlie waves hello';if(a&&a.act==='cheer')return 'Zoomies with Charlie!';
-  return CH.state==='walk'?(CTRL.m>0.92?'Charlie is running':'You are walking Charlie around'):'Charlie is waiting for you';}
+CH.faceMode='happy';charlie.faceObj.drawFace('happy');
 
 function poseSolon(dt,time){
   const M=solon,acting=SL.state==='act',act=acting?SL.act:null;
@@ -2906,6 +2900,57 @@ function poseSolon(dt,time){
   const nearL=Math.hypot(AI.x-SL.x,AI.z-SL.z),nearM=LM.inside?99:Math.hypot(LM.x-SL.x,LM.z-SL.z);
   if(act!=='scout'&&act!=='sit'&&nearL<5)hy=clamp(normalizeAngle(Math.atan2(AI.x-SL.x,AI.z-SL.z)-SL.yaw),-0.9,0.9);
   else if(act!=='scout'&&nearM<5)hy=clamp(normalizeAngle(Math.atan2(LM.x-SL.x,LM.z-SL.z)-SL.yaw),-0.9,0.9);
+  M.headGroup.rotation.y=lerp(M.headGroup.rotation.y,hy,Math.min(1,dt*6));
+  M.headGroup.rotation.x=lerp(M.headGroup.rotation.x,hp,Math.min(1,dt*6));
+  M.headGroup.rotation.z=lerp(M.headGroup.rotation.z,hz,Math.min(1,dt*6));
+}
+function poseCharlie(dt,time){
+  const M=charlie,acting=CH.state==='act',act=acting?CH.act:null;
+  const sitting=act==='sit';
+  CH.sitK=lerp(CH.sitK,sitting?1:0,Math.min(1,dt*5));
+  CH.twirlT=Math.max(0,CH.twirlT-dt);
+  const tw=CH.twirlT>0?smooth(0,1,1-CH.twirlT/0.7)*Math.PI*2:0;
+  let hop=0;
+  if(act==='cheer')hop=Math.abs(Math.sin(time*6.2))*0.28;
+  if(CH.jumpT>0)hop+=Math.sin((1-CH.jumpT/0.62)*Math.PI)*0.72;
+  const gy=CH.inside?0:(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'?BOAT.deckY():walkHeight(CH.x,CH.z));
+  CH.y=lerp(CH.y,gy,Math.min(1,dt*22));
+  M.root.position.set(CH.x,CH.y-CH.sitK*CHIBI.SIT+hop,CH.z);
+  M.root.rotation.y=CH.yaw+tw;
+  const mv=clamp(CH.speed/3.2,0,1),running=CH.speed>3.2;
+  if(mv>0.03)CH.walkPhase+=dt*CH.speed*(running?4.1:3.5);
+  const s=Math.sin(CH.walkPhase),c=Math.cos(CH.walkPhase),H=M.HIP;
+  let lLegX=s*(running?0.8:0.58)*mv,rLegX=-s*(running?0.8:0.58)*mv;
+  let lLegZ=0,rLegZ=0,lLegY=H+Math.max(0,-c)*0.1*mv,rLegY=H+Math.max(0,c)*0.1*mv;
+  const walkLX=lLegX,walkRX=rLegX;
+  if(CH.sitK>0.05){lLegX=lerp(lLegX,-1.25,CH.sitK);rLegX=lerp(rLegX,-1.25,CH.sitK);lLegZ=lerp(0,0.28,CH.sitK);rLegZ=lerp(0,-0.28,CH.sitK);}
+  if(act==='cheer'){lLegX=-0.15;rLegX=-0.7-Math.abs(Math.sin(time*6.2))*0.3;}
+  M.leftLeg.leg.rotation.set(lLegX,0,lLegZ);M.rightLeg.leg.rotation.set(rLegX,0,rLegZ);
+  {const w=(lLegX===walkLX&&rLegX===walkRX)?1:0;
+    M.leftLeg.shoe.rotation.x=w*(-walkLX*0.75-(lLegY-H)*1.4);M.rightLeg.shoe.rotation.x=w*(-walkRX*0.75-(rLegY-H)*1.4);}
+  M.leftLeg.leg.position.y=lLegY;M.rightLeg.leg.position.y=rLegY;
+  M.bodyPivot.position.y=Math.abs(s)*(running?0.07:0.05)*mv;
+  M.bodyPivot.rotation.z=s*0.045*mv;
+  let lean=(running?0.14:0.05)*mv;
+  let lX=-s*(running?0.65:0.46)*mv,rX=s*(running?0.65:0.46)*mv,lZ=-0.28,rZ=0.28;
+  if(acting){
+    switch(act){
+      case 'wave':rZ=2.2+Math.sin(time*8)*0.28;lZ=-0.15;lX=-0.1;break;
+      case 'cheer':lZ=-2.4-Math.sin(time*8)*0.15;rZ=2.4+Math.sin(time*8)*0.15;lX=-0.2;rX=-0.2;lean=-0.06;break;
+      case 'chat':rZ=0.5+Math.max(0,Math.sin(time*2.4))*0.5;rX=-0.4;lZ=-0.4;lX=-0.15;break;
+      case 'look':rX=-0.2;rZ=1.15;lZ=-0.2;break;
+      case 'sit':lX=-0.4;rX=-0.4;lZ=-0.15;rZ=0.15;lean=0.08;break;
+    }
+  }
+  const ak=Math.min(1,dt*10);
+  M.bodyPivot.rotation.x=lerp(M.bodyPivot.rotation.x,lean,ak);
+  M.leftArm.rotation.x=lerp(M.leftArm.rotation.x,lX,ak);M.rightArm.rotation.x=lerp(M.rightArm.rotation.x,rX,ak);
+  M.leftArm.rotation.z=lerp(M.leftArm.rotation.z,lZ,ak);M.rightArm.rotation.z=lerp(M.rightArm.rotation.z,rZ,ak);
+  let hy=Math.sin(time*0.7)*0.1,hp=act==='look'?-0.12:act==='sit'?0.12:0,hz=0;
+  const near=[{p:AI,in:AI.inside},{p:LM,in:LM.inside},{p:SL,in:SL.inside}].filter(o=>!o.in);
+  let looked=false;
+  if(act!=='sit')for(const o of near){if(Math.hypot(o.p.x-CH.x,o.p.z-CH.z)<5){hy=clamp(normalizeAngle(Math.atan2(o.p.x-CH.x,o.p.z-CH.z)-CH.yaw),-0.9,0.9);looked=true;break;}}
+  if(!looked&&CH.spot&&CH.spot.look&&act==='look')hy=clamp(normalizeAngle(Math.atan2(CH.spot.look[0]-CH.x,CH.spot.look[1]-CH.z)-CH.yaw),-0.8,0.8);
   M.headGroup.rotation.y=lerp(M.headGroup.rotation.y,hy,Math.min(1,dt*6));
   M.headGroup.rotation.x=lerp(M.headGroup.rotation.x,hp,Math.min(1,dt*6));
   M.headGroup.rotation.z=lerp(M.headGroup.rotation.z,hz,Math.min(1,dt*6));
@@ -3628,7 +3673,7 @@ function updatePet(e,dt,time){
     e.moving=Math.max(0,e.moving-dt*5);if(dL<6)faceLuna(e,dt);e.idlePose='sit';
     if(e.timer<=0){e.state='idle';e.timer=rnd(1,3);}
   }else if(e.state==='petted'){
-    e.moving=0;if(e.petBy==='solon')e.yaw+=normalizeAngle(Math.atan2(SL.x-e.x,SL.z-e.z)-e.yaw)*Math.min(1,dt*4);else if(e.petBy==='moon')e.yaw+=normalizeAngle(Math.atan2(LM.x-e.x,LM.z-e.z)-e.yaw)*Math.min(1,dt*4);else faceLuna(e,dt);e.lonely=Math.max(0,e.lonely-dt*0.25);
+    e.moving=0;if(e.petBy==='solon')e.yaw+=normalizeAngle(Math.atan2(SL.x-e.x,SL.z-e.z)-e.yaw)*Math.min(1,dt*4);else if(e.petBy==='moon')e.yaw+=normalizeAngle(Math.atan2(LM.x-e.x,LM.z-e.z)-e.yaw)*Math.min(1,dt*4);else if(e.petBy==='charlie')faceCharlie(e,dt);else faceLuna(e,dt);e.lonely=Math.max(0,e.lonely-dt*0.25);
   }
   // friendly glance + heart when Luna walks by
   if(dL<2.6&&AI.state==='walk'&&time-e.lastGreet>18&&e.state!=='petted'){e.lastGreet=time;if(Math.random()<0.35)emote(e.root,'heart',e.kind==='bunny'?0.65:0.8,1.6,0.5);}
@@ -3668,7 +3713,7 @@ const GATE=(function(){
   return {leaves,open:0,target:0,closeAt:0,hold:false,update(dt){
     // swings open for Luna whenever she walks through, and for the let-out / bedtime routine
     const gateWalk=(o,st)=>st==='walk'&&Math.hypot(o.x+26,o.z-31.2)<2.6;
-    if(gateWalk(AI,AI.state)||(!LM.inside&&gateWalk(LM,LM.state))||(!SL.inside&&gateWalk(SL,SL.state))){this.target=1;if(this.closeAt)this.closeAt=Math.max(this.closeAt,simTime+2.5);else if(!this.hold)this.closeAt=simTime+2.5;}
+    if(gateWalk(AI,AI.state)||(!LM.inside&&gateWalk(LM,LM.state))||(!SL.inside&&gateWalk(SL,SL.state))||(!CH.inside&&gateWalk(CH,CH.state))){this.target=1;if(this.closeAt)this.closeAt=Math.max(this.closeAt,simTime+2.5);else if(!this.hold)this.closeAt=simTime+2.5;}
     if(this.closeAt&&simTime>this.closeAt&&!this.hold){this.target=0;this.closeAt=0;}
     this.open+=clamp(this.target-this.open,-dt*1.6,dt*1.6);
     const e=smooth(0,1,this.open);for(const l of this.leaves)l.leaf.rotation.y=l.dir*e*1.45;}};
@@ -3724,7 +3769,7 @@ function updateDog(d,dt,time){
     followPath(d,dt,4.8,10);
     if(dL<1.5){BALL.state='held';d.state='sitWait';d.idlePose='sit';d.happy=3;emote(d.root,'heart',0.95);BRAIN.fetchReturned=true;}
   }else if(d.state==='sitWait'||d.state==='petted'||d.state==='await'){
-    d.moving=Math.max(0,d.moving-dt*5);if(d.petBy==='solon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(SL.x-d.x,SL.z-d.z)-d.yaw)*Math.min(1,dt*4);else if(d.petBy==='moon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(LM.x-d.x,LM.z-d.z)-d.yaw)*Math.min(1,dt*4);else faceLuna(d,dt);d.idlePose='sit';
+    d.moving=Math.max(0,d.moving-dt*5);if(d.petBy==='solon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(SL.x-d.x,SL.z-d.z)-d.yaw)*Math.min(1,dt*4);else if(d.petBy==='moon'&&d.state==='petted')d.yaw+=normalizeAngle(Math.atan2(LM.x-d.x,LM.z-d.z)-d.yaw)*Math.min(1,dt*4);else if(d.petBy==='charlie'&&d.state==='petted')faceCharlie(d,dt);else faceLuna(d,dt);d.idlePose='sit';
     if(d.state==='await'&&d.timer<=0)d.state='follow';
     if(d.state==='petted')d.happy=1;
   }else{ // follow Luna around, one dog at each shoulder
@@ -3741,6 +3786,7 @@ function updateDog(d,dt,time){
   animatePet(d,dt,time);
 }
 function faceSolon(e,dt){e.yaw+=normalizeAngle(Math.atan2(SL.x-e.x,SL.z-e.z)-e.yaw)*Math.min(1,dt*4);}
+function faceCharlie(e,dt){e.yaw+=normalizeAngle(Math.atan2(CH.x-e.x,CH.z-e.z)-e.yaw)*Math.min(1,dt*4);}
 function updateBarney(b,dt,time){
   // Solon went indoors: come in with him and settle at his feet
   if(SL.inside){
@@ -3755,7 +3801,7 @@ function updateBarney(b,dt,time){
   b.happy=Math.max(0,b.happy-dt);b.timer-=dt;
   if(b.state==='petted'||b.state==='await'){
     b.moving=Math.max(0,b.moving-dt*5);b.idlePose='sit';
-    if(b.petBy==='solon')faceSolon(b,dt);else if(b.petBy==='moon')b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);else faceLuna(b,dt);
+    if(b.petBy==='solon')faceSolon(b,dt);else if(b.petBy==='moon')b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);else if(b.petBy==='charlie')faceCharlie(b,dt);else faceLuna(b,dt);
     if(b.state==='petted')b.happy=1;
     if(b.state==='await'&&b.timer<=0)b.state='follow';
   }else{ // follow Solon around at his shoulder
@@ -4129,6 +4175,7 @@ const POI={
   yard:{x:-31.5,z:31.5,look:[-35.5,29.5]},isle:{x:ISLE2.x+2,z:ISLE2.z+3.5,look:[ISLE2.x+16,ISLE2.z+8]},market:{x:MARKET.x-3.45,z:MARKET.z,look:[MARKET.x,MARKET.z]},zen:{x:-30.6,z:6,look:[-38,6]},waterfall:{x:-14.5,z:-16.5,look:[-22,-20]}
 };
 for(const k in POI){const p=POI[k];const[gx,gz]=toGrid(p.x,p.z);if(!NAV.walk[gIdx(gx,gz)]){const s=snapWalkable(p.x,p.z);p.x=s[0];p.z=s[1];}}
+{const s=snapWalkable(POI.houseSteps.x+3.4,POI.houseSteps.z+2.2);CH.x=s[0];CH.z=s[1];CH.y=walkHeight(CH.x,CH.z);CH.checkX=CH.x;CH.checkZ=CH.z;charlie.root.position.set(CH.x,CH.y,CH.z);}
 const TASKS=[
   {id:'feedHouse',need:'pets',poi:'petCorner',act:'feed',dur:[3.5,5],sat:0.55,shelter:true},
   {id:'feedYard',need:'pets',poi:'yard',act:'feed',dur:[3.5,5],sat:0.55},
@@ -4699,8 +4746,10 @@ function buildWardrobe(C){
 const WARDROBE=buildWardrobe(caretaker);
 const MOON_WARDROBE=buildWardrobe(ladyMoon);
 const SOLON_WARDROBE=buildWardrobe(solon);
-for(const W of[WARDROBE,MOON_WARDROBE,SOLON_WARDROBE])W.skirt.scale.set(1.05,1.15,1.0);
+const CHARLIE_WARDROBE=buildWardrobe(charlie);
+for(const W of[WARDROBE,MOON_WARDROBE,SOLON_WARDROBE,CHARLIE_WARDROBE])W.skirt.scale.set(1.05,1.15,1.0);
 solon.wardrobe=SOLON_WARDROBE;
+charlie.wardrobe=CHARLIE_WARDROBE;
 // Shirt textures have to exist before Solon's closet runs. A saved outfit calls
 // shirtTexture during startup, and a const declared below that call is still in the
 // temporal dead zone (Cannot access 'SHIRT_TEX' before initialization).
@@ -4715,6 +4764,7 @@ function shirtTexture(o){
 }
 SHIRT_TEX.usual=caretaker.mats.shirtMat.map;
 applySolonCloset(false);
+applyCharlieCloset(false);
 const CLOSET={outfit:'usual',mask:'none'};
 function applyCloset(fromUser){
   const o=OUTFITS.find(x=>x.id===CLOSET.outfit)||OUTFITS[0],M=caretaker.mats,W=WARDROBE;
@@ -4762,7 +4812,7 @@ applyCloset(false);
   function card(label,cv,pressed,onPick){const b=document.createElement('button');b.type='button';b.className='card';b.setAttribute('aria-pressed',pressed);
     cv.setAttribute('aria-hidden','true');b.appendChild(cv);const s=document.createElement('span');s.textContent=label;b.appendChild(s);b.onclick=onPick;return b;}
   let who='luna';
-  const whoLuna=document.getElementById('whoLuna'),whoMoon=document.getElementById('whoMoon'),whoSolon=document.getElementById('whoSolon'),whoCharlie=document.getElementById('whoCharlie'),hatSec=document.getElementById('moonHatSec'),hatGrid=document.getElementById('moonHatGrid'),solonSec=document.getElementById('solonSec'),solonGrid=document.getElementById('solonHatGrid'),charlieSec=document.getElementById('charlieSec'),charlieGrid=document.getElementById('charlieGrid'),outfitHead=document.getElementById('outfitHead'),maskHead=document.getElementById('maskHead');
+  const whoLuna=document.getElementById('whoLuna'),whoMoon=document.getElementById('whoMoon'),whoSolon=document.getElementById('whoSolon'),whoCharlie=document.getElementById('whoCharlie'),hatSec=document.getElementById('moonHatSec'),hatGrid=document.getElementById('moonHatGrid'),solonSec=document.getElementById('solonSec'),solonGrid=document.getElementById('solonHatGrid'),charlieSec=document.getElementById('charlieSec'),outfitHead=document.getElementById('outfitHead'),maskHead=document.getElementById('maskHead');
   function setWho(next){who=next;if(whoLuna)whoLuna.setAttribute('aria-selected',next==='luna');if(whoMoon)whoMoon.setAttribute('aria-selected',next==='moon');if(whoSolon)whoSolon.setAttribute('aria-selected',next==='solon');if(whoCharlie)whoCharlie.setAttribute('aria-selected',next==='charlie');render();}
   function hatThumb(h){
     const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
@@ -4795,22 +4845,26 @@ applyCloset(false);
     c.fillStyle='#3cb44a';c.fillRect(36,28,96,78);c.fillStyle='#f4f6f2';c.fillRect(62,52,44,22);c.strokeStyle='#1b1b1b';c.lineWidth=3;c.strokeRect(62,52,44,22);
     c.fillStyle='#2a3f78';c.fillRect(48,108,72,28);c.fillStyle='#3cb44a';c.fillRect(46,142,30,12);c.fillRect(92,142,30,12);return cv;
   }
+  function charlieUsualThumb(){
+    const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
+    c.fillStyle='#16130f';c.fillRect(36,28,96,78);
+    c.strokeStyle='#e2b23a';c.lineWidth=2.2;
+    for(let y=42;y<100;y+=14){c.beginPath();c.moveTo(42,y);c.quadraticCurveTo(84,y+(y%28?8:-6),128,y);c.stroke();}
+    c.fillStyle='#8e1a2c';c.beginPath();c.arc(68,58,7,0,6.2832);c.fill();c.beginPath();c.arc(104,78,6,0,6.2832);c.fill();
+    c.fillStyle='#d23b4e';c.beginPath();c.arc(68,58,3.2,0,6.2832);c.fill();c.beginPath();c.arc(104,78,2.6,0,6.2832);c.fill();
+    c.fillStyle='#243e66';c.fillRect(48,108,72,28);
+    c.fillStyle='#f4f4f2';c.fillRect(46,140,30,14);c.fillRect(92,140,30,14);
+    c.fillStyle='#1c1c1e';c.fillRect(46,152,30,5);c.fillRect(92,152,30,5);
+    return cv;
+  }
   function render(){
     og.textContent='';mg.textContent='';
     if(hatSec)hatSec.hidden=(who!=='moon');
     if(solonSec)solonSec.hidden=who!=='solon';
     if(charlieSec)charlieSec.hidden=who!=='charlie';
-    if(outfitHead)outfitHead.hidden=who==='charlie';
-    if(maskHead)maskHead.hidden=who==='charlie';
-    og.hidden=who==='charlie';mg.hidden=who==='charlie';
-    if(who==='charlie'&&charlieGrid){
-      charlieGrid.textContent='';
-      const cv=document.createElement('canvas');cv.width=cv.height=168;const c=cv.getContext('2d');
-      const img=charlie.photoTex&&charlie.photoTex.image;
-      if(img&&img.width){const s=Math.min(img.width,img.height*0.55);const sx=(img.width-s)/2,sy=img.height*0.02;c.drawImage(img,sx,sy,s,s*0.9,14,8,140,140);}
-      else{c.fillStyle='#1d68e3';c.fillRect(20,20,128,128);c.fillStyle='#fff';c.font='bold 22px sans-serif';c.fillText('Charlie',40,96);}
-      charlieGrid.appendChild(card('Find Charlie',cv,true,()=>{setFollowWho('charlie');toast('Camera is now following Charlie');}));
-    }
+    if(outfitHead)outfitHead.hidden=false;
+    if(maskHead)maskHead.hidden=false;
+    og.hidden=false;mg.hidden=false;
     if(who==='solon'&&solonGrid){
       solonGrid.textContent='';
       solonGrid.appendChild(card('Pom beanie',solonBeanieThumb(true),SOLON_STYLE.hat!==false,()=>{SOLON_STYLE.hat=true;applySolonCloset(true);render();}));
@@ -4826,10 +4880,14 @@ applyCloset(false);
       og.appendChild(card('His usual',solonUsualThumb(),SOLON_STYLE.outfit==='solon',()=>{SOLON_STYLE.outfit='solon';applySolonCloset(true);render();}));
       for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),SOLON_STYLE.outfit===o.id,()=>{SOLON_STYLE.outfit=o.id;applySolonCloset(true);render();}));
       for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),SOLON_STYLE.mask===m.id,()=>{SOLON_STYLE.mask=m.id;applySolonCloset(true);render();}));
+    }else if(who==='charlie'){
+      og.appendChild(card('His usual',charlieUsualThumb(),CHARLIE_STYLE.outfit==='charlie',()=>{CHARLIE_STYLE.outfit='charlie';applyCharlieCloset(true);render();}));
+      for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),CHARLIE_STYLE.outfit===o.id,()=>{CHARLIE_STYLE.outfit=o.id;applyCharlieCloset(true);render();}));
+      for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),CHARLIE_STYLE.mask===m.id,()=>{CHARLIE_STYLE.mask=m.id;applyCharlieCloset(true);render();}));
     }else if(who==='moon'){
       for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),MOON_STYLE.outfit===o.id,()=>{MOON_STYLE.outfit=o.id;applyLadyMoonCloset(true);render();}));
       for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),MOON_STYLE.mask===m.id,()=>{MOON_STYLE.mask=m.id;applyLadyMoonCloset(true);render();}));
-    }else if(who!=='charlie'){
+    }else{
       for(const o of OUTFITS)if(!o.hidden&&(!o.price||owns(o.id)))og.appendChild(card(o.name,teeThumb(o),CLOSET.outfit===o.id,()=>{CLOSET.outfit=o.id;CLOSET.lastChanged='outfit';applyCloset(true);render();}));
       for(const m of MASKS)if(!m.price||owns(m.id))mg.appendChild(card(m.name,maskThumb(m),CLOSET.mask===m.id,()=>{CLOSET.mask=m.id;CLOSET.lastChanged='mask';applyCloset(true);render();}));
     }
@@ -5876,7 +5934,7 @@ const ACT_WORDS={wave:'waving hello',inspect:'checking the pet bed',bow:'visitin
 const POI_WORDS={isle:'the view from the little island',zen:'the zen garden',waterfall:'the waterfall',torii:'the torii gate'};
 function lunaStatus(){
   if(typeof BOAT!=='undefined'&&BOAT.helm==='luna')return BOAT.status();
-  if(CTRL.on&&!FOLLOW_SOLON&&!FOLLOW_MOON)return ctrlStatus();
+  if(CTRL.on&&!FOLLOW_SOLON&&!FOLLOW_MOON&&!FOLLOW_CHARLIE)return ctrlStatus();
   if(STILL.on&&!(AI.inside&&INSIDE.ent.state==='act'))return 'Luna is holding still for you';
   if(AI.inside)return insideStatus();
   const tg=AI.target,tk=AI.task,night=nightK>0.55;
@@ -6564,12 +6622,6 @@ function moonShotFor(V){   // auto cam shots for Lady Moon (when the camera foll
   if(LM.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(LM.x,LM.y+1.35,LM.z)});
   return Object.assign(base,{id:'follow',label:'Following Lady Moon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(LM.x+fx*4,LM.y+1.2,LM.z+fz*4)});
 }
-function charlieShotFor(V){
-  const fx=Math.sin(CH.yaw),fz=Math.cos(CH.yaw),base={pivot:V(CH.x,CH.y,CH.z),yaw:CH.yaw};
-  if(CH.state==='act')return Object.assign(base,{id:'c_act',label:'Charlie',az:0.5,dist:5.2,h:1.9,fov:36,look:V(CH.x,CH.y+1.15,CH.z)});
-  if(CH.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.4,h:1.85,fov:34,look:V(CH.x,CH.y+1.35,CH.z)});
-  return Object.assign(base,{id:'follow',label:'Following Charlie',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(CH.x+fx*4,CH.y+1.2,CH.z+fz*4)});
-}
 function solonShotFor(V){
   const fx=Math.sin(SL.yaw),fz=Math.cos(SL.yaw),base={pivot:V(SL.x,SL.y,SL.z),yaw:SL.yaw};
   if(SL.state==='act'){const a=SL.act;
@@ -6580,6 +6632,15 @@ function solonShotFor(V){
     return Object.assign(base,{id:'s_act',label:'Solon',az:0.5,dist:5,h:1.8,fov:36,look:V(SL.x,SL.y+1.1,SL.z)});}
   if(SL.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(SL.x,SL.y+1.35,SL.z)});
   return Object.assign(base,{id:'follow',label:'Following Solon',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(SL.x+fx*4,SL.y+1.2,SL.z+fz*4)});
+}
+function charlieShotFor(V){
+  const fx=Math.sin(CH.yaw),fz=Math.cos(CH.yaw),base={pivot:V(CH.x,CH.y,CH.z),yaw:CH.yaw};
+  if(CH.state==='act'){const a=CH.act;
+    if(a==='wave'||a==='cheer')return Object.assign(base,{id:'c_wave',label:'Charlie',az:0.4,dist:4.6,h:1.7,fov:36,look:V(CH.x,CH.y+1.15,CH.z)});
+    if(a==='sit')return Object.assign(base,{id:'c_sit',label:'Charlie takes a seat',az:0.55,dist:5,h:1.6,fov:36,look:V(CH.x,CH.y+0.9,CH.z)});
+    return Object.assign(base,{id:'c_act',label:'Charlie',az:0.5,dist:5,h:1.8,fov:36,look:V(CH.x,CH.y+1.1,CH.z)});}
+  if(CH.state==='idle'&&DIRECTOR.stillT>1.4)return Object.assign(base,{id:'portrait',label:'Close-up',az:0.45,dist:4.2,h:1.8,fov:34,look:V(CH.x,CH.y+1.35,CH.z)});
+  return Object.assign(base,{id:'follow',label:'Following Charlie',yaw:DIRECTOR.smoothYaw,az:Math.PI+0.28,dist:16,h:6.2,fov:50,look:V(CH.x+fx*4,CH.y+1.2,CH.z+fz*4)});
 }
 function shotFor(){
   const night=nightK>0.55,fx=Math.sin(AI.yaw),fz=Math.cos(AI.yaw);
@@ -6661,9 +6722,11 @@ function smoothDamp(cur,target,vel,time,maxSpeed,dt){
 function directorUpdate(dt,time){
   const D=DIRECTOR;
   // Dual-Character Framing: calculate midpoint and distance between Luna (AI) and Lady Moon (LM)
-  const Fa=FOLLOW_SOLON?SL:AI;
-  const Fb=FOLLOW_SOLON?(Math.hypot(SL.x-AI.x,SL.z-AI.z)<=(LM.inside?1e9:Math.hypot(SL.x-LM.x,SL.z-LM.z))?AI:LM):LM;
-  const duoLabel=FOLLOW_SOLON?(Fb===AI?'Solon & Luna':'Solon & Lady Moon'):'Luna & Lady Moon';
+  const Fa=FOLLOW_CHARLIE?CH:FOLLOW_SOLON?SL:FOLLOW_MOON?LM:AI;
+  const pals=[{p:AI,n:'Luna',in:!!AI.inside},{p:LM,n:'Lady Moon',in:!!LM.inside},{p:SL,n:'Solon',in:!!SL.inside},{p:CH,n:'Charlie',in:!!CH.inside}].filter(o=>o.p!==Fa&&!o.in);
+  let best=pals[0]||null,bd=1e9;for(const o of pals){const d=Math.hypot(o.p.x-Fa.x,o.p.z-Fa.z);if(d<bd){bd=d;best=o;}}
+  const Fb=best?best.p:AI;
+  const duoLabel=(Fa===CH?'Charlie':Fa===SL?'Solon':Fa===LM?'Lady Moon':'Luna')+' & '+(best?best.n:'Luna');
   const distBetween=Math.hypot(Fb.x-Fa.x, Fb.z-Fa.z);
   const midX=(Fa.x + Fb.x) / 2;
   const midZ=(Fa.z + Fb.z) / 2;
@@ -6694,7 +6757,7 @@ function directorUpdate(dt,time){
   if(ens&&ens.span<46&&!wideShotId){_duoMid.set(ens.x,ens.y+1.6,ens.z);const need=clamp(18+ens.span*1.4,22,56);
     if(s.dist<need){s.dist=need;s.h=Math.max(s.h,need*0.42);}
     s.h=Math.max(s.h,8);
-    s.pivot=_duoPivot.set(ens.x,ens.y,ens.z);s.look=_duoMid;s.label=ens.n>3?'The whole cast':ens.n>2?'Friends on the island':duoLabel;s.fov=Math.max(s.fov,48);}
+    s.pivot=_duoPivot.set(ens.x,ens.y,ens.z);s.look=_duoMid;s.label=ens.n>2?'Luna, Lady Moon & Solon':duoLabel;s.fov=Math.max(s.fov,48);}
   else if(duo){_duoMid.set(midX,midY+1.2,midZ);const need=clamp(8+distBetween*1.05,8,28);
     if(s.dist<need){const k=need/s.dist;s.dist=need;s.h=Math.min(s.h*k,need*0.55);}
     s.pivot=_duoPivot.set(midX,midY,midZ);s.look=_duoMid;s.label=duoLabel;s.fov=Math.max(s.fov,46);}
@@ -7007,7 +7070,7 @@ const CTRL={on:false,started:false,touch:{x:0,y:0},keys:new Set(),pad:{x:0,y:0},
 const STICK_DZ=0.12,PAD_DZ=0.16;const id_knob=document.getElementById('stickKnob');
 function stickCurve(x,y,dz){const m=Math.hypot(x,y);if(m<dz)return[0,0,0];const k=Math.min(1,(m-dz)/(1-dz)),c=Math.pow(k,1.25);return[x/m*c,y/m*c,c];}
 function ctrlAction(kind){
-  if(HOLD[followWho()]){toast((followWho()==='moon'?'Lady Moon':followWho()==='solon'?'Solon':'Luna')+' is paused. Turn Pause off to move.');return;}
+  if(HOLD[followWho()]){toast(CAST_NAME[followWho()]+' is paused. Turn Pause off to move.');return;}
   if(CTRL.on&&FOLLOW_CHARLIE){charlieCtrlAction(kind);return;}
   if(CTRL.on&&FOLLOW_SOLON){solonCtrlAction(kind);return;}
   if(CTRL.on&&FOLLOW_MOON){moonCtrlAction(kind);return;}
@@ -7075,10 +7138,10 @@ function setCtrl(v){
   CTRL.on=v;CTRL.started=false;CTRL.touch.x=CTRL.touch.y=0;CTRL.keys.clear();AI.mAct=null;
   document.body.classList.toggle('ctrl',v);document.getElementById('btnCtrl').setAttribute('aria-pressed',v);document.getElementById('pad').hidden=!v;
   if(v){if(HOLD[followWho()])setHold(followWho(),false,true);if(DIRECTOR.on)setAuto(false);if(FREE.on)setFree(false);orbit=false;document.getElementById('btnOrbit').setAttribute('aria-pressed','false');
-    if(PLACE.active)cancelPlacing();if(CHOP.on)setChop(false);tRadius=11;tPhi=1.02;tTheta=focusBody().yaw+Math.PI;toast('Controller mode: left stick moves '+(FOLLOW_CHARLIE?'Charlie':FOLLOW_SOLON?'Solon':FOLLOW_MOON?'Lady Moon':'Luna')+' (press M to switch)');}
+    if(PLACE.active)cancelPlacing();if(CHOP.on)setChop(false);tRadius=11;tPhi=1.02;tTheta=focusBody().yaw+Math.PI;toast('Controller mode: left stick moves '+CAST_NAME[followWho()]+' (press M to switch)');}
   else{if(AI.mAct)ctrlEndAct();AI.state='idle';AI.timer=1;AI.speed=0;LM.mAct=null;CTRL.moonStarted=false;if(LM.state!=='walk'){LM.state='idle';LM.timer=0.6;}
-    if(CTRL.charlieStarted||FOLLOW_CHARLIE){CH.mAct=null;CTRL.charlieStarted=false;CH.state='idle';CH.timer=0.6;CH.speed=0;}
-    if(CTRL.solonStarted||FOLLOW_SOLON){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}}
+    if(CTRL.solonStarted||FOLLOW_SOLON){SL.mAct=null;CTRL.solonStarted=false;SL.state='idle';SL.timer=0.6;SL.speed=0;}
+    if(CTRL.charlieStarted||FOLLOW_CHARLIE){CH.mAct=null;CTRL.charlieStarted=false;CH.state='idle';CH.timer=0.6;CH.speed=0;}}
 }
 (function padUI(){
   const pad=document.getElementById('pad'),zone=document.getElementById('stickZone'),base=document.getElementById('stickBase'),knob=document.getElementById('stickKnob');
@@ -7120,7 +7183,7 @@ function setFree(v){
   {const h=document.getElementById('camHint');if(!h.dataset.orig)h.dataset.orig=h.innerHTML;
    if(v)h.textContent='Free cam: drag to orbit, right-drag (or two fingers) to pan, scroll to zoom, WASD or arrows to fly, Q/E down and up.';else h.innerHTML=h.dataset.orig;}
   const who=followWho();
-  toast(v?'Free cam: the camera stays wherever you put it':'The camera follows '+(who==='moon'?'Lady Moon':who==='solon'?'Solon':who==='charlie'?'Charlie':'Luna')+' again');
+  toast(v?'Free cam: the camera stays wherever you put it':'The camera follows '+CAST_NAME[who]+' again');
 }
 function setAuto(v){
   if(v&&FREE.on)setFree(false);
@@ -7129,13 +7192,14 @@ function setAuto(v){
 }
 btnAuto.onclick=()=>setAuto(!DIRECTOR.on);
 const CAST_NAME={luna:'Luna',moon:'Lady Moon',solon:'Solon',charlie:'Charlie'};
+function castHead(who){return who==='charlie'?charlie.headGroup:who==='solon'?solon.headGroup:who==='moon'?ladyMoon.headGroup:caretaker.headGroup;}
 function setHold(who,v,quiet){
   HOLD[who]=!!v;
   if(who==='luna')STILL.on=HOLD.luna;
   syncCastUI();
   if(quiet)return;
   const n=CAST_NAME[who];
-  if(HOLD[who]){const head=who==='charlie'?charlie.headGroup:who==='solon'?solon.headGroup:who==='moon'?ladyMoon.headGroup:caretaker.headGroup;emote(head,'heart',0.85);toast(n+' will hold still until you turn Pause off');}
+  if(HOLD[who]){emote(castHead(who),'heart',0.85);toast(n+' will hold still until you turn Pause off');}
   else toast(n+' is moving again');
 }
 function setStill(v){setHold('luna',v);}
@@ -8185,6 +8249,131 @@ function solonCtrlUpdate(dt,time){
 function solonCtrlStatus(){const a=SL.mAct;if(a&&a.act==='pet')return 'Solon is cuddling '+a.ent.name;if(a&&a.act==='wave')return 'Solon waves hello';if(a&&a.act==='train')return 'Zoomies with Solon!';
   return SL.state==='walk'?(CTRL.m>0.92?'Solon is running':'You are walking Solon around'):'Solon is waiting for you';}
 
+function chooseCharliePlan(){
+  const spots=[POI.veranda,POI.market,POI.pier,POI.houseSteps,POI.petCorner].filter(Boolean);
+  const people=[{x:AI.x,z:AI.z,in:!!AI.inside},{x:LM.x,z:LM.z,in:!!LM.inside},{x:SL.x,z:SL.z,in:!!SL.inside}].filter(p=>!p.in);
+  let spot;
+  if(people.length&&Math.random()<0.5){
+    const p=pick(people),s=randomSpotNear(p.x,p.z,2.4,1.4);
+    spot={x:s[0],z:s[1],look:[p.x,p.z],act:pick(['wave','chat','sit'])};
+  }else{
+    const p=pick(spots),s=snapWalkable(p.x+rnd(-1.4,1.4),p.z+rnd(-1.4,1.4));
+    spot={x:s[0],z:s[1],look:p.look||[p.x,p.z+4],act:pick(['wave','sit','look','cheer'])};
+  }
+  CH.spot=spot;CH.path=planPath(CH.x,CH.z,spot.x,spot.z);CH.wp=0;CH.state='walk';CH.timer=24;
+  CH.walkSpeed=Math.random()<0.28?3.35:2.7;CH.stuckT=0;CH.stuckN=0;CH.checkX=CH.x;CH.checkZ=CH.z;
+}
+function beginCharlieAct(name){
+  CH.state='act';CH.act=name||(CH.spot&&CH.spot.act)||'wave';CH.actT=0;
+  const durs={wave:[2.6,4],cheer:[3,4.5],chat:[4,7],look:[4,7],sit:[6,10]};
+  const d=durs[CH.act]||[3,5];CH.actDur=CH.timer=rnd(d[0],d[1]);CH.emoteT=0.4;
+  const happy=CH.act==='wave'||CH.act==='cheer'||CH.act==='chat';
+  CH.faceMode=happy?'happy':'open';charlie.faceObj.drawFace(CH.faceMode);
+  if(happy)emote(charlie.headGroup,CH.act==='cheer'?'sparkle':'heart',0.9);
+}
+function charlieStuckCheck(dt){
+  CH.stuckT=(CH.stuckT||0)+dt;if(CH.stuckT<1.6)return;CH.stuckT=0;
+  if(Math.hypot(CH.x-(CH.checkX||0),CH.z-(CH.checkZ||0))<0.3){CH.stuckN=(CH.stuckN||0)+1;
+    if(CH.stuckN<=2&&CH.spot){CH.path=planPath(CH.x,CH.z,CH.spot.x,CH.spot.z);CH.wp=0;}
+    else{const s=snapWalkable(CH.x,CH.z);CH.x=s[0];CH.z=s[1];CH.spot=null;CH.state='idle';CH.timer=0.4;}}
+  else CH.stuckN=0;
+  CH.checkX=CH.x;CH.checkZ=CH.z;
+}
+function updateCharlie(dt,time){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'){poseCharlie(dt,time);return;}
+  CH.jumpT=Math.max(0,(CH.jumpT||0)-dt);
+  if(CH.faceMode==='open'){
+    CH.blinkTimer-=dt;
+    if(CH.blinkTimer<=0){
+      if(!CH.isBlinking){CH.isBlinking=true;charlie.faceObj.drawFace('blink');CH.blinkTimer=0.12;}
+      else{CH.isBlinking=false;charlie.faceObj.drawFace('open');CH.blinkTimer=rnd(2.2,4.6);}
+    }
+  }
+  if(INSIDE.on){
+    if(!CH.inside){CH.inside=true;scene.remove(charlie.root);INSIDE.scene.add(charlie.root);CH.ix=-0.2;CH.iz=2.4;CH.yaw=0.2;CH.speed=0;CH.spot=null;beginCharlieAct('sit');}
+    if(HOLD.charlie)CH.speed=0;
+    else{CH.timer-=dt;if(CH.timer<=0)beginCharlieAct(pick(['sit','wave','look','chat']));}
+    const svX=CH.x,svZ=CH.z;CH.x=CH.ix;CH.z=CH.iz;poseCharlie(dt,time);CH.x=svX;CH.z=svZ;return;
+  }else if(CH.inside){
+    CH.inside=false;INSIDE.scene.remove(charlie.root);scene.add(charlie.root);
+    const s=snapWalkable(POI.houseSteps.x+2.2,POI.houseSteps.z+1.6);CH.x=s[0];CH.z=s[1];CH.state='idle';CH.timer=0.8;CH.spot=null;
+  }
+  if(HOLD.charlie){
+    CH.speed=lerp(CH.speed,0,Math.min(1,dt*12));
+    if(CH.state==='walk'){CH.state='idle';CH.path=[];}
+    poseCharlie(dt,time);return;
+  }
+  if(CTRL.on&&FOLLOW_CHARLIE){charlieCtrlUpdate(dt,time);return;}
+  if(CTRL.charlieStarted){CTRL.charlieStarted=false;CH.mAct=null;CH.state='idle';CH.timer=0.5;}
+  CH.timer-=dt;
+  if(CH.state==='idle'){
+    CH.speed=lerp(CH.speed,0,Math.min(1,dt*10));
+    if(CH.timer<=0)chooseCharliePlan();
+  }else if(CH.state==='walk'){
+    if(!CH.path||CH.wp>=CH.path.length||CH.timer<=0){
+      if(CH.spot&&CH.spot.look)CH.yaw=Math.atan2(CH.spot.look[0]-CH.x,CH.spot.look[1]-CH.z);
+      beginCharlieAct(CH.spot?CH.spot.act:'wave');
+    }else{
+      charlieStuckCheck(dt);
+      const[wx,wz]=CH.path[CH.wp],dx=wx-CH.x,dz=wz-CH.z,d=Math.hypot(dx,dz),last=CH.wp===CH.path.length-1;
+      if(d<(last?0.35:0.65))CH.wp++;
+      else{
+        const diff=normalizeAngle(Math.atan2(dx,dz)-CH.yaw);
+        CH.yaw+=diff*Math.min(1,dt*8);
+        const sp=CH.walkSpeed*clamp(1-Math.abs(diff)/2.4,0.35,1);
+        CH.speed=lerp(CH.speed,sp,Math.min(1,dt*7));
+        const nx=CH.x+Math.sin(CH.yaw)*CH.speed*dt,nz=CH.z+Math.cos(CH.yaw)*CH.speed*dt;
+        if(isPointWalkable(nx,nz,0.22)){CH.x=nx;CH.z=nz;}else{CH.x+=dx/d*CH.speed*dt;CH.z+=dz/d*CH.speed*dt;}
+      }
+    }
+  }else if(CH.state==='act'){
+    CH.speed=lerp(CH.speed,0,Math.min(1,dt*10));CH.actT+=dt;
+    if(CH.spot&&CH.spot.look)CH.yaw+=normalizeAngle(Math.atan2(CH.spot.look[0]-CH.x,CH.spot.look[1]-CH.z)-CH.yaw)*Math.min(1,dt*3);
+    if(CH.timer<=0){CH.faceMode='open';charlie.faceObj.drawFace('open');CH.spot=null;CH.state='idle';CH.timer=rnd(0.5,1.6);}
+  }
+  poseCharlie(dt,time);
+}
+function charlieStatus(){
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='charlie')return BOAT.status();
+  if(HOLD.charlie)return 'Charlie is holding still';
+  if(CTRL.on&&FOLLOW_CHARLIE)return charlieCtrlStatus();
+  if(CH.state==='walk')return CH.speed>3.1?'Charlie is running over':'Charlie is walking over';
+  const words={wave:'waving hello',cheer:'hopping with a grin',chat:'chatting',look:'looking around the island',sit:'sitting in the sun'};
+  return 'Charlie is '+(words[CH.act]||'hanging out');
+}
+function charlieCtrlAction(kind){
+  if(CH.mAct)return;
+  if(kind==='jump'){if(!(CH.jumpT>0))CH.jumpT=0.62;return;}
+  if(kind==='wave'){CH.mAct={act:'wave',t:2};CH.faceMode='happy';charlie.faceObj.drawFace('happy');emote(charlie.headGroup,'heart',0.9);return;}
+  if(kind==='pet'){let best=null,bd=2.8;for(const e of ALL_ANIMALS){if(e.inside||SKIP_STATES.has(e.state))continue;const d=Math.hypot(e.x-CH.x,e.z-CH.z);if(d<bd){bd=d;best=e;}}
+    if(!best){toast('Walk Charlie up to a pet to give them a cuddle');return;}
+    best.prevState=best.state;best.state='petted';best.petBy='charlie';best.lastPet=simTime;best.lonely=0;CH.mAct={act:'pet',t:2.6,ent:best,em:0};return;}
+  if(kind==='throw'){let dog=null,dd=12;for(const d of DOGS){const k=Math.hypot(d.x-CH.x,d.z-CH.z);if(d.state==='follow'&&k<dd){dd=k;dog=d;}}
+    if(!dog){toast('Bring a pup over so Charlie can start zoomies');return;}CH.mAct={act:'cheer',t:5};startZoomies(dog,CH.x,CH.z,5);}
+}
+function charlieCtrlUpdate(dt,time){
+  if(!CTRL.charlieStarted){CH.spot=null;CH.state='idle';CTRL.charlieStarted=true;}
+  const[x,y,m]=ctrlInput();
+  CH.jumpT=Math.max(0,(CH.jumpT||0)-dt);
+  if(CH.mAct){const a=CH.mAct;a.t-=dt;CH.speed=lerp(CH.speed,0,Math.min(1,dt*10));CH.state='act';CH.act=a.act;CH.actT=(CH.actT||0)+dt;
+    if(a.act==='pet'&&a.ent){const e=a.ent;CH.yaw+=normalizeAngle(Math.atan2(e.x-CH.x,e.z-CH.z)-CH.yaw)*Math.min(1,dt*8);a.em-=dt;if(a.em<=0){a.em=0.8;emote(e.root,'heart',e.kind==='bunny'?0.65:e.kind==='dog'?0.95:0.8);}}
+    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):e.follows?'follow':'idle';e.timer=rnd(3,6);e.petBy=null;}
+      CH.mAct=null;CH.state='idle';CH.act=null;if(CH.faceMode!=='open'){CH.faceMode='open';charlie.faceObj.drawFace('open');}}}
+  else{CH.actT=0;let target=0;
+    if(m>0){const th=STEER.th,fx=-Math.sin(th),fz=-Math.cos(th),rx=Math.cos(th),rz=-Math.sin(th),dx=fx*y+rx*x,dz=fz*y+rz*x;
+      CH.yaw+=normalizeAngle(Math.atan2(dx,dz)-CH.yaw)*Math.min(1,dt*10);target=(m>0.92?4.5:2.8)*Math.min(1,m/0.92);
+      if(!FREE.on&&!DIRECTOR.on&&Math.abs(x)<0.45&&y>0.3)tTheta+=normalizeAngle(CH.yaw+Math.PI-tTheta)*dt*0.7;}
+    CH.speed=lerp(CH.speed,target,Math.min(1,dt*(target>CH.speed?6:10)));
+    if(CH.speed>0.02){const st=CH.speed*dt,nx=CH.x+Math.sin(CH.yaw)*st,nz=CH.z+Math.cos(CH.yaw)*st;
+      if(standable(nx,nz)){CH.x=nx;CH.z=nz;}else{let ok=false;
+        for(const o of[0.5,-0.5,1,-1,1.4,-1.4]){const yy=CH.yaw+o,sx=CH.x+Math.sin(yy)*st*0.8,sz=CH.z+Math.cos(yy)*st*0.8;if(standable(sx,sz)){CH.x=sx;CH.z=sz;ok=true;break;}}
+        if(!ok)CH.speed=Math.min(CH.speed,0.2);}}
+    CH.state=CH.speed>0.15?'walk':'idle';CH.act=null;CH.path=[];CH.spot=null;}
+  poseCharlie(dt,time);
+}
+function charlieCtrlStatus(){const a=CH.mAct;if(a&&a.act==='pet')return 'Charlie is cuddling '+a.ent.name;if(a&&a.act==='wave')return 'Charlie waves hello';if(a&&a.act==='cheer')return 'Zoomies with Charlie!';
+  return CH.state==='walk'?(CTRL.m>0.92?'Charlie is running':'You are walking Charlie around'):'Charlie is waiting for you';}
+
 const _resolveIsland=resolveTarget;
 resolveTarget=function(tk){
   if((tk.id==='feedHouse'||tk.id==='feedYard')&&!ISLAND.free('feed','luna'))return null;
@@ -8337,14 +8526,13 @@ function updateForage(dt){
 }
 function gatherNearby(){
   const who=followWho();
-  const body=who==='charlie'?CH:who==='solon'?SL:who==='moon'?LM:AI;
+  const body=focusBody();
   if(INSIDE.on||body.inside){toast('Step outside to gather');return;}
   let best=null,bd=2.4;
   for(const f of FORAGE){if(!f.g.visible||f.wait>0)continue;const d=Math.hypot(f.x-body.x,f.z-body.z);if(d<bd){bd=d;best=f;}}
   if(!best){toast('Walk up to a shell or a blossom, then press Gather');return;}
   addGood(best.kind,1);best.g.visible=false;best.wait=42;
-  const head=who==='charlie'?charlie.headGroup:who==='solon'?solon.headGroup:who==='moon'?ladyMoon.headGroup:caretaker.headGroup;
-  emote(head,'sparkle',0.9);
+  emote(castHead(who),'sparkle',0.9);
   toast(CAST_NAME[who]+' picked up a '+(best.kind==='shell'?'seashell':'blossom')+' · worth '+PRICES[best.kind]+' coins');
 }
 seedForage();
@@ -8404,7 +8592,7 @@ const BOAT=(function(){
   function place(){B.g.position.set(B.x,0.1+Math.sin(B.bob)*0.04,B.z);B.g.rotation.y=B.yaw;B.g.rotation.z=Math.sin(B.bob*0.7)*0.02;}
   place();
   B.deckY=function(){return 0.1+Math.sin(B.bob)*0.04+0.4;};
-  B.status=function(){const n=B.helm==='moon'?'Lady Moon':B.helm==='solon'?'Solon':B.helm==='charlie'?'Charlie':'Luna';return n+' is at the helm of the skiff';};
+  B.status=function(){return (CAST_NAME[B.helm]||'Luna')+' is at the helm of the skiff';};
   B.save=function(){try{localStorage.setItem('lunas-boat-v1',JSON.stringify({x:+B.x.toFixed(2),z:+B.z.toFixed(2),yaw:+B.yaw.toFixed(3)}));}catch(e){}};
   B.who=function(){return B.helm==='charlie'?CH:B.helm==='solon'?SL:B.helm==='moon'?LM:AI;};
   B.pin=function(){if(!B.helm)return;const p=B.who(),back=0.25;p.x=B.x-Math.sin(B.yaw)*back;p.z=B.z-Math.cos(B.yaw)*back;p.yaw=B.yaw;p.speed=0;};
@@ -8418,10 +8606,10 @@ const BOAT=(function(){
     if(body.inside){toast('Step outside to take the skiff');return;}
     if(who==='luna'){if(AI.state==='act')endAct();else if(AI.state==='walk')abortTask();AI.seatObj=null;AI.mAct=null;AI.speed=0;}
     else if(who==='moon'){LM.mAct=null;LM.speed=0;LM.state='idle';}
-    else if(who==='charlie'){CH.mAct=null;CH.speed=0;CH.state='idle';}
-    else{SL.mAct=null;SL.speed=0;SL.state='idle';}
+    else if(who==='solon'){SL.mAct=null;SL.speed=0;SL.state='idle';}
+    else{CH.mAct=null;CH.speed=0;CH.state='idle';CH.spot=null;CH.path=[];}
     B.helm=who;B.pin();
-    const n=who==='moon'?'Lady Moon':who==='solon'?'Solon':who==='charlie'?'Charlie':'Luna';
+    const n=CAST_NAME[who]||'Luna';
     toast((ferry?n+' climbs aboard. ':n+' takes the skiff. ')+'WASD or the stick steers. Pull up to a shore to step off.');
     B.save();
   };
@@ -8433,7 +8621,7 @@ const BOAT=(function(){
     if(!ok){toast('That shore is too steep. Nudge a little closer.');return;}
     body.x=x;body.z=z;body.speed=0;body.state='idle';body.y=walkHeight(x,z);
     const who=B.helm;B.helm=null;B.speed=0;B.save();
-    toast((who==='moon'?'Lady Moon':who==='solon'?'Solon':who==='charlie'?'Charlie':'Luna')+' steps ashore on '+L.name);
+    toast((CAST_NAME[who]||'Luna')+' steps ashore on '+L.name);
   };
   B.update=function(dt,time){
     B.bob=time;
@@ -8463,8 +8651,8 @@ const BOAT=(function(){
 })();
 let boatTapAt=0;
 function boatButton(){
-  if(BOAT.helm){if(BOAT.helm!==followWho()){toast('Switch to '+(BOAT.helm==='moon'?'Lady Moon':BOAT.helm==='solon'?'Solon':BOAT.helm==='charlie'?'Charlie':'Luna')+' to leave the skiff');return;}BOAT.disembark();return;}
-  const who=followWho(),body=who==='charlie'?CH:who==='solon'?SL:who==='moon'?LM:AI;
+  if(BOAT.helm){if(BOAT.helm!==followWho()){toast('Switch to '+(CAST_NAME[BOAT.helm]||'Luna')+' to leave the skiff');return;}BOAT.disembark();return;}
+  const who=followWho(),body=focusBody();
   if(body.inside||INSIDE.on){toast('Step outside to take the skiff');return;}
   if(Math.hypot(body.x-BOAT.x,body.z-BOAT.z)<6){BOAT.board(who,false);return;}
   const now=performance.now();
