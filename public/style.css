@@ -43,15 +43,15 @@ body.launch-vid-out #launchVid{opacity:0;transition:opacity 3s linear}
 .title h1{margin:0;font-size:1.05rem;line-height:1.2;font-weight:700;letter-spacing:.01em}
 .title p{margin:2px 0 0;font-size:.78rem;color:var(--muted);min-height:1.2em}
 .dock{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));
-  width:min(680px,calc(100vw - 28px));background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  width:min(760px,calc(100vw - 28px));background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border:1px solid var(--line);border-radius:22px;padding:12px 14px;box-sizing:border-box}
 .cast{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:stretch}
-.cast .who{display:flex;flex:1 1 150px;min-width:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--chip)}
+.cast .who{display:flex;flex:1 1 112px;min-width:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--chip)}
 .cast .who button{font:inherit;font-size:.78rem;font-weight:700;color:var(--ink);background:transparent;border:none;padding:8px 6px;cursor:pointer;flex:1 1 auto}
 .cast .who button[aria-pressed="true"]{background:var(--lacquer);color:#fff}
 .cast .who .hold{flex:0 0 auto;border-left:1px solid var(--line);padding:8px 8px;font-size:.68rem}
 .cast .who .hold[aria-pressed="true"]{background:#2a314f;color:#fff}
-.cast>#btnGather{font:inherit;font-size:.78rem;font-weight:700;border:1px solid var(--line);border-radius:12px;background:var(--chip);color:var(--ink);padding:8px 12px;cursor:pointer}
+.cast>#btnGather,.cast>#btnCast{font:inherit;font-size:.78rem;font-weight:700;border:1px solid var(--line);border-radius:12px;background:var(--chip);color:var(--ink);padding:8px 12px;cursor:pointer}
 .cast button:focus-visible{outline:2px solid var(--lacquer);outline-offset:2px}
 .time{display:flex;align-items:center;gap:10px}
 .time label{font-size:.82rem;font-weight:700;min-width:84px}
@@ -235,7 +235,7 @@ body.ctrl .shot .lbl small{color:rgba(255,255,255,.72)}
 .header-actions { display: flex; gap: 6px; }
 /* Lady Moon Closet Switcher */
 .who-tabs{display:flex;gap:6px;margin:6px 0 10px}
-.who-btn{flex:1;font:inherit;font-size:.8rem;font-weight:700;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
+.who-btn{flex:1;font:inherit;font-size:.74rem;font-weight:700;padding:8px 6px;border-radius:12px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
 .who-btn[aria-selected="true"]{background:var(--lacquer);color:#fff;border-color:transparent}
 .closet .tabnote{font-size:.72rem;color:var(--muted);margin:8px 0 0;line-height:1.35}
 /* release polish */
