@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v36)
+# Luna's Cozy Pets – The Island (v37)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v37 (Charlie's hats):** Charlie's curls stay inside every beanie and cap. The hair hides while either hat is actually on, and it comes back for His usual, bows, bandanas, and whenever a mask hides the hat.
 - **v36 (Charlie, chibi):** Charlie is rebuilt as a chibi, the same way Luna, Lady Moon and Solon are built to their stills. His look follows `Sprites/CharlieFull.jpg`: curly dark-brown hair, freckles, big brown eyes, a toothy smile, warm medium skin, a black short-sleeve shirt with gold scrolls and red roses, dark blue jeans, and chunky white sneakers with black soles and gold eyelets. He waves beside the front steps, then walks the island, chats, sits, and cheers. His closet (`charlie-closet-v1`) keeps that outfit as "His usual" and also wears the shared clothes. Follow, Pause, the controller, Gather, and the skiff include him.
 - **v35 (Charlie):** **Charlie** joins the cast as a fourth playable island guest. His look is the full-body still `Sprites/CharlieFull.jpg`, shipped for the game as `public/images/charlie-full.jpg` and loaded with `TextureLoader` through `LUNA_ASSET_BASE` (Vite `base: './'`). Soft studio-backdrop cut-out keeps him standing on the island without a photo box. Follow / Pause buttons, M cycle, controller steering, boat helm, gather, closet tab, collisions and auto-cam shots match Luna, Lady Moon and Solon.
 - **v34 (Barney):** Solon has a pet capybara, Barney, built to `Sprites/Capybara.png`: a round tan body with a darker back, a big blunt brown snout, small round ears and short legs with dark toes. Barney follows Solon around the island the way Kiko and Bruno follow Luna, trotting at his shoulder and catching up when he falls behind. He sits or flops down beside Solon while Solon works, naps when it's late, goes indoors with him, and waits on shore when Solon takes the skiff. Luna, Lady Moon and Solon can all pet him.
