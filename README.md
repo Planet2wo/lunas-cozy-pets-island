@@ -6,7 +6,7 @@ Claude and Gemini both edit these same files.
 ```
 index.html            page markup: HUD, dock buttons, closets, market, controller pad
 public/style.css      every style (dock, closets/market, controller layout, launch film)
-public/game.js        the whole game: world, pets, Luna, Lady Moon and Solon, weather, market, camera, controls
+public/game.js        the whole game: world, pets, Luna, Lady Moon, Solon and Charlie, weather, market, camera, controls
 public/audio/         launch-theme.mp3: the older launch-film song (kept; the launch now plays the video in public/media)
 public/media/         the two radio songs and launch-backdrop, split into pieces under 1 MB. The game joins them back into the original files.
 public/icons/         favicon, home-screen icons and the link-preview image (made from Sprites/)
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v35 (Charlie):** **Charlie** joins the cast as a fourth playable island guest. His look is the full-body still `Sprites/CharlieFull.jpg`, shipped for the game as `public/images/charlie-full.jpg` and loaded with `TextureLoader` through `LUNA_ASSET_BASE` (Vite `base: './'`). Soft studio-backdrop cut-out keeps him standing on the island without a photo box. Follow / Pause buttons, M cycle, controller steering, boat helm, gather, closet tab, collisions and auto-cam shots match Luna, Lady Moon and Solon.
 - **v34 (Barney):** Solon has a pet capybara, Barney, built to `Sprites/Capybara.png`: a round tan body with a darker back, a big blunt brown snout, small round ears and short legs with dark toes. Barney follows Solon around the island the way Kiko and Bruno follow Luna, trotting at his shoulder and catching up when he falls behind. He sits or flops down beside Solon while Solon works, naps when it's late, goes indoors with him, and waits on shore when Solon takes the skiff. Luna, Lady Moon and Solon can all pet him.
 - **v33 (saves, skiff, tackle, Halloween closet):** The Seaside Market now sells the island fixtures that were only built into the world (crates, pier gear, fences, pines, the yard swing, and the rest). A save menu opens every launch: Continue, Dev Island (the built island with coins, clothes, and a full tackle box already in place), Load, Save, and New Game. Ten Halloween outfits are free in every closet. Auto cam pulls back more often across the cast and the whole island. A motor skiff waits beside the pier (Boat, or B) and can be steered to the little island, Lantern Isle, and Fishing Rock. The tackle box and the market's Tackle tab hold 25 pieces of gear; better rods and lures reach Golden Koi, salmon, halibut, and marlin.
 - **v32 (cast stills):** Luna, Lady Moon and Solon are rebuilt to the updated Sprites stills. Shared chibi proportions (big head, short torso, short arms and legs), Luna's cat-face tee, peach shorts and black sneakers with white toe caps, Lady Moon's cobalt bob, pink strawberry bucket hat and rainbow onesie, and Solon's sage pom-pom beanie, controller tee, navy shorts and green sneakers.
