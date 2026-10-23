@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v38 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v38.1 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 function failScene(msg){
   const loading=document.getElementById('loading');
@@ -5569,7 +5569,7 @@ function updateDecor(dt,time){updateBuilds(dt);if(!INSIDE_REF||!INSIDE_REF.on)fo
   sellBtn.onclick=()=>sellBasket();
   document.getElementById('mkSellWood').onclick=()=>{if(ECON.wood<5)return;ECON.wood-=5;const v=5*PRICES.wood;ECON.coins+=v;ECON.earned+=v;econSave();toast('+'+v+' coins for 5 wood');};
   const rs=document.getElementById('mkReset');let rsT=0;
-  rs.onclick=()=>{if(performance.now()-rsT<4000){try{for(const k of['lunas-market-v2','lunas-closet-v2','lunas-welcomed-v2','lunas-market-tab-v2','ladymoon-closet-v1','ladymoon-closet-v2','solon-closet-v1','solon-closet-v2','lunas-spacelaunch-played-v1','lunas-tackle-v1','lunas-boat-v1','lunas-tod-v1','lunas-saves-v1'])localStorage.removeItem(k);}catch(e){}location.reload();}
+  rs.onclick=()=>{if(performance.now()-rsT<4000){try{for(const k of['lunas-market-v2','lunas-closet-v2','lunas-welcomed-v2','lunas-market-tab-v2','ladymoon-closet-v1','ladymoon-closet-v2','solon-closet-v1','solon-closet-v2','charlie-closet-v1','lunas-spacelaunch-played-v1','lunas-tackle-v1','lunas-boat-v1','lunas-tod-v1','lunas-saves-v1'])localStorage.removeItem(k);}catch(e){}location.reload();}
     else{rsT=performance.now();rs.textContent='Tap again to erase everything';setTimeout(()=>{rs.textContent='Start over (erase coins, items and clothes)';},4000);}};
   addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){setOpen(false);btn.focus();}});
   MARKET.ui={setOpen};
@@ -8968,6 +8968,7 @@ addEventListener('keyup',e=>BOAT.keys.delete(e.key.toLowerCase()));
       closet:{outfit:CLOSET.outfit,mask:CLOSET.mask},
       moon:{hat:MOON_STYLE.hat,outfit:MOON_STYLE.outfit,mask:MOON_STYLE.mask,userLockedHat:!!MOON_STYLE.userLockedHat},
       solon:{hat:SOLON_STYLE.hat!==false,outfit:SOLON_STYLE.outfit,mask:SOLON_STYLE.mask},
+      charlie:{outfit:CHARLIE_STYLE.outfit,mask:CHARLIE_STYLE.mask},
       tackle:{owned:TACKLE.owned.slice(),equip:Object.assign({},TACKLE.equip)},
       boat:away?{x:+BOAT.x.toFixed(2),z:+BOAT.z.toFixed(2),yaw:+BOAT.yaw.toFixed(3)}:null,
       tod:+todTarget||0
@@ -8985,6 +8986,7 @@ addEventListener('keyup',e=>BOAT.keys.delete(e.key.toLowerCase()));
       closet:{outfit:'usual',mask:'none'},
       moon:{hat:'strawberry',outfit:'rainbow',mask:'none',userLockedHat:false},
       solon:{hat:true,outfit:'solon',mask:'none'},
+      charlie:{outfit:'charlie',mask:'none'},
       tackle:{owned:TACKLE_ITEMS.map(t=>t.id),equip:{rod:'rod_deep',reel:'reel_spin',line:'line_steel',bobber:'bob_glow',bait:'bait_shrimp',lure:'lure_jig',extra:'extra_net'}},
       boat:null,tod:0};
   }
@@ -8993,6 +8995,7 @@ addEventListener('keyup',e=>BOAT.keys.delete(e.key.toLowerCase()));
       closet:{outfit:'usual',mask:'none'},
       moon:{hat:'strawberry',outfit:'rainbow',mask:'none',userLockedHat:false},
       solon:{hat:true,outfit:'solon',mask:'none'},
+      charlie:{outfit:'charlie',mask:'none'},
       tackle:null,boat:null,tod:0};
   }
   function writeLive(st){
@@ -9001,6 +9004,7 @@ addEventListener('keyup',e=>BOAT.keys.delete(e.key.toLowerCase()));
       localStorage.setItem('lunas-closet-v2',JSON.stringify(st.closet));
       localStorage.setItem('ladymoon-closet-v2',JSON.stringify(st.moon));
       localStorage.setItem('solon-closet-v2',JSON.stringify(st.solon));
+      if(st.charlie)localStorage.setItem('charlie-closet-v1',JSON.stringify(st.charlie));else localStorage.removeItem('charlie-closet-v1');
       if(st.tackle)localStorage.setItem('lunas-tackle-v1',JSON.stringify(st.tackle));else localStorage.removeItem('lunas-tackle-v1');
       if(st.boat)localStorage.setItem('lunas-boat-v1',JSON.stringify(st.boat));else localStorage.removeItem('lunas-boat-v1');
       localStorage.setItem('lunas-tod-v1',JSON.stringify({v:st.tod||0}));

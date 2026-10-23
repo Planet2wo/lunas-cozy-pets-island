@@ -91,7 +91,7 @@ for (const [rel, key, stem] of sources) {
     if (!existing.length) throw new Error('missing ' + rel);
     console.log('keep', stem, existing.length, 'parts');
     for (const name of existing) {
-      tags.index.push(`<script src="/media/${name}"></script>`);
+      tags.index.push(`<script src="./media/${name}"></script>`);
       tags.play.push(`<script src="../public/media/${name}"></script>`);
     }
     continue;
@@ -103,7 +103,7 @@ for (const [rel, key, stem] of sources) {
   packed++;
   console.log('packed', rel, buf.length, '->', names.length, 'parts');
   for (const name of names) {
-    tags.index.push(`<script src="/media/${name}"></script>`);
+    tags.index.push(`<script src="./media/${name}"></script>`);
     tags.play.push(`<script src="../public/media/${name}"></script>`);
   }
 }
