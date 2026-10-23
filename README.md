@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v38)
+# Luna's Cozy Pets – The Island (v38.1)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -18,7 +18,7 @@ metadata.json         AI Studio app name/description
 package.json          `npm run dev` / `npm run build` (Vite) + three.js r128
 vite.config.js        dev server on port 3000 (AI Studio's preview port), relative build paths
 RUN.bat               double-click launcher: local server or the standalone file
-play/Luna's Cozy Pets Island.html   the same game as one file: double-click to play
+play/Luna's Cozy Pets Island.html   standalone page: loads ../public (CSS, game.js, vendor, media); double-click or RUN.bat
 ```
 
 three.js r128 and its bloom add-ons load from `public/vendor/` (filled by `npm install`), with the CDN as an automatic fallback. `game.js` uses the global `THREE` (aliased to `T`).
@@ -30,7 +30,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 |---|---|
 | Google AI Studio | Use the import steps below. |
 | Locally | `npm install`, then `npm run dev`, then open http://localhost:3000 |
-| On your computer, no setup | Double-click `play/Luna's Cozy Pets Island.html` |
+| On your computer, no setup | Double-click `play/Luna's Cozy Pets Island.html` (needs the `public/` folder beside `play/`) |
 | Any static host | `npm run build` and upload `dist/`, or upload `index.html` with `style.css` and `game.js` placed beside it. |
 
 ## Import into Google AI Studio
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v38.1 (audit fixes):** Save / Load / Dev Island / New Game and Market "Start over" now include Charlie's closet (`charlie-closet-v1`). The standalone `play/` page loads current `public/game.js` (and CSS) instead of an old inlined v32 copy. `tools/pack-media.cjs` writes `./media/` script tags so it no longer undoes Vite's relative `base: './'`. `package.json` version matches the game (38).
 - **v38 (Axoloto):** Charlie has a pet axolotl, Axoloto, built to `Sprites/Axloto.png`: a long cream body with coral spots, feathery pink gills, big blue eyes, a smile, four-toed feet, and a finned tail. Axoloto follows Charlie the way Barney follows Solon: at his shoulder, sitting or flopping down while Charlie pauses, napping when it's late, coming indoors with him, and greeting the others when they stop to cuddle. Unlike the other animals, Axoloto can swim. Paths across the ponds and the stream go through the water, and when Charlie stands on a bank Axoloto paddles there. When Charlie takes the skiff, Axoloto swims alongside it.
 - **v37 (Charlie's hats):** Charlie's curls stay inside every beanie and cap. The hair hides while either hat is actually on, and it comes back for His usual, bows, bandanas, and whenever a mask hides the hat.
 - **v36 (Charlie, chibi):** Charlie is rebuilt as a chibi, the same way Luna, Lady Moon and Solon are built to their stills. His look follows `Sprites/CharlieFull.jpg`: curly dark-brown hair, freckles, big brown eyes, a toothy smile, warm medium skin, a black short-sleeve shirt with gold scrolls and red roses, dark blue jeans, and chunky white sneakers with black soles and gold eyelets. He waves beside the front steps, then walks the island, chats, sits, and cheers. His closet (`charlie-closet-v1`) keeps that outfit as "His usual" and also wears the shared clothes. Follow, Pause, the controller, Gather, and the skiff include him.
