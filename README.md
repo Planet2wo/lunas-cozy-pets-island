@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v37)
+# Luna's Cozy Pets – The Island (v38)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v38 (Axoloto):** Charlie has a pet axolotl, Axoloto, built to `Sprites/Axloto.png`: a long cream body with coral spots, feathery pink gills, big blue eyes, a smile, four-toed feet, and a finned tail. Axoloto follows Charlie the way Barney follows Solon: at his shoulder, sitting or flopping down while Charlie pauses, napping when it's late, coming indoors with him, and greeting the others when they stop to cuddle. Unlike the other animals, Axoloto can swim. Paths across the ponds and the stream go through the water, and when Charlie stands on a bank Axoloto paddles there. When Charlie takes the skiff, Axoloto swims alongside it.
 - **v37 (Charlie's hats):** Charlie's curls stay inside every beanie and cap. The hair hides while either hat is actually on, and it comes back for His usual, bows, bandanas, and whenever a mask hides the hat.
 - **v36 (Charlie, chibi):** Charlie is rebuilt as a chibi, the same way Luna, Lady Moon and Solon are built to their stills. His look follows `Sprites/CharlieFull.jpg`: curly dark-brown hair, freckles, big brown eyes, a toothy smile, warm medium skin, a black short-sleeve shirt with gold scrolls and red roses, dark blue jeans, and chunky white sneakers with black soles and gold eyelets. He waves beside the front steps, then walks the island, chats, sits, and cheers. His closet (`charlie-closet-v1`) keeps that outfit as "His usual" and also wears the shared clothes. Follow, Pause, the controller, Gather, and the skiff include him.
 - **v35 (Charlie):** **Charlie** joins the cast as a fourth playable island guest. His look is the full-body still `Sprites/CharlieFull.jpg`, shipped for the game as `public/images/charlie-full.jpg` and loaded with `TextureLoader` through `LUNA_ASSET_BASE` (Vite `base: './'`). Soft studio-backdrop cut-out keeps him standing on the island without a photo box. Follow / Pause buttons, M cycle, controller steering, boat helm, gather, closet tab, collisions and auto-cam shots match Luna, Lady Moon and Solon.
