@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v36 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v37 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 function failScene(msg){
   const loading=document.getElementById('loading');
@@ -2831,7 +2831,8 @@ function applyCharlieCloset(fromUser){
     for(const k in W.maskGroups)W.maskGroups[k].visible=k===CHARLIE_STYLE.mask;
     charlie.nose.visible=!masked;
   }
-  charlie.hair.visible=true;
+  // Curls sit outside the shared beanie and cap. Hide them whenever either hat is actually on.
+  charlie.hair.visible=!(W&&(W.ACC.beanie.visible||W.ACC.cap.visible));
   if(fromUser){CH.twirlT=0.7;emote(charlie.headGroup,'sparkle',0.9);try{localStorage.setItem('charlie-closet-v1',JSON.stringify(CHARLIE_STYLE));}catch(e){}}
 }
 const _chSpawn=snapWalkable(23.4,9.6);
