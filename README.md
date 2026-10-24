@@ -1,4 +1,4 @@
-# Luna's Cozy Pets – The Island (v38.2)
+# Luna's Cozy Pets – The Island (v38.3)
 
 This folder holds the whole playable game in the smallest form that runs in **Google AI Studio (Build)**, in Vite, or on any static web host.
 Claude and Gemini both edit these same files.
@@ -57,6 +57,7 @@ Nothing needs installing to play: without `public/vendor` the game simply loads 
 6. **Bump the version** in the header comment of `game.js` and add a line to the changelog below for every change.
 
 ## Changelog
+- **v38.3 (Fric, house-cat scale):** Fric is rebuilt to domestic-cat proportions and shrunk to sit about at Lady Moon's knee. Withers, a body longer than it is tall, a short neck, a head smaller than the ribcage, a short muzzle, front-facing eyes, straight front legs, angled hind legs, and a tail about as long as the torso. The orange tabby markings from `Sprites/frick.jpg` stay: darker bands, white chest, blaze, muzzle and socks, yellow-green eyes, a pink nose and a pale tail tip. He still follows her.
 - **v38.2 (Fric):** Lady Moon has a pet cat, Fric, built to `Sprites/frick.jpg`: a plump orange tabby with darker bands, a white chest, blaze, muzzle and socks, half-lidded yellow-green eyes, a pink nose and a pale-tipped tail. Fric follows Lady Moon the way Barney follows Solon: at her shoulder, sitting or loafing while she works, napping when it's late, coming indoors with her, playing yarn when she dangles it, and waiting on shore when she takes the skiff. Luna, Lady Moon, Solon and Charlie can all pet him, and he goes back to following her afterward.
 - **v38.1 (audit fixes):** Save / Load / Dev Island / New Game and Market "Start over" now include Charlie's closet (`charlie-closet-v1`). The standalone `play/` page loads current `public/game.js` (and CSS) instead of an old inlined v32 copy. `tools/pack-media.cjs` writes `./media/` script tags so it no longer undoes Vite's relative `base: './'`. `package.json` version matches the game (38).
 - **v38 (Axoloto):** Charlie has a pet axolotl, Axoloto, built to `Sprites/Axloto.png`: a long cream body with coral spots, feathery pink gills, big blue eyes, a smile, four-toed feet, and a finned tail. Axoloto follows Charlie the way Barney follows Solon: at his shoulder, sitting or flopping down while Charlie pauses, napping when it's late, coming indoors with him, and greeting the others when they stop to cuddle. Unlike the other animals, Axoloto can swim. Paths across the ponds and the stream go through the water, and when Charlie stands on a bank Axoloto paddles there. When Charlie takes the skiff, Axoloto swims alongside it.

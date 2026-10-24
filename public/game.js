@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v38.2 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v38.3 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 function failScene(msg){
   const loading=document.getElementById('loading');
@@ -3695,71 +3695,80 @@ function makeAxolotl(o){
   return {root,body,head,legs,tail:[],mouth,gills,tailSegs,frill,ripple};
 }
 function makeFric(){
-  // Fric: Lady Moon's plump orange tabby, built to Sprites/frick.jpg
-  // a round ginger body, darker flank bands, a white chest, blaze, muzzle and socks,
-  // big half-lidded yellow-green eyes and a pale-tipped tail
+  // Fric: Lady Moon's orange tabby (Sprites/frick.jpg) at house-cat scale.
+  // Withers sit near her knee (~0.30). Nose-to-rump is about 1.8x that, the tail
+  // matches the torso, and the head is a smaller wedge on a short neck.
   const root=new T.Group(),body=new T.Group();root.add(body);
   const FUR={main:'#f08c3c',light:'#f7a85e',stripe:'#c0561c',dark:'#8e3814',white:'#fff7f1',cream:'#fff3e8',ear:'#f6b5a8',nose:'#f7a0b0',eye:'#d7e25c',pupil:'#1c1814'};
   const fm={},fur=c=>fm[c]||(fm[c]=mStd(c,{roughness:0.92}));
   const eyeMat=mStd(FUR.eye,{roughness:0.18}),pupilMat=mStd(FUR.pupil,{roughness:0.25}),shine=mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.85,roughness:0.08});
-  const noseMat=mStd(FUR.nose,{roughness:0.4});
-  // round loaf of a body, taller than it is long
-  blob(body,SPH,fur(FUR.main),0,0.34,-0.02,0.32,0.26,0.36);
-  blob(body,SPH,fur(FUR.main),0,0.32,-0.26,0.26,0.22,0.18);
-  blob(body,SPH,fur(FUR.white),0,0.28,0.2,0.24,0.2,0.16);
-  blob(body,SPH,fur(FUR.cream),0,0.18,0.04,0.24,0.1,0.26,false);
-  for(let i=0;i<4;i++){
-    const z=0.12-i*0.12;
-    blob(body,SPH,fur(FUR.dark),0,0.52,z,0.08,0.016,0.03,false);
+  const noseMat=mStd(FUR.nose,{roughness:0.4}),whisker=mStd('#f4efe8',{roughness:0.6});
+  // ribcage, a tucked belly, and haunches: longer than tall, back sloping to the rump
+  blob(body,SPH,fur(FUR.main),0,0.188,0.02,0.1,0.092,0.135);
+  blob(body,SPH,fur(FUR.main),0,0.172,-0.08,0.092,0.078,0.11);
+  blob(body,SPH,fur(FUR.main),0,0.168,-0.16,0.096,0.08,0.1);
+  blob(body,SPH,fur(FUR.white),0,0.155,0.138,0.038,0.036,0.02,false);
+  blob(body,SPH,fur(FUR.cream),0,0.132,-0.05,0.034,0.012,0.04,false);
+  const neck=blob(body,CYL,fur(FUR.main),0,0.245,0.115,0.048,0.08,0.044);neck.rotation.x=0.45;
+  for(let i=0;i<3;i++){
+    const z=0.06-i*0.07,backY=[0.27,0.26,0.246][i];
+    blob(body,SPH,fur(FUR.dark),0,backY,z,0.02,0.01,0.012,false);
     for(const s of[-1,1]){
-      const band=blob(body,SPH,fur(FUR.dark),s*0.27,0.36,z,0.028,0.09,0.04,false);
-      band.rotation.z=s*0.15;
+      const band=blob(body,SPH,fur(FUR.dark),s*0.09,0.18,z,0.013,0.04,0.016,false);
+      band.rotation.z=s*0.1;
     }
   }
-  const head=new T.Group();head.position.set(0,0.52,0.28);body.add(head);
-  blob(head,SPH,fur(FUR.main),0,0.04,0.02,0.22,0.2,0.2);
-  for(const s of[-1,1])blob(head,SPH,fur(FUR.light),s*0.12,0.0,0.06,0.07,0.07,0.06,false);
-  blob(head,SPH,fur(FUR.white),0,-0.05,0.12,0.15,0.12,0.12);
-  const blaze=blob(head,SPH,fur(FUR.white),0,0.06,0.16,0.05,0.12,0.045,false);blaze.rotation.x=-0.35;
-  blob(head,SPH,fur(FUR.white),0,-0.1,0.14,0.11,0.08,0.09,false);
-  blob(head,SPH,fur(FUR.dark),0,0.1,0.175,0.014,0.028,0.01,false);
+  for(const s of[-1,1])blob(body,SPH,fur(FUR.stripe),s*0.08,0.168,-0.16,0.012,0.032,0.016,false);
+  const head=new T.Group();head.position.set(0,0.286,0.15);body.add(head);
+  // cranium wider than tall, short muzzle, gentle rise from the nose bridge
+  blob(head,SPH,fur(FUR.main),0,0.01,-0.01,0.066,0.052,0.056);
+  for(const s of[-1,1])blob(head,SPH,fur(FUR.light),s*0.04,-0.008,0.01,0.022,0.02,0.02,false);
+  blob(head,SPH,fur(FUR.main),0,0.0,0.038,0.018,0.012,0.016,false);
+  blob(head,SPH,fur(FUR.white),0,-0.016,0.048,0.03,0.016,0.02);
+  blob(head,SPH,fur(FUR.white),0,-0.03,0.04,0.022,0.01,0.016,false);
+  const blaze=blob(head,SPH,fur(FUR.white),0,0.022,0.042,0.009,0.026,0.008,false);blaze.rotation.x=-0.3;
+  blob(head,SPH,fur(FUR.dark),0,0.042,0.038,0.006,0.008,0.004,false);
   for(const s of[-1,1]){
-    const arm=blob(head,SPH,fur(FUR.dark),s*0.045,0.14,0.16,0.04,0.012,0.012,false);
-    arm.rotation.z=s*0.8;arm.rotation.x=-0.3;
-    const ear=blob(head,CONE,fur(FUR.main),s*0.13,0.2,-0.02,0.08,0.14,0.055);ear.rotation.z=-s*0.28;ear.rotation.x=-0.1;
-    const inn=blob(head,CONE,fur(FUR.ear),s*0.125,0.185,0.012,0.045,0.085,0.022,false);inn.rotation.z=-s*0.28;inn.rotation.x=-0.1;
-    blob(head,SPH,eyeMat,s*0.085,0.028,0.178,0.06,0.042,0.034,false);
-    blob(head,SPH,pupilMat,s*0.088,0.022,0.204,0.022,0.026,0.012,false);
-    blob(head,SPH,shine,s*0.104,0.04,0.216,0.012,0.012,0.006,false);
-    const lid=blob(head,SPH,fur(FUR.main),s*0.085,0.058,0.168,0.064,0.02,0.036,false);
-    const brow=blob(head,SPH,fur(FUR.dark),s*0.08,0.095,0.15,0.05,0.012,0.014,false);brow.rotation.z=-s*0.55;
-    blob(head,SPH,fur(FUR.stripe),s*0.16,0.0,0.1,0.04,0.014,0.04,false);
+    const arm=blob(head,SPH,fur(FUR.dark),s*0.014,0.046,0.034,0.012,0.004,0.003,false);
+    arm.rotation.z=s*0.5;
+    const ear=blob(head,CONE,fur(FUR.main),s*0.034,0.09,-0.016,0.024,0.086,0.015);ear.rotation.z=-s*0.2;ear.rotation.x=-0.15;
+    const inn=blob(head,CONE,fur(FUR.ear),s*0.032,0.082,-0.004,0.012,0.05,0.006,false);inn.rotation.z=-s*0.2;inn.rotation.x=-0.15;
+    blob(head,SPH,eyeMat,s*0.02,0.012,0.048,0.013,0.01,0.007,false);
+    blob(head,SPH,pupilMat,s*0.02,0.011,0.054,0.004,0.0075,0.0025,false);
+    blob(head,SPH,shine,s*0.024,0.015,0.056,0.0028,0.0028,0.0012,false);
+    const brow=blob(head,SPH,fur(FUR.dark),s*0.02,0.024,0.042,0.014,0.003,0.003,false);brow.rotation.z=-s*0.25;
     for(const k of[-1,0,1]){
-      const w=blob(head,CYL,mStd('#f7f1ea'),s*0.2,-0.04+k*0.018,0.14,0.003,0.12,0.003,false);
-      w.rotation.set(0,0,s*(Math.PI/2-0.2*k));
+      const w=blob(head,CYL,whisker,s*0.07,-0.014+k*0.006,0.046,0.0013,0.062,0.0013,false);
+      w.rotation.set(k*0.12,s*0.2,s*Math.PI/2);
     }
   }
-  const nose=blob(head,SPH,noseMat,0,-0.004,0.23,0.032,0.022,0.02,false);nose.rotation.x=-0.3;
-  const frown=new T.Mesh(new T.TorusGeometry(0.04,0.005,5,14,Math.PI),mStd('#c48478',{roughness:0.5}));
-  frown.position.set(0,-0.058,0.238);frown.rotation.x=0.15;head.add(frown);
-  const mouth=new T.Object3D();mouth.position.set(0,-0.05,0.22);head.add(mouth);
+  blob(head,SPH,noseMat,0,-0.008,0.07,0.009,0.006,0.005,false);
+  const frown=new T.Mesh(new T.TorusGeometry(0.012,0.0016,5,12,Math.PI),mStd('#c48478',{roughness:0.5}));
+  frown.position.set(0,-0.026,0.062);frown.rotation.x=0.35;head.add(frown);
+  const mouth=new T.Object3D();mouth.position.set(0,-0.024,0.055);head.add(mouth);
   const legs=[[-1,1],[1,1],[-1,-1],[1,-1]].map(([sx,sz])=>{
-    const g=new T.Group();g.position.set(sx*0.16,0.24,sz*0.16);body.add(g);
-    blob(g,CYL,fur(FUR.main),0,-0.06,0,0.07,0.12,0.07);
-    blob(g,CYL,fur(FUR.white),0,-0.14,0,0.062,0.1,0.062);
-    blob(g,SPH,fur(FUR.white),0,-0.2,0.025,0.072,0.042,0.085,false);
-    for(const t of[-1,0,1])blob(g,SPH,fur(FUR.white),t*0.026,-0.21,0.085,0.018,0.014,0.02,false);
+    const hind=sz<0,yP=hind?0.19:0.21,zP=hind?-0.14:0.085;
+    const g=new T.Group();g.position.set(sx*(hind?0.05:0.045),yP,zP);body.add(g);
+    if(hind){
+      const thigh=blob(g,CYL,fur(FUR.main),0,-0.04,-0.004,0.022,0.095,0.02);thigh.rotation.x=0.18;
+      const crus=blob(g,CYL,fur(FUR.main),0,-0.1,0.004,0.016,0.09,0.015);crus.rotation.x=-0.1;
+      blob(g,CYL,fur(FUR.white),0,-0.158,0.01,0.014,0.055,0.013);
+    }else{
+      blob(g,CYL,fur(FUR.main),0,-0.07,0,0.018,0.14,0.016);
+      blob(g,CYL,fur(FUR.white),0,-0.162,0.006,0.015,0.05,0.014);
+    }
+    blob(g,SPH,fur(FUR.white),0,-yP+0.014,0.018,0.02,0.014,0.026,false);
+    for(let t=0;t<4;t++)blob(g,SPH,fur(FUR.white),(t-1.5)*0.008,-yP+0.011,0.032,0.0055,0.0045,0.006,false);
     return g;});
-  const tail=[];let par=body,pz=-0.34,py=0.36;
-  const cols=[FUR.main,FUR.stripe,FUR.main,FUR.dark,FUR.cream];
-  for(let i=0;i<5;i++){
+  const tail=[];let par=body,pz=-0.24,py=0.22;
+  const cols=[FUR.main,FUR.dark,FUR.main,FUR.cream];
+  for(let i=0;i<4;i++){
     const g=new T.Group();g.position.set(0,py,pz);par.add(g);
-    const r=0.052-i*0.005;
-    const seg=blob(g,CYL,fur(cols[i]),0,0,-0.05,r,0.11,r);seg.rotation.x=Math.PI/2;
-    if(i===4)blob(g,SPH,fur(FUR.cream),0,0,-0.1,0.05,0.05,0.05,false);
-    tail.push(g);par=g;py=0;pz=-0.095;
+    const r=0.022-i*0.004;
+    const seg=blob(g,CYL,fur(cols[i]),0,0,-0.04,r,0.105,r);seg.rotation.x=Math.PI/2;
+    if(i===3)blob(g,SPH,fur(FUR.cream),0,0,-0.082,0.014,0.014,0.014,false);
+    tail.push(g);par=g;py=0;pz=-0.078;
   }
-  root.scale.setScalar(1.05);
   root.name='Fric';
   return {root,body,head,legs,tail,mouth};
 }
@@ -3790,7 +3799,7 @@ Object.assign(AXOLOTO,{state:'follow',follows:'charlie',side:-1,yaw:CH.yaw,idleP
 AXOLOTO.root.rotation.order='YXZ';
 // Fric the orange tabby tags along with Lady Moon
 const FRIC=makeAnimal('cat',{name:'Fric'},[LM.x-1.15,LM.z+0.85]);
-Object.assign(FRIC,{state:'follow',follows:'moon',side:-1,yaw:LM.yaw,idlePose:'sit',rad:0.32});
+Object.assign(FRIC,{state:'follow',follows:'moon',side:-1,yaw:LM.yaw,idlePose:'sit',rad:0.18});
 FRIC.root.rotation.order='YXZ';
 const ALL_ANIMALS=[...PETS,...DOGS,BARNEY,AXOLOTO,FRIC];
 for(const e of ALL_ANIMALS)e.root.userData.noWx=true;
@@ -3821,6 +3830,13 @@ function animatePet(e,dt,time){
     e.body.position.y=-0.07*e.sitK-0.13*e.loafK+Math.abs(s)*0.02*mv;
     e.legs[2].rotation.x+=1.1*e.sitK+1.3*e.loafK;e.legs[3].rotation.x+=1.1*e.sitK+1.3*e.loafK;
     e.legs[0].rotation.x+=0.42*e.sitK-1.3*e.loafK;e.legs[1].rotation.x+=0.42*e.sitK-1.3*e.loafK;
+    if(e.name==='Fric'){
+      const swF=0.55*mv,sK=e.sitK,lK=e.loafK;
+      e.legs[0].rotation.x=s*swF+0.35*sK-1.05*lK;e.legs[1].rotation.x=-s*swF+0.35*sK-1.05*lK;
+      e.legs[2].rotation.x=-s*swF+1.15*sK+1.35*lK;e.legs[3].rotation.x=s*swF+1.15*sK+1.35*lK;
+      e.body.rotation.x=-0.12*sK-0.22*lK;
+      e.body.position.y=-0.05*sK-0.08*lK+Math.abs(s)*0.01*mv;
+    }
     const happy=e.state==='petted'||e.happy>0;
     e.tail.forEach((g,i)=>{g.rotation.y=Math.sin(time*(happy?3.2:1.5)+i*0.7)*(0.22+0.05*i);g.rotation.x=i===0?(happy?1.2:0.5+0.3*mv):0.16;});
     if(e.wag)e.wag.rotation[e.wagAxis||'z']=Math.sin(time*(happy?20:mv>0.1?12:6))*(happy?0.7:0.4);
@@ -4151,7 +4167,7 @@ function updateFric(b,dt,time){
     if(!b.inside){b.inside=true;b.state='inside';scene.remove(b.root);INSIDE.scene.add(b.root);b.path=null;b.moving=0;}
     b.idlePose=nightK>0.55?'loaf':'sit';
     animatePet(b,dt,time);
-    const ix=LM.ix+0.95,iz=LM.iz+0.15;
+    const ix=LM.ix+0.62,iz=LM.iz+0.12;
     b.yaw+=normalizeAngle(Math.atan2(LM.ix-ix,LM.iz-iz)-b.yaw)*Math.min(1,dt*3);
     b.head.rotation.y=0;
     b.root.position.set(ix,0,iz);b.root.rotation.y=b.yaw;return;
@@ -4165,7 +4181,7 @@ function updateFric(b,dt,time){
       b.playT=(b.playT||0)+dt;const a=b.playT*1.6,tx=LM.x+Math.sin(LM.yaw)*0.95+Math.cos(a)*0.45,tz=LM.z+Math.cos(LM.yaw)*0.95+Math.sin(a)*0.45,dx=tx-b.x,dz=tz-b.z,d=Math.hypot(dx,dz);
       if(d>0.05){const sp=Math.min(d/dt,2.4);b.x+=dx/d*sp*dt;b.z+=dz/d*sp*dt;b.moving=sp;b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*6);}
       else b.moving=Math.max(0,b.moving-dt*4);
-      if(Math.random()<dt*0.45)emote(b.root,Math.random()<0.5?'heart':'note',0.9,1.2,0.5);
+      if(Math.random()<dt*0.45)emote(b.root,Math.random()<0.5?'heart':'note',0.52,1.2,0.36);
     }
   }else if(b.state==='petted'||b.state==='await'){
     b.moving=Math.max(0,b.moving-dt*5);b.idlePose='loaf';
@@ -4175,21 +4191,21 @@ function updateFric(b,dt,time){
   }else{
     if(b.state!=='follow'){b.state='follow';b.path=null;}
     const onBoat=typeof BOAT!=='undefined'&&BOAT.helm==='moon',busy=LM.state!=='walk'&&LM.speed<0.5;
-    const tx=LM.x-Math.sin(LM.yaw)*1.65+Math.cos(LM.yaw)*b.side*1.25,tz=LM.z-Math.cos(LM.yaw)*1.65-Math.sin(LM.yaw)*b.side*1.25;
+    const tx=LM.x-Math.sin(LM.yaw)*1.05+Math.cos(LM.yaw)*b.side*0.72,tz=LM.z-Math.cos(LM.yaw)*1.05-Math.sin(LM.yaw)*b.side*0.72;
     const dT=Math.hypot(tx-b.x,tz-b.z);
     if((busy||onBoat)&&dS<3.8){
       b.moving=Math.max(0,b.moving-dt*5);
       b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);
-      if(nightK>0.6){b.idlePose='loaf';if(time-b.lastGreet>9){b.lastGreet=time;emote(b.root,'zzz',0.85,1.6,0.45);}}
+      if(nightK>0.6){b.idlePose='loaf';if(time-b.lastGreet>9){b.lastGreet=time;emote(b.root,'zzz',0.52,1.6,0.34);}}
       else{if(b.timer<=0){b.timer=rnd(4,9);b.idlePose=pick(IDLE_POSES.cat);}
-        if(time-b.lastGreet>22&&Math.random()<dt*0.22){b.lastGreet=time;emote(b.root,'heart',0.85,1.6,0.5);}}
-    }else if(dT>1.05){
+        if(time-b.lastGreet>22&&Math.random()<dt*0.22){b.lastGreet=time;emote(b.root,'heart',0.52,1.6,0.36);}}
+    }else if(dT>0.55){
       b.repath-=dt;if(b.repath<=0||!b.path){b.path=planPath(b.x,b.z,tx,tz);b.wp=0;b.repath=0.9;}
       followPath(b,dt,clamp(dS*1.15,2.1,5.5),9);
     }else{b.moving=Math.max(0,b.moving-dt*4);}
     if(dS>45){const[sx,sz]=randomSpotNear(LM.x,LM.z,4,2);b.x=sx;b.z=sz;b.path=null;}
   }
-  if(dS<2.6&&LM.state==='walk'&&time-b.lastGreet>16&&b.state!=='petted'&&b.state!=='play'){b.lastGreet=time;if(Math.random()<0.4)emote(b.root,'heart',0.9,1.6,0.5);}
+  if(dS<2.6&&LM.state==='walk'&&time-b.lastGreet>16&&b.state!=='petted'&&b.state!=='play'){b.lastGreet=time;if(Math.random()<0.4)emote(b.root,'heart',0.52,1.6,0.36);}
   animatePet(b,dt,time);
 }
 
