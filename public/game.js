@@ -1,4 +1,4 @@
-/* Luna's Cozy Pets – The Island · v38.1 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
+/* Luna's Cozy Pets – The Island · v38.2 · the whole game (three.js r128: local copy in public/vendor, CDN fallback; see index.html) */
 (function(){
 function failScene(msg){
   const loading=document.getElementById('loading');
@@ -3284,32 +3284,48 @@ function updateLadyMoon(dt,time){
   poseLadyMoon(dt,time);
 }
 
+function fricBeside(){
+  if(typeof FRIC==='undefined'||FRIC.inside)return '';
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='moon')return ' · Fric waits on the shore';
+  if(FRIC.state==='play'||FRIC.state==='petted')return '';
+  if(Math.hypot(FRIC.x-LM.x,FRIC.z-LM.z)>6)return '';
+  if((FRIC.loafK||0)>0.55)return ' · Fric is loafing beside her';
+  if(FRIC.moving>0.4)return ' · Fric trots along';
+  return ' · Fric is with her';
+}
 function ladyMoonStatus(){
-  if(typeof BOAT!=='undefined'&&BOAT.helm==='moon')return BOAT.status();
-  if(HOLD.moon)return 'Lady Moon is holding still';
-  if(CTRL.on&&FOLLOW_MOON)return moonCtrlStatus();
-  const hatLbl={frog:'🐸',strawberry:'🍓',coral:'🧶',none:'💙'}[MOON_STYLE.hat]||'';
-  const sp=LM.spot;
-  if(LM.state==='act'){
-    if(LM.act==='tend')return 'Lady Moon '+hatLbl+' is helping in the garden';
-    if(LM.act==='sweep')return 'Lady Moon '+hatLbl+' is sweeping '+((sp&&sp.mess&&sp.mess.label)||'up');
-    if(LM.act==='chat')return 'Lady Moon '+hatLbl+' is chatting with Luna';
-    if(LM.act==='radio')return 'Lady Moon '+hatLbl+(LM.radioPhase==='dance'?' is dancing to '+RADIO.label():LM.radioPhase==='off'?' is switching the radio off':' is turning on the radio');
-    if(LM.act==='yarnPlay')return 'Lady Moon '+hatLbl+' is playing yarn with '+((sp&&sp.pet&&sp.pet.name)||'a kitty');
-    if(LM.act==='dogPlay')return 'Lady Moon '+hatLbl+' is playing zoomies with '+((sp&&sp.dog&&sp.dog.name)||'the pups');
-    if(LM.act==='pet'&&sp&&sp.pet)return 'Lady Moon '+hatLbl+' is cuddling '+sp.pet.name;}
-  if(LM.state==='walk')return 'Lady Moon '+hatLbl+' is '+(LM.speed>3.2?'skipping across the island':'strolling along');
-  const words={
-    knitSit:'knitting a rainbow scarf',
-    knitSquat:'crouching & knitting',
-    yarnBall:'winding her giant rainbow yarn ball',
-    strawberry:'enjoying a sweet strawberry',
-    cheer:'doing a joyful star-jump!',
-    dance:'doing a happy crafter dance',
-    wave:'waving hello',
-    pet:'cuddling a furry friend'
-  };
-  return 'Lady Moon '+hatLbl+' is '+(words[LM.act]||'crafting');
+  let line;
+  if(typeof BOAT!=='undefined'&&BOAT.helm==='moon')line=BOAT.status();
+  else if(HOLD.moon)line='Lady Moon is holding still';
+  else if(CTRL.on&&FOLLOW_MOON)line=moonCtrlStatus();
+  else{
+    const hatLbl={frog:'🐸',strawberry:'🍓',coral:'🧶',none:'💙'}[MOON_STYLE.hat]||'';
+    const sp=LM.spot;
+    if(LM.state==='act'){
+      if(LM.act==='tend')line='Lady Moon '+hatLbl+' is helping in the garden';
+      else if(LM.act==='sweep')line='Lady Moon '+hatLbl+' is sweeping '+((sp&&sp.mess&&sp.mess.label)||'up');
+      else if(LM.act==='chat')line='Lady Moon '+hatLbl+' is chatting with Luna';
+      else if(LM.act==='radio')line='Lady Moon '+hatLbl+(LM.radioPhase==='dance'?' is dancing to '+RADIO.label():LM.radioPhase==='off'?' is switching the radio off':' is turning on the radio');
+      else if(LM.act==='yarnPlay')line='Lady Moon '+hatLbl+' is playing yarn with '+((sp&&sp.pet&&sp.pet.name)||'a kitty');
+      else if(LM.act==='dogPlay')line='Lady Moon '+hatLbl+' is playing zoomies with '+((sp&&sp.dog&&sp.dog.name)||'the pups');
+      else if(LM.act==='pet'&&sp&&sp.pet)line='Lady Moon '+hatLbl+' is cuddling '+sp.pet.name;
+    }
+    if(!line&&LM.state==='walk')line='Lady Moon '+hatLbl+' is '+(LM.speed>3.2?'skipping across the island':'strolling along');
+    if(!line){
+      const words={
+        knitSit:'knitting a rainbow scarf',
+        knitSquat:'crouching & knitting',
+        yarnBall:'winding her giant rainbow yarn ball',
+        strawberry:'enjoying a sweet strawberry',
+        cheer:'doing a joyful star-jump!',
+        dance:'doing a happy crafter dance',
+        wave:'waving hello',
+        pet:'cuddling a furry friend'
+      };
+      line='Lady Moon '+hatLbl+' is '+(words[LM.act]||'crafting');
+    }
+  }
+  return line+fricBeside();
 }
 
 
@@ -3678,8 +3694,77 @@ function makeAxolotl(o){
   root.scale.setScalar(1.48);
   return {root,body,head,legs,tail:[],mouth,gills,tailSegs,frill,ripple};
 }
+function makeFric(){
+  // Fric: Lady Moon's plump orange tabby, built to Sprites/frick.jpg
+  // a round ginger body, darker flank bands, a white chest, blaze, muzzle and socks,
+  // big half-lidded yellow-green eyes and a pale-tipped tail
+  const root=new T.Group(),body=new T.Group();root.add(body);
+  const FUR={main:'#f08c3c',light:'#f7a85e',stripe:'#c0561c',dark:'#8e3814',white:'#fff7f1',cream:'#fff3e8',ear:'#f6b5a8',nose:'#f7a0b0',eye:'#d7e25c',pupil:'#1c1814'};
+  const fm={},fur=c=>fm[c]||(fm[c]=mStd(c,{roughness:0.92}));
+  const eyeMat=mStd(FUR.eye,{roughness:0.18}),pupilMat=mStd(FUR.pupil,{roughness:0.25}),shine=mStd('#ffffff',{emissive:'#ffffff',emissiveIntensity:0.85,roughness:0.08});
+  const noseMat=mStd(FUR.nose,{roughness:0.4});
+  // round loaf of a body, taller than it is long
+  blob(body,SPH,fur(FUR.main),0,0.34,-0.02,0.32,0.26,0.36);
+  blob(body,SPH,fur(FUR.main),0,0.32,-0.26,0.26,0.22,0.18);
+  blob(body,SPH,fur(FUR.white),0,0.28,0.2,0.24,0.2,0.16);
+  blob(body,SPH,fur(FUR.cream),0,0.18,0.04,0.24,0.1,0.26,false);
+  for(let i=0;i<4;i++){
+    const z=0.12-i*0.12;
+    blob(body,SPH,fur(FUR.dark),0,0.52,z,0.08,0.016,0.03,false);
+    for(const s of[-1,1]){
+      const band=blob(body,SPH,fur(FUR.dark),s*0.27,0.36,z,0.028,0.09,0.04,false);
+      band.rotation.z=s*0.15;
+    }
+  }
+  const head=new T.Group();head.position.set(0,0.52,0.28);body.add(head);
+  blob(head,SPH,fur(FUR.main),0,0.04,0.02,0.22,0.2,0.2);
+  for(const s of[-1,1])blob(head,SPH,fur(FUR.light),s*0.12,0.0,0.06,0.07,0.07,0.06,false);
+  blob(head,SPH,fur(FUR.white),0,-0.05,0.12,0.15,0.12,0.12);
+  const blaze=blob(head,SPH,fur(FUR.white),0,0.06,0.16,0.05,0.12,0.045,false);blaze.rotation.x=-0.35;
+  blob(head,SPH,fur(FUR.white),0,-0.1,0.14,0.11,0.08,0.09,false);
+  blob(head,SPH,fur(FUR.dark),0,0.1,0.175,0.014,0.028,0.01,false);
+  for(const s of[-1,1]){
+    const arm=blob(head,SPH,fur(FUR.dark),s*0.045,0.14,0.16,0.04,0.012,0.012,false);
+    arm.rotation.z=s*0.8;arm.rotation.x=-0.3;
+    const ear=blob(head,CONE,fur(FUR.main),s*0.13,0.2,-0.02,0.08,0.14,0.055);ear.rotation.z=-s*0.28;ear.rotation.x=-0.1;
+    const inn=blob(head,CONE,fur(FUR.ear),s*0.125,0.185,0.012,0.045,0.085,0.022,false);inn.rotation.z=-s*0.28;inn.rotation.x=-0.1;
+    blob(head,SPH,eyeMat,s*0.085,0.028,0.178,0.06,0.042,0.034,false);
+    blob(head,SPH,pupilMat,s*0.088,0.022,0.204,0.022,0.026,0.012,false);
+    blob(head,SPH,shine,s*0.104,0.04,0.216,0.012,0.012,0.006,false);
+    const lid=blob(head,SPH,fur(FUR.main),s*0.085,0.058,0.168,0.064,0.02,0.036,false);
+    const brow=blob(head,SPH,fur(FUR.dark),s*0.08,0.095,0.15,0.05,0.012,0.014,false);brow.rotation.z=-s*0.55;
+    blob(head,SPH,fur(FUR.stripe),s*0.16,0.0,0.1,0.04,0.014,0.04,false);
+    for(const k of[-1,0,1]){
+      const w=blob(head,CYL,mStd('#f7f1ea'),s*0.2,-0.04+k*0.018,0.14,0.003,0.12,0.003,false);
+      w.rotation.set(0,0,s*(Math.PI/2-0.2*k));
+    }
+  }
+  const nose=blob(head,SPH,noseMat,0,-0.004,0.23,0.032,0.022,0.02,false);nose.rotation.x=-0.3;
+  const frown=new T.Mesh(new T.TorusGeometry(0.04,0.005,5,14,Math.PI),mStd('#c48478',{roughness:0.5}));
+  frown.position.set(0,-0.058,0.238);frown.rotation.x=0.15;head.add(frown);
+  const mouth=new T.Object3D();mouth.position.set(0,-0.05,0.22);head.add(mouth);
+  const legs=[[-1,1],[1,1],[-1,-1],[1,-1]].map(([sx,sz])=>{
+    const g=new T.Group();g.position.set(sx*0.16,0.24,sz*0.16);body.add(g);
+    blob(g,CYL,fur(FUR.main),0,-0.06,0,0.07,0.12,0.07);
+    blob(g,CYL,fur(FUR.white),0,-0.14,0,0.062,0.1,0.062);
+    blob(g,SPH,fur(FUR.white),0,-0.2,0.025,0.072,0.042,0.085,false);
+    for(const t of[-1,0,1])blob(g,SPH,fur(FUR.white),t*0.026,-0.21,0.085,0.018,0.014,0.02,false);
+    return g;});
+  const tail=[];let par=body,pz=-0.34,py=0.36;
+  const cols=[FUR.main,FUR.stripe,FUR.main,FUR.dark,FUR.cream];
+  for(let i=0;i<5;i++){
+    const g=new T.Group();g.position.set(0,py,pz);par.add(g);
+    const r=0.052-i*0.005;
+    const seg=blob(g,CYL,fur(cols[i]),0,0,-0.05,r,0.11,r);seg.rotation.x=Math.PI/2;
+    if(i===4)blob(g,SPH,fur(FUR.cream),0,0,-0.1,0.05,0.05,0.05,false);
+    tail.push(g);par=g;py=0;pz=-0.095;
+  }
+  root.scale.setScalar(1.05);
+  root.name='Fric';
+  return {root,body,head,legs,tail,mouth};
+}
 function makeAnimal(kind,o,home){
-  const b=kind==='cat'?makeCat(o):kind==='dog'?(o.breed==='shepherd'?makeShepherd(o):makeDog(o)):kind==='capybara'?makeCapybara(o):kind==='axolotl'?makeAxolotl(o):makeBunny(o);
+  const b=kind==='cat'?(o.name==='Fric'?makeFric():makeCat(o)):kind==='dog'?(o.breed==='shepherd'?makeShepherd(o):makeDog(o)):kind==='capybara'?makeCapybara(o):kind==='axolotl'?makeAxolotl(o):makeBunny(o);
   const[hx,hz]=snapWalkable(home[0],home[1]);
   const e=Object.assign(b,{kind,name:o.name,x:hx,z:hz,yaw:Math.random()*6.28,home:[hx,hz],state:'idle',timer:rnd(1,4),path:null,wp:0,moving:0,phase:0,
     idlePose:'stand',sitK:0,loafK:0,lastPet:-99,lastGreet:-99,repath:0,happy:0});
@@ -3703,7 +3788,11 @@ Object.assign(BARNEY,{state:'follow',follows:'solon',side:1,yaw:SL.yaw,idlePose:
 const AXOLOTO=makeAnimal('axolotl',{name:'Axoloto'},[CH.x+1.05,CH.z-0.85]);
 Object.assign(AXOLOTO,{state:'follow',follows:'charlie',side:-1,yaw:CH.yaw,idlePose:'sit',swims:true,swimK:0,sea:false,preferWater:false,paddleT:0});
 AXOLOTO.root.rotation.order='YXZ';
-const ALL_ANIMALS=[...PETS,...DOGS,BARNEY,AXOLOTO];
+// Fric the orange tabby tags along with Lady Moon
+const FRIC=makeAnimal('cat',{name:'Fric'},[LM.x-1.15,LM.z+0.85]);
+Object.assign(FRIC,{state:'follow',follows:'moon',side:-1,yaw:LM.yaw,idlePose:'sit',rad:0.32});
+FRIC.root.rotation.order='YXZ';
+const ALL_ANIMALS=[...PETS,...DOGS,BARNEY,AXOLOTO,FRIC];
 for(const e of ALL_ANIMALS)e.root.userData.noWx=true;
 
 function animatePet(e,dt,time){
@@ -3766,7 +3855,7 @@ function animatePet(e,dt,time){
     }
   }
   // look toward Luna (or their own human) when she is close
-  const LK=e.follows==='charlie'&&!CH.inside?CH:e.follows==='solon'&&!SL.inside?SL:AI,dL=Math.hypot(LK.x-e.x,LK.z-e.z);
+  const LK=e.follows==='charlie'&&!CH.inside?CH:e.follows==='solon'&&!SL.inside?SL:e.follows==='moon'&&!LM.inside?LM:AI,dL=Math.hypot(LK.x-e.x,LK.z-e.z);
   let hy=0;if(dL<4.5)hy=clamp(normalizeAngle(Math.atan2(LK.x-e.x,LK.z-e.z)-e.yaw),-0.9,0.9);
   e.head.rotation.y=lerp(e.head.rotation.y,hy,Math.min(1,dt*5));
   let gy=e.inside?0:walkHeight(e.x,e.z);
@@ -4054,6 +4143,53 @@ function updateAxoloto(b,dt,time){
     if(dS>45){const[sx,sz]=randomSpotNear(CH.x,CH.z,4,2);b.x=sx;b.z=sz;b.path=null;}
   }
   if(dS<2.8&&CH.state==='walk'&&time-b.lastGreet>16&&b.state!=='petted'){b.lastGreet=time;if(Math.random()<0.4)emote(b.root,'heart',0.8,1.6,0.5);}
+  animatePet(b,dt,time);
+}
+function updateFric(b,dt,time){
+  // Lady Moon went indoors: come in with her and settle at her feet
+  if(LM.inside){
+    if(!b.inside){b.inside=true;b.state='inside';scene.remove(b.root);INSIDE.scene.add(b.root);b.path=null;b.moving=0;}
+    b.idlePose=nightK>0.55?'loaf':'sit';
+    animatePet(b,dt,time);
+    const ix=LM.ix+0.95,iz=LM.iz+0.15;
+    b.yaw+=normalizeAngle(Math.atan2(LM.ix-ix,LM.iz-iz)-b.yaw)*Math.min(1,dt*3);
+    b.head.rotation.y=0;
+    b.root.position.set(ix,0,iz);b.root.rotation.y=b.yaw;return;
+  }
+  if(b.inside){b.inside=false;INSIDE.scene.remove(b.root);scene.add(b.root);const s=snapWalkable(LM.x+1.0,LM.z+0.7);b.x=s[0];b.z=s[1];b.state='follow';b.path=null;}
+  const dS=Math.hypot(LM.x-b.x,LM.z-b.z);
+  b.happy=Math.max(0,b.happy-dt);b.timer-=dt;
+  if(b.state==='play'){
+    if(!(LM.state==='act'&&LM.act==='yarnPlay')){b.state='follow';b.path=null;}
+    else{
+      b.playT=(b.playT||0)+dt;const a=b.playT*1.6,tx=LM.x+Math.sin(LM.yaw)*0.95+Math.cos(a)*0.45,tz=LM.z+Math.cos(LM.yaw)*0.95+Math.sin(a)*0.45,dx=tx-b.x,dz=tz-b.z,d=Math.hypot(dx,dz);
+      if(d>0.05){const sp=Math.min(d/dt,2.4);b.x+=dx/d*sp*dt;b.z+=dz/d*sp*dt;b.moving=sp;b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*6);}
+      else b.moving=Math.max(0,b.moving-dt*4);
+      if(Math.random()<dt*0.45)emote(b.root,Math.random()<0.5?'heart':'note',0.9,1.2,0.5);
+    }
+  }else if(b.state==='petted'||b.state==='await'){
+    b.moving=Math.max(0,b.moving-dt*5);b.idlePose='loaf';
+    if(b.petBy==='solon')faceSolon(b,dt);else if(b.petBy==='moon')b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);else if(b.petBy==='charlie')faceCharlie(b,dt);else faceLuna(b,dt);
+    if(b.state==='petted')b.happy=1;
+    if(b.state==='await'&&b.timer<=0)b.state='follow';
+  }else{
+    if(b.state!=='follow'){b.state='follow';b.path=null;}
+    const onBoat=typeof BOAT!=='undefined'&&BOAT.helm==='moon',busy=LM.state!=='walk'&&LM.speed<0.5;
+    const tx=LM.x-Math.sin(LM.yaw)*1.65+Math.cos(LM.yaw)*b.side*1.25,tz=LM.z-Math.cos(LM.yaw)*1.65-Math.sin(LM.yaw)*b.side*1.25;
+    const dT=Math.hypot(tx-b.x,tz-b.z);
+    if((busy||onBoat)&&dS<3.8){
+      b.moving=Math.max(0,b.moving-dt*5);
+      b.yaw+=normalizeAngle(Math.atan2(LM.x-b.x,LM.z-b.z)-b.yaw)*Math.min(1,dt*4);
+      if(nightK>0.6){b.idlePose='loaf';if(time-b.lastGreet>9){b.lastGreet=time;emote(b.root,'zzz',0.85,1.6,0.45);}}
+      else{if(b.timer<=0){b.timer=rnd(4,9);b.idlePose=pick(IDLE_POSES.cat);}
+        if(time-b.lastGreet>22&&Math.random()<dt*0.22){b.lastGreet=time;emote(b.root,'heart',0.85,1.6,0.5);}}
+    }else if(dT>1.05){
+      b.repath-=dt;if(b.repath<=0||!b.path){b.path=planPath(b.x,b.z,tx,tz);b.wp=0;b.repath=0.9;}
+      followPath(b,dt,clamp(dS*1.15,2.1,5.5),9);
+    }else{b.moving=Math.max(0,b.moving-dt*4);}
+    if(dS>45){const[sx,sz]=randomSpotNear(LM.x,LM.z,4,2);b.x=sx;b.z=sz;b.path=null;}
+  }
+  if(dS<2.6&&LM.state==='walk'&&time-b.lastGreet>16&&b.state!=='petted'&&b.state!=='play'){b.lastGreet=time;if(Math.random()<0.4)emote(b.root,'heart',0.9,1.6,0.5);}
   animatePet(b,dt,time);
 }
 
@@ -5695,7 +5831,7 @@ function resolveCollisions(){
   if(!LM.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='moon'))L.push({o:LM,r:0.3,w:0.5,luna:true});
   if(!SL.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='solon'))L.push({o:SL,r:0.3,w:0.5,luna:true});
   if(!CH.inside&&!(typeof BOAT!=='undefined'&&BOAT.helm==='charlie'))L.push({o:CH,r:0.3,w:0.5,luna:true});
-  for(const e of ALL_ANIMALS){if(e.inside||e.sea||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.kind==='dog'||e.kind==='capybara'?0.3:e.kind==='axolotl'?0.26:e.kind==='cat'?0.25:0.22,w:1});}
+  for(const e of ALL_ANIMALS){if(e.inside||e.sea||SKIP_STATES.has(e.state))continue;L.push({o:e,r:e.rad||(e.kind==='dog'||e.kind==='capybara'?0.3:e.kind==='axolotl'?0.26:e.kind==='cat'?0.25:0.22),w:1});}
   for(const it of L){it.ox=it.o.x;it.oz=it.o.z;}
   for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];let dx=b.o.x-a.o.x,dz=b.o.z-a.o.z,d=Math.hypot(dx,dz);const m=a.r+b.r;
     if(d>=m)continue;if(d<1e-4){const r=Math.random()*6.28;dx=Math.cos(r);dz=Math.sin(r);d=1;}else{dx/=d;dz/=d;}
@@ -5790,7 +5926,7 @@ function startTask(c){
   const icon=c.tgt.chore?CHORE_ICON[c.tgt.chore]:{pets:'heart',play:'ball',energy:night?'zzz':'note',explore:'note',fish:'fish',swim:'drop',swing:'note',wander:'sparkle',enjoy:'heart'}[c.tk.need];
   if(Math.random()<0.45)emote(caretaker.headGroup,icon,0.85,1.5,0.5);
 }
-function releaseTarget(){const tg=AI.target;if(tg&&tg.ent&&(tg.ent.state==='await'||tg.ent.state==='petted')){tg.ent.state=tg.ent.kind==='dog'?'follow':'idle';tg.ent.timer=rnd(4,8);tg.ent.idlePose='loaf';}}
+function releaseTarget(){const tg=AI.target;if(tg&&tg.ent&&(tg.ent.state==='await'||tg.ent.state==='petted')){tg.ent.state=tg.ent.kind==='dog'||tg.ent.follows?'follow':'idle';tg.ent.timer=rnd(4,8);tg.ent.idlePose='loaf';}}
 function abortTask(){releaseTarget();AI.task=null;AI.target=null;AI.state='idle';AI.timer=1;}
 function beginAct(){
   const tk=AI.task;if(!tk){AI.state='idle';AI.timer=1;return;}
@@ -6216,6 +6352,7 @@ function updateWildlifeAndVehicles(dt,time){
   for(const d of DOGS)if(!d.inside)updateDog(d,dt,time);
   updateBarney(BARNEY,dt,time);
   updateAxoloto(AXOLOTO,dt,time);
+  updateFric(FRIC,dt,time);
   SWING.update(dt);updateChops(dt);resolveCollisions();
   MARKET.update(dt,time);updateDecor(dt,time);
   GATE.update(dt);
@@ -7320,7 +7457,7 @@ function ctrlAction(kind){
     if(!dog){toast('Bring a pup along to play fetch');return;}AI.mAct={act:'throw',t:0.6,dog,thrown:false};}
 }
 function ctrlEndAct(){const a=AI.mAct;AI.mAct=null;
-  if(a&&a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):'idle';e.timer=rnd(3,6);}}
+  if(a&&a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):e.follows?'follow':'idle';e.timer=rnd(3,6);}}
 function pollGamepad(){
   if(typeof navigator==='undefined'||!navigator.getGamepads)return;const gps=navigator.getGamepads();let gp=null;for(const g of gps)if(g&&g.connected){gp=g;break;}
   if(!gp){CTRL.pad.x=CTRL.pad.y=0;return;}
@@ -7992,8 +8129,8 @@ function moonJoinChat(){   // Luna came over to talk: Lady Moon turns to her and
 function moonFinish(complete){
   const sp=LM.spot;
   if(sp){if(sp.mess)ISLAND.release('mess_'+sp.mess.id,'moon');if(sp.bed)ISLAND.release('bed_'+sp.bed.type+sp.bed.i,'moon');if(sp.pet){ISLAND.release('pet_'+sp.pet.name,'moon');
-      if(sp.pet.state==='petted'&&sp.pet.petBy==='moon'){sp.pet.state=sp.pet.kind==='dog'?'follow':'idle';sp.pet.timer=rnd(3,6);sp.pet.petBy=null;}}
-    if(sp.pet&&sp.pet.state==='play'){sp.pet.state='idle';sp.pet.timer=rnd(2,4);}}
+      if(sp.pet.state==='petted'&&sp.pet.petBy==='moon'){sp.pet.state=sp.pet.kind==='dog'||sp.pet.follows?'follow':'idle';sp.pet.timer=rnd(3,6);sp.pet.petBy=null;}}
+    if(sp.pet&&sp.pet.state==='play'){sp.pet.state=sp.pet.follows?'follow':'idle';sp.pet.timer=rnd(2,4);}}
   if(complete&&LM.act&&MOON_ACT_SAT[LM.act])for(const k in MOON_ACT_SAT[LM.act])MOON_NEEDS[k]=Math.max(0,MOON_NEEDS[k]-MOON_ACT_SAT[LM.act][k]);
 }
 // new acts begin / run / end (hooked into her existing act machine)
@@ -8223,7 +8360,7 @@ function moonCtrlUpdate(dt,time){
   LM.jumpT=Math.max(0,(LM.jumpT||0)-dt);
   if(LM.mAct){const a=LM.mAct;a.t-=dt;LM.speed=lerp(LM.speed,0,Math.min(1,dt*10));LM.state='act';LM.act=a.act;LM.actT=(LM.actT||0)+dt;
     if(a.act==='pet'&&a.ent){const e=a.ent;LM.yaw+=normalizeAngle(Math.atan2(e.x-LM.x,e.z-LM.z)-LM.yaw)*Math.min(1,dt*8);a.em-=dt;if(a.em<=0){a.em=0.8;emote(e.root,'heart',e.kind==='bunny'?0.65:e.kind==='dog'?0.95:0.8);}}
-    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):'idle';e.timer=rnd(3,6);e.petBy=null;}
+    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):e.follows?'follow':'idle';e.timer=rnd(3,6);e.petBy=null;}
       LM.mAct=null;LM.state='idle';LM.act=null;}}
   else{LM.actT=0;let target=0;
     if(m>0){const th=STEER.th,fx=-Math.sin(th),fz=-Math.cos(th),rx=Math.cos(th),rz=-Math.sin(th);const dx=fx*y+rx*x,dz=fz*y+rz*x;
@@ -8468,7 +8605,7 @@ function solonCtrlUpdate(dt,time){
   if(SL.mAct){const a=SL.mAct;a.t-=dt;SL.speed=lerp(SL.speed,0,Math.min(1,dt*10));SL.state='act';SL.act=a.act;SL.actT=(SL.actT||0)+dt;
     if(a.act==='pet'&&a.ent){const e=a.ent;SL.yaw+=normalizeAngle(Math.atan2(e.x-SL.x,e.z-SL.z)-SL.yaw)*Math.min(1,dt*8);a.em-=dt;if(a.em<=0){a.em=0.8;emote(e.root,'heart',e.kind==='bunny'?0.65:e.kind==='dog'?0.95:0.8);}}
     if(a.act==='wave')SL.faceMode='happy';
-    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):'idle';e.timer=rnd(3,6);e.petBy=null;}
+    if(a.t<=0){if(a.act==='pet'&&a.ent&&a.ent.state==='petted'){const e=a.ent;e.state=e.kind==='dog'?(e.prevState==='kennel'?'kennel':'follow'):e.follows?'follow':'idle';e.timer=rnd(3,6);e.petBy=null;}
       SL.mAct=null;SL.state='idle';SL.act=null;if(SL.faceMode!=='open'){SL.faceMode='open';solon.faceObj.drawFace('open');}}}
   else{SL.actT=0;let target=0;
     if(m>0){const th=STEER.th,fx=-Math.sin(th),fz=-Math.cos(th),rx=Math.cos(th),rz=-Math.sin(th),dx=fx*y+rx*x,dz=fz*y+rz*x;
